@@ -1,0 +1,192 @@
+%==============================================================
+% Muhammad Talha Atif -- Backend Engineer Resume
+% Compile with: pdflatex backend-engineer.tex
+%==============================================================
+\documentclass[10pt, letterpaper]{article}
+
+\usepackage[
+top=0.55in, bottom=0.55in,
+left=0.65in, right=0.65in
+]{geometry}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{parskip}
+\usepackage{microtype}
+\usepackage{lmodern}
+
+\definecolor{navy}{HTML}{1A1A2E}
+\definecolor{accentblue}{HTML}{1565C0}
+\definecolor{medgray}{HTML}{555555}
+\definecolor{lightgray}{HTML}{777777}
+
+\hypersetup{colorlinks=true,urlcolor=accentblue,linkcolor=accentblue}
+
+\titleformat{\section}
+{\normalsize\bfseries\color{navy}}{}{0em}{\MakeUppercase}
+[\vspace{-4pt}\color{lightgray}\rule{\linewidth}{0.4pt}\vspace{2pt}]
+\titlespacing{\section}{0pt}{10pt}{4pt}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+\setlist[itemize]{leftmargin=14pt,itemsep=2pt,parsep=0pt,topsep=3pt,label=\textbullet}
+
+\newcommand{\jobheader}[2]{%
+\noindent\textbf{#1}\hfill{\small\color{lightgray}\textit{#2}}\par\vspace{-2pt}}
+
+\newcommand{\jobsub}[2]{%
+\noindent{\small\color{accentblue}\textbf{#1}}\quad{\small\color{lightgray}#2}\par\vspace{2pt}}
+
+\newcommand{\jobdesc}[1]{%
+\noindent{\small\color{lightgray}\textit{#1}}\par\vspace{2pt}}
+
+\newcommand{\projheader}[4]{%
+\noindent\textbf{#1}\quad{\color{lightgray}|}\quad{\small #2}\quad{\color{lightgray}|}\quad
+{\small\color{accentblue}\href{#3}{Demo}}%
+\hfill{\small\color{lightgray}\textit{#4}}\par\vspace{-2pt}}
+
+\newcommand{\skillrow}[2]{%
+\noindent\textbf{#1}\quad{\color{medgray}#2}\par\vspace{3pt}}
+
+\newcommand{\awardrow}[3]{%
+\noindent\textbf{#1}\hfill{\small\color{lightgray}\textit{#3}}\par
+{\small\color{lightgray}#2}\par\vspace{4pt}}
+
+\begin{document}
+\pagestyle{empty}
+
+\begin{center}
+{\Large\bfseries\color{navy} Muhammad Talha Atif}\par\vspace{4pt}
+{\normalsize\color{medgray} Backend Engineer}\par\vspace{4pt}
+{\small\color{lightgray}
++923064391520\enspace$\diamond$\enspace
+\href{mailto:talhaatif573@gmail.com}{talhaatif573@gmail.com}\enspace$\diamond$\enspace
+Lahore, Pakistan\enspace$\diamond$\enspace
+\href{https://linkedin.com/in/muhammad-talha-atif}{LinkedIn}\enspace$\diamond$\enspace
+\href{https://github.com/M-Talha-Atif}{GitHub}\enspace$\diamond$\enspace
+\href{https://talha-atif.vercel.app}{Portfolio}}
+\end{center}
+
+\vspace{2pt}
+
+%--------------------------------------------------------------
+% SUMMARY
+%--------------------------------------------------------------
+\section{Summary}
+
+Backend Engineer with 1+ years of production experience building scalable APIs, distributed systems,
+microservices, and AI-integrated backend platforms. Experienced in Java, Spring Boot, Node.js,
+Express.js, gRPC, Kafka, PostgreSQL, MongoDB, Redis, and cloud deployment workflows. Delivered
+compliance-heavy Identity Governance infrastructure across 8+ Spring Boot microservices with event-driven
+pipelines, secure audit logging, rule-based access automation, and low-latency inter-service
+communication. Strong focus on backend architecture, database design, performance optimization,
+system reliability, API security, and clean engineering practices.
+
+%--------------------------------------------------------------
+% WORK EXPERIENCE
+%--------------------------------------------------------------
+\section{Work Experience}
+
+\jobheader{Backend Engineer}{Dec '25 -- Present}
+\jobsub{Intimec via MicroTechX}{Remote}
+\jobdesc{Built backend infrastructure for a compliance-heavy Identity Governance platform, contributing
+across Spring Boot microservices, audit systems, access automation, gRPC communication, and event-driven
+backend workflows.}
+\begin{itemize}
+\item Migrated internal service-to-service communication from REST to gRPC, reducing inter-service
+latency by 50\% across Auth, Identity, and Access Portal workflows.
+\item Architected a generic rule-based access engine to assign roles, entitlements, and access items
+through grouped condition evaluation, CRON scheduling, and event-triggered execution.
+\item Refactored the audit log schema to remove PII while preserving forensic traceability for
+compliance, debugging, and security review workflows.
+\item Fixed a Spring AOP self-invocation issue that was bypassing audit advice on critical backend
+methods, restoring reliable audit coverage across sensitive operations.
+\item Contributed to backend architecture across 8+ Spring Boot microservices involving authentication,
+identity lifecycle management, access requests, logging, audit trails, and inter-service APIs.
+\end{itemize}
+
+\vspace{4pt}
+
+\jobheader{Backend Engineer}{Sep '25 -- Jan '26}
+\jobsub{Digital Upgraders LLC}{Remote}
+\jobdesc{Built and optimized production backend APIs for a social platform serving photographers,
+videographers, and creative professionals across web and mobile clients.}
+\begin{itemize}
+\item Reduced production feed load time from 3s to 700ms by improving query structure, database indexes,
+response payload size, and caching strategy.
+\item Fixed duplicate notification delivery by redesigning concurrent write flows with proper database
+transactions and consistency checks.
+\item Built and maintained REST APIs for feeds, notifications, user interactions, authentication, media
+workflows, and creator profile features.
+\item Led a zero-downtime infrastructure migration from AWS to Fly.io, reworking CI/CD, DNS, service
+configuration, deployment pipelines, and production environment variables.
+\item Improved backend reliability by debugging production issues across API responses, database state,
+deployment configuration, and cross-platform client behavior.
+\end{itemize}
+
+%--------------------------------------------------------------
+% PROJECTS
+%--------------------------------------------------------------
+\section{Projects}
+
+\projheader{Moodly}{AI-Powered Booking Backend}{https://talha-atif.vercel.app/projects/moodly}{}
+\begin{itemize}
+\item Designed a multimodal emotion detection backend that processes voice recordings and facial images
+through separate ML classification flows and routes results to a recommendation engine.
+\item Built RESTful APIs for authentication, booking lifecycle management, mood analysis, host actions,
+recommendation results, and real-time event updates.
+\item Implemented an async message queue to decouple media processing from booking recommendations,
+improving system responsiveness and fault tolerance.
+\item Added strict input validation, secure authentication, and unit-tested backend business logic across
+critical API paths.
+\end{itemize}
+
+\vspace{4pt}
+
+\projheader{Memingo}{Language Learning Backend Platform}{https://talha-atif.vercel.app/projects/memingo}{}
+\begin{itemize}
+\item Optimized a critical leaderboard API by replacing read-time ranking recalculation with a
+write-time precomputed cache, reducing response time from 30 seconds to 90ms.
+\item Built a backend object detection module that receives camera frames, performs item
+classification, and returns vocabulary plus cultural context as a structured API response.
+\item Integrated a conversational AI chatbot with session-aware context management, structured output
+parsing, and personalized learning recommendations based on learner progress.
+\item Designed backend APIs for lessons, progression tracking, rankings, AI responses, vocabulary data,
+and user learning history.
+\end{itemize}
+
+%--------------------------------------------------------------
+% SKILLS
+%--------------------------------------------------------------
+\section{Skills}
+
+\skillrow{Backend}{Java, Spring Boot, Spring MVC, Spring Security, Spring AOP, Node.js, Express.js, NestJS, FastAPI, Python}
+\skillrow{APIs}{REST APIs, gRPC, WebSockets, Swagger, Postman, API Design, Input Validation, Error Handling}
+\skillrow{Architecture}{Microservices, Event-Driven Architecture, Distributed Systems, Kafka, RabbitMQ, Message Queues}
+\skillrow{Databases}{PostgreSQL, MySQL, MongoDB, SQLite, Redis, Supabase, Firebase, OpenSearch}
+\skillrow{Security}{JWT, OAuth 2.0, RBAC, Rate Limiting, Secure Authentication, Audit Logging}
+\skillrow{Cloud \& DevOps}{AWS S3, AWS RDS, AWS EC2, Docker, GitHub Actions, CI/CD, Fly.io, Dokploy}
+\skillrow{Frontend Familiarity}{Next.js, React.js, React Native, TypeScript, Tailwind CSS}
+\skillrow{Tools}{Maven, Git, VS Code, IntelliJ IDEA, Stripe}
+
+%--------------------------------------------------------------
+% AWARDS
+%--------------------------------------------------------------
+\section{Awards}
+
+\awardrow{Runner-up, App Development Hackathon (2025)}{Organized by Punjab University}{May '25}
+\awardrow{Ranked, ICPC Asia Topi Online Programming Contest (2024)}{Organized by International Collegiate Programming Contests}{Nov '24}
+
+%--------------------------------------------------------------
+% EDUCATION
+%--------------------------------------------------------------
+\section{Education}
+
+\noindent\textbf{Bachelor's degree in Computer Science, University of Management and Technology -- UMT}
+\hfill{\small\color{lightgray}\textit{Oct '21 -- Aug '25}}
+
+\end{document}

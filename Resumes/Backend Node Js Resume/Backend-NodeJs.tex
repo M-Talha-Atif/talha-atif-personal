@@ -1,0 +1,186 @@
+%==============================================================
+% Muhammad Talha Atif -- Backend Engineer Resume
+% Compile with: pdflatex backend-engineer.tex
+%==============================================================
+\documentclass[10pt, letterpaper]{article}
+
+\usepackage[
+  top=0.55in, bottom=0.55in,
+  left=0.65in, right=0.65in
+]{geometry}
+\usepackage{hyperref}          % Correct package name
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{parskip}
+\usepackage{microtype}
+\usepackage{lmodern}
+
+\definecolor{navy}{HTML}{1A1A2E}
+\definecolor{accentblue}{HTML}{1565C0}
+\definecolor{medgray}{HTML}{555555}
+\definecolor{lightgray}{HTML}{777777}
+
+\hypersetup{colorlinks=true,urlcolor=accentblue,linkcolor=accentblue}
+
+\titleformat{\section}
+  {\normalsize\bfseries\color{navy}}{}{0em}{\MakeUppercase}
+  [\vspace{-4pt}\color{lightgray}\rule{\linewidth}{0.4pt}\vspace{2pt}]
+\titlespacing{\section}{0pt}{10pt}{4pt}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+\setlist[itemize]{leftmargin=14pt,itemsep=2pt,parsep=0pt,topsep=3pt,label=\textbullet}
+
+% ----- Custom commands -----
+\newcommand{\jobheader}[2]{%
+  \noindent\textbf{#1}\hfill{\small\color{lightgray}\textit{#2}}\\[-2pt]}
+\newcommand{\jobsub}[2]{%
+  \noindent{\small\color{accentblue}\textbf{#1}}\quad{\small\color{lightgray}#2}\\[2pt]}
+\newcommand{\jobdesc}[1]{%
+  \noindent{\small\color{lightgray}\textit{#1}}\\[2pt]}
+\newcommand{\projheader}[4]{%
+  \noindent\textbf{#1}\;{\color{lightgray}|}\;{\small #2}\;{\color{lightgray}|}\;
+  {\small\color{accentblue}\href{#3}{Demo}}%
+  \hfill{\small\color{lightgray}\textit{#4}}\\[-2pt]}
+\newcommand{\skillrow}[2]{%
+  \noindent\textbf{#1}\quad{\color{medgray}#2}\\[3pt]}
+\newcommand{\awardrow}[3]{%
+  \noindent\textbf{#1}\hfill{\small\color{lightgray}\textit{#3}}\\
+  {\small\color{lightgray}#2}\\[4pt]}
+
+\begin{document}
+\pagestyle{empty}
+
+\begin{center}
+  {\Large\bfseries\color{navy} Muhammad Talha Atif}\\[4pt]
+  {\normalsize\color{medgray} Backend Engineer \textbar\ Node.js · Express · NestJS}\\[4pt]
+  {\small\color{lightgray}
+    +923064391520\enspace$\diamond$\enspace
+    talhaatif573@gmail.com\enspace$\diamond$\enspace
+    Lahore, Pakistan\enspace$\diamond$\enspace
+    \href{https://linkedin.com/in/muhammad-talha-atif}{LinkedIn}\enspace$\diamond$\enspace
+    \href{https://github.com/M-Talha-Atif}{GitHub}\enspace$\diamond$\enspace
+    \href{https://talha-atif.vercel.app}{Portfolio}}
+\end{center}
+
+\vspace{2pt}
+
+%--------------------------------------------------------------
+% SUMMARY
+%--------------------------------------------------------------
+\section{Summary}
+
+Backend engineer with 1+ years of production experience building scalable server-side systems
+using Node.js, Express, and NestJS. Designed and optimized RESTful and event-driven APIs,
+relational and NoSQL databases, and cloud-native deployments. Delivered a NestJS-powered AI
+booking platform with async message queues and real-time processing, and a full-stack social
+platform with an Express backend and Next.js frontend. Comfortable owning backend services end‑to‑end
+from database schema to deployment, with a strong focus on performance, clean architecture, and
+reliability. Also proficient in Next.js frontend development for seamless API integration.
+
+%--------------------------------------------------------------
+% WORK EXPERIENCE
+%--------------------------------------------------------------
+\section{Work Experience}
+
+\jobheader{Full Stack Engineer}{Dec '25 -- Present}
+\jobsub{Intimec via MicroTechX}{Remote}
+\jobdesc{Engineered the Next.js dashboard for an enterprise Identity Governance platform,
+implementing the frontend design system, reusable component library, and secure API integration.}
+\begin{itemize}
+  \item Standardised the frontend theme, color system, and shared component library across the
+        Next.js dashboard, eliminating UI drift and establishing team‑wide conventions.
+  \item Improved client‑side performance by reducing bundle sizes and implementing efficient
+        data‑fetching strategies with server‑side rendering and static generation.
+  \item Collaborated with backend engineers to define REST API schemas for access requests,
+        audit logging, and entitlement management, ensuring clean frontend‑backend contracts.
+  \item Integrated role‑based access control (RBAC) and JWT‑based authentication flows into
+        the UI, enhancing platform security and user experience.
+\end{itemize}
+
+\vspace{4pt}
+
+\jobheader{Full Stack Engineer}{Sep '25 -- Jan '26}
+\jobsub{Digital Upgraders LLC}{Remote}
+\jobdesc{Built and maintained backend services and frontend features for a production social
+platform serving photographers, videographers, and creative professionals.}
+\begin{itemize}
+  \item Developed and optimized RESTful APIs with Node.js and Express for feeds, notifications,
+        authentication, and media workflows, handling thousands of daily active users.
+  \item Cut feed load time from 3s to 700ms by restructuring database queries, adding MongoDB
+        indexes, minimizing payload sizes, and implementing Redis caching.
+  \item Fixed duplicate notifications by redesigning concurrent write flows with proper MongoDB
+        transactions, restoring data consistency across the system.
+  \item Led a zero‑downtime infrastructure migration from AWS to Fly.io, reworking Docker
+        configurations, CI/CD pipelines, and environment variables on a live production platform.
+\end{itemize}
+
+%--------------------------------------------------------------
+% PROJECTS
+%--------------------------------------------------------------
+\section{Projects}
+
+\projheader{Moodly}{AI Experience Booking Platform (NestJS, TypeScript, RabbitMQ)}
+           {https://talha-atif.vercel.app/projects/moodly}{}
+\begin{itemize}
+  \item Architected a modular NestJS backend with Guards, Interceptors, and Pipes for
+        authentication, validation, and logging across 15+ RESTful endpoints.
+  \item Designed a multimodal emotion detection pipeline that processes voice and facial images
+        through separate ML models, routing results via RabbitMQ to a booking recommendation engine.
+  \item Implemented JWT‑based authentication with refresh tokens and role‑based access control
+        (RBAC) for hosts and users, achieving 90\%+ test coverage on core business logic.
+  \item Built a React Native cross‑platform frontend with one‑tap booking flows, real‑time
+        mood visualisations, and deep backend integration via structured API responses.
+\end{itemize}
+
+\vspace{4pt}
+
+\projheader{CunoCovo}{Social Platform (Express, Node.js, MongoDB, Next.js)}
+           {https://talha-atif.vercel.app/projects/cunocovo}{}
+\begin{itemize}
+  \item Developed a RESTful API with Express.js, including rate limiting, error handling
+        middleware, and JWT authentication, documented with Swagger for team and client use.
+  \item Designed MongoDB schemas for user profiles, posts, and interactions, adding compound
+        indexes that improved query performance by 60\%.
+  \item Built the Next.js frontend with server‑side rendering, dynamic routes, and API route
+        handlers, reducing time‑to‑interactive and improving SEO.
+  \item Integrated real‑time notification delivery using Socket.io, synchronised with the
+        Express backend to provide instant updates across the platform.
+\end{itemize}
+
+%--------------------------------------------------------------
+% SKILLS
+%--------------------------------------------------------------
+\section{Skills}
+
+\skillrow{Languages}{TypeScript, JavaScript (ES6+), Python}
+\skillrow{Backend}{Node.js, Express.js, NestJS, REST APIs, gRPC, WebSockets, RabbitMQ}
+\skillrow{Frontend}{Next.js, React.js, React Native, Tailwind CSS, Shadcn UI, Framer Motion}
+\skillrow{Architecture}{Microservices, Event‑Driven Architecture, Distributed Systems, Kafka (basics)}
+\skillrow{Databases}{MongoDB, PostgreSQL, Redis, MySQL, Supabase, Firebase}
+\skillrow{Security}{JWT, OAuth 2.0, RBAC, Rate Limiting, Input Validation, Helmet}
+\skillrow{Cloud}{AWS (S3, EC2, RDS), Fly.io, Vercel, Dokploy}
+\skillrow{DevOps}{Docker, GitHub Actions, CI/CD, Git}
+\skillrow{Tools}{Postman, Swagger, VS Code, MongoDB Compass}
+
+%--------------------------------------------------------------
+% AWARDS
+%--------------------------------------------------------------
+\section{Awards}
+
+\awardrow{Runner‑up, App Development Hackathon (2025)}{Organized by Punjab University}{May '25}
+\awardrow{Ranked, ICPC Asia Topi Online Programming Contest (2024)}{Organized by International Collegiate Programming Contests}{Nov '24}
+
+%--------------------------------------------------------------
+% EDUCATION
+%--------------------------------------------------------------
+\section{Education}
+
+\noindent\textbf{Bachelor's degree in Computer Science, University of Management and Technology -- UMT}
+\hfill{\small\color{lightgray}\textit{Oct '21 -- Aug '25}}
+
+\end{document}

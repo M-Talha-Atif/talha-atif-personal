@@ -1,0 +1,189 @@
+%==============================================================
+% Muhammad Talha Atif -- Full Stack Engineer Resume
+% Compile with: pdflatex fullstack-engineer.tex
+%==============================================================
+\documentclass[10pt, letterpaper]{article}
+
+\usepackage[
+  top=0.55in, bottom=0.55in,
+  left=0.65in, right=0.65in
+]{geometry}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{parskip}
+\usepackage{microtype}
+\usepackage{lmodern}
+
+\definecolor{navy}{HTML}{1A1A2E}
+\definecolor{accentblue}{HTML}{1565C0}
+\definecolor{medgray}{HTML}{555555}
+\definecolor{lightgray}{HTML}{777777}
+
+\hypersetup{colorlinks=true,urlcolor=accentblue,linkcolor=accentblue}
+
+\titleformat{\section}
+  {\normalsize\bfseries\color{navy}}{}{0em}{\MakeUppercase}
+  [\vspace{-4pt}\color{lightgray}\rule{\linewidth}{0.4pt}\vspace{2pt}]
+\titlespacing{\section}{0pt}{10pt}{4pt}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+\setlist[itemize]{leftmargin=14pt,itemsep=2pt,parsep=0pt,topsep=3pt,label=\textbullet}
+
+\newcommand{\jobheader}[2]{%
+  \noindent\textbf{#1}\hfill{\small\color{lightgray}\textit{#2}}\\[-2pt]}
+\newcommand{\jobsub}[2]{%
+  \noindent{\small\color{accentblue}\textbf{#1}}\quad{\small\color{lightgray}#2}\\[2pt]}
+\newcommand{\jobdesc}[1]{%
+  \noindent{\small\color{lightgray}\textit{#1}}\\[2pt]}
+\newcommand{\projheader}[4]{%
+  \noindent\textbf{#1}\;{\color{lightgray}|}\;{\small #2}\;{\color{lightgray}|}\;
+  {\small\color{accentblue}\href{#3}{Demo}}%
+  \hfill{\small\color{lightgray}\textit{#4}}\\[-2pt]}
+\newcommand{\skillrow}[2]{%
+  \noindent\textbf{#1}\quad{\color{medgray}#2}\\[3pt]}
+\newcommand{\awardrow}[3]{%
+  \noindent\textbf{#1}\hfill{\small\color{lightgray}\textit{#3}}\\
+  {\small\color{lightgray}#2}\\[4pt]}
+
+\begin{document}
+\pagestyle{empty}
+
+\begin{center}
+  {\Large\bfseries\color{navy} Muhammad Talha Atif}\\[4pt]
+  {\normalsize\color{medgray} Full Stack Engineer}\\[4pt]
+  {\small\color{lightgray}
+    +923064391520\enspace$\diamond$\enspace
+    talhaatif573@gmail.com\enspace$\diamond$\enspace
+    Lahore, Pakistan\enspace$\diamond$\enspace
+    \href{https://linkedin.com/in/muhammad-talha-atif}{LinkedIn}\enspace$\diamond$\enspace
+    \href{https://github.com/M-Talha-Atif}{GitHub}\enspace$\diamond$\enspace
+    \href{https://talha-atif.vercel.app}{Portfolio}}
+\end{center}
+
+\vspace{2pt}
+
+%--------------------------------------------------------------
+% SUMMARY
+%--------------------------------------------------------------
+\section{Summary}
+
+Full Stack Engineer with 2+ years of production experience building distributed backend systems, full
+stack web platforms, and AI-integrated applications. Delivered enterprise Identity Governance
+infrastructure across 8+ Spring Boot microservices with Kafka event pipelines, gRPC inter-service
+communication, and compliance-grade audit infrastructure. Shipped a complete production social platform
+on Node.js and Next.js with zero-downtime infrastructure migration. Comfortable owning features end to
+end from database schema to UI layer with a consistent focus on system reliability, clean architecture,
+and engineering correctness.
+
+%--------------------------------------------------------------
+% WORK EXPERIENCE
+%--------------------------------------------------------------
+\section{Work Experience}
+
+\jobheader{Full Stack Engineer}{Dec '25 -- Present}
+\jobsub{Intimec via MicroTechX}{Remote}
+\jobdesc{Owned the Access Portal end to end across Spring Boot microservices and the Next.js dashboard,
+and contributed to platform-wide architecture across audit, logging, and inter-service communication
+on a compliance-heavy Identity Governance platform.}
+\begin{itemize}
+  \item Migrated synchronous service-to-service communication from REST to gRPC reducing inter-service
+        latency by 50\% across Auth, Identity, and Access Portal workflows.
+  \item Architected the generic rule-based engine assigning roles, entitlements, and access items to
+        identities through grouped condition evaluation with CRON and event-based scheduling.
+  \item Refactored the audit log schema to be PII-free, restoring compliance alignment without losing
+        forensic traceability, and resolved a Spring AOP self-invocation bypass that was silently
+        skipping audit advice on critical methods.
+  \item Standardised the frontend theme, color system, and shared component library across the
+        Next.js dashboard and documented the conventions that the team now applies to every new
+        feature, eliminating UI drift across the platform.
+\end{itemize}
+
+\vspace{4pt}
+
+\jobheader{Full Stack Engineer}{Sep '25 -- Jan '26}
+\jobsub{Digital Upgraders LLC}{Remote}
+\jobdesc{Built and maintained backend APIs and frontend features for a production social platform serving
+photographers, videographers, and creative professionals across web and mobile.}
+\begin{itemize}
+  \item Cut feed load time from 3s to 700ms by fixing query structure, indexing, payload size,
+        and caching bottlenecks across the production feed system.
+  \item Fixed duplicate notifications by redesigning concurrent write flows with proper database
+        transactions, restoring consistency across the notification system.
+  \item Resolved Android, iOS, and Safari rendering issues by tracing client-side performance
+        bottlenecks and restoring consistent cross-platform behaviour.
+  \item Led a zero-downtime migration from AWS to Fly.io, reworking infrastructure, CI/CD,
+        DNS, and service configuration on a live production platform.
+\end{itemize}
+
+
+
+%--------------------------------------------------------------
+% PROJECTS
+%--------------------------------------------------------------
+\section{Projects}
+
+\projheader{Moodly}{AI Experience Booking Platform}{https://talha-atif.vercel.app/projects/moodly}{}
+\begin{itemize}
+  \item Designed a multimodal emotion detection pipeline processing voice recordings and facial images
+        through separate classification models, routing results via an async message queue to a booking
+        recommendation engine that selects experiences based on detected mood state.
+  \item Built RESTful backend APIs for the full booking lifecycle and a cross-platform React Native
+        frontend with one-tap booking flows, mood visualisation components, and a voice-command interface
+        for hosts, all connected through a real-time event-driven architecture.
+  \item Implemented strict input validation, secure authentication, and unit-tested business logic across
+        all backend critical paths, while enforcing TypeScript-strict component architecture on the
+        frontend to reduce edge-case bugs in production.
+\end{itemize}
+
+\vspace{4pt}
+
+\projheader{Memingo}{Language Learning Platform}{https://talha-atif.vercel.app/projects/memingo}{}
+\begin{itemize}
+  \item Identified and resolved a critical leaderboard bottleneck where rankings were recalculated on
+        every read request, replaced with a write-time precomputed cache, reducing API response time
+        from 30 seconds to 90ms and eliminating the drop-off on the rankings screen.
+  \item Built 9 interactive lesson format components on the frontend and a real-time object detection
+        module on the backend that intercepts camera frames, runs item classification, and returns
+        vocabulary and cultural context as a single structured API response.
+  \item Integrated a conversational AI chatbot with session-aware context management and structured
+        output parsing, delivering personalised learning recommendations that adapt based on the
+        learner's progression state across sessions.
+\end{itemize}
+
+%--------------------------------------------------------------
+% SKILLS
+%--------------------------------------------------------------
+\section{Skills}
+
+\skillrow{Backend}{Java, Spring Boot, Spring MVC, Spring Security, Spring AOP, Node.js, Express.js, NestJS, FastAPI, Python, REST APIs, gRPC}
+\skillrow{Frontend}{Next.js, React.js, React Native, TypeScript, JavaScript, Tailwind CSS, Shadcn UI, Framer Motion}
+\skillrow{Architecture}{Microservices, Event-Driven Architecture, Distributed Systems, Kafka, RabbitMQ, WebSockets}
+\skillrow{Databases}{PostgreSQL, MySQL, MongoDB, SQLite, Redis, Supabase, Firebase, OpenSearch}
+\skillrow{Security}{JWT, OAuth 2.0, RBAC, Rate Limiting, Spring Security, Input Validation}
+\skillrow{Cloud}{AWS (S3, RDS, EC2), Firebase, Supabase, Dokploy, Fly.io}
+\skillrow{DevOps}{Docker, GitHub Actions, CI/CD, Maven, Git}
+\skillrow{Tools}{Postman, Swagger, Stripe, VS Code, IntelliJ IDEA}
+
+%--------------------------------------------------------------
+% AWARDS
+%--------------------------------------------------------------
+\section{Awards}
+
+\awardrow{Runner-up, App Development Hackathon (2025)}{Organized by Punjab University}{May '25}
+\awardrow{Ranked, ICPC Asia Topi Online Programming Contest (2024)}{Organized by International Collegiate Programming Contests}{Nov '24}
+
+%--------------------------------------------------------------
+% EDUCATION
+%--------------------------------------------------------------
+\section{Education}
+
+\noindent\textbf{Bachelor's degree in Computer Science, University of Management and Technology -- UMT}
+\hfill{\small\color{lightgray}\textit{Oct '21 -- Aug '25}}
+
+\end{document}

@@ -1,0 +1,3 @@
+[submodule "Portfolio/my-portfolio"]
+	path = Portfolio/my-portfolio
+	url = https://github.com/M-Talha-Atif/Portfolio-NEXTJS.git
