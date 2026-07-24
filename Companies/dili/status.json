@@ -10,11 +10,11 @@
   "contact": {
     "name": "Anand Chaturvedi",
     "title": "Co-Founder & CEO",
-    "email": null,
-    "emailStatus": "Not found (Snov.io matched existing record with no email; Apollo blocked on free plan)"
+    "email": "anand@dili.ai",
+    "emailStatus": "Verified (user-supplied, confirmed via Snov.io app_verify_email: status-ok, isVerified 1)"
   },
   "outreach": {
-    "channel": "LinkedIn only",
+    "channel": "Email + LinkedIn",
     "portfolioPage": "/r/dili",
     "draftStatus": "Drafted",
     "approvalStatus": "Not Approved",

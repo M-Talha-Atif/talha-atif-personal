@@ -21,7 +21,22 @@ Talha
 Opens by naming the actual pivot (PE/VC diligence to clean-energy compliance) as the hook, a real, specific, non-obvious detail rather than a generic compliment. Names the honest tech gaps (Django, Terraform) directly instead of glossing over them, consistent with career.md's own honesty discipline. Portfolio link phrased as "wrote up the overlap/specifics," placed near the top of both messages.
 
 ## Email status
-No verified email found (Snov.io matched an existing 2024 record with no email; Apollo blocked on free plan). Per instruction, no Gmail draft prepared since no email exists to send to.
+User supplied `anand@dili.ai` directly (2026-07-24). Verified via Snov.io `app_verify_email`: valid, verified, deliverable.
+
+## Email Draft
+
+**Subject:** Founding Engineer, Full Stack — Talha Atif (Dili)
+
+**Body:**
+Hi Anand,
+
+Noticed Dili's move from PE/VC diligence into clean-energy compliance, a much sharper problem, real money (tax incentives, federal funding) rides on getting the paperwork right.
+
+I'm a backend/full-stack engineer (about 2 years, Python, React) based in Pakistan, open to remote work. Your Founding Engineer post (Python/Django, React, LLM document extraction, AWS/Terraform) overlaps directly on Python and React, and on the core problem of pulling trustworthy structured data out of messy documents, I built exactly that pattern into an AI inference pipeline (Moodly) and a zero-downtime migration of a 5M-document index. Django and Terraform specifically would be new to me, want to say that upfront rather than imply otherwise.
+
+Wrote up the specifics here: https://talha-atif.vercel.app/r/dili
+
+Talha
 
 ## Approval status
-Not yet approved. Not sent. LinkedIn only.
+Email drafted, awaiting explicit send approval. LinkedIn messages also still awaiting approval, not sent.

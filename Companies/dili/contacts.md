@@ -8,4 +8,4 @@
 ### Email Discovery
 - **Snov.io:** Searched by name + `dili.ai` domain — matched an existing prospect record (created 2024, re-verified 2026-07-24), **no email returned** (`emails: []`).
 - **Apollo:** Not attempted separately — Free-plan restriction already confirmed blocks all people-search/enrichment endpoints.
-- **Result: Email — Not found.** Per instruction, no Gmail draft prepared since no verified email exists. LinkedIn only.
+- **Update 2026-07-24:** User supplied `anand@dili.ai` directly. Verified via Snov.io `app_verify_email`: `status-ok`, `isVerified: 1`, "This email address is valid." **Email — Verified.**
