@@ -1,0 +1,25 @@
+{
+  "company": "Inblick",
+  "slug": "inblick",
+  "status": "Drafted",
+  "lastUpdated": "2026-07-24",
+  "opportunity": {
+    "role": "No confirmed open role at Inblick itself, Strategic Outreach based on CTO's own past hiring-interest post",
+    "companyUrl": "https://inblick.ai"
+  },
+  "contact": {
+    "name": "Andreas Kaltenbach",
+    "title": "CTO & Co-Founder",
+    "email": null,
+    "emailStatus": "Not found (Snov.io search completed with no result; Apollo blocked on free plan)"
+  },
+  "outreach": {
+    "channel": "LinkedIn only",
+    "portfolioPage": "/r/inblick",
+    "draftStatus": "Drafted",
+    "approvalStatus": "Not Approved",
+    "sentStatus": "Not Sent"
+  },
+  "riskFlags": ["No confirmed current open role at Inblick itself; hiring-interest evidence is dated (~1yr old post)"],
+  "notion": { "synced": false, "recordUrl": null }
+}
