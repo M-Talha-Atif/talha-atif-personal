@@ -1,0 +1,25 @@
+{
+  "company": "Zynix AI",
+  "slug": "zynix",
+  "status": "Drafted",
+  "lastUpdated": "2026-07-24",
+  "opportunity": {
+    "role": "No confirmed remote engineering opening; current live hiring badge is Product Owner/Designer, Bengaluru on-site. Strategic Outreach based on CTO's own recurring technical thesis.",
+    "companyUrl": "https://www.zynix.ai/"
+  },
+  "contact": {
+    "name": "Gautamdev Chowdary",
+    "title": "Co-Founder & CTO",
+    "email": null,
+    "emailStatus": "Not found (Snov.io search completed with no result; Apollo blocked on free plan)"
+  },
+  "outreach": {
+    "channel": "LinkedIn only",
+    "portfolioPage": "/r/zynix",
+    "draftStatus": "Drafted",
+    "approvalStatus": "Not Approved",
+    "sentStatus": "Not Sent"
+  },
+  "riskFlags": ["No confirmed remote engineering opening at Zynix; only engineering roles found (SDE-1/SDE-II) are Bengaluru-based, on-site"],
+  "notion": { "synced": false, "recordUrl": null }
+}
