@@ -1,0 +1,25 @@
+{
+  "company": "Ellipsis",
+  "slug": "ellipsis",
+  "status": "Drafted",
+  "lastUpdated": "2026-07-24",
+  "opportunity": {
+    "role": "Founding AI Engineer, live open req, on-site NYC (not remote), stack matches profile closely (Python/FastAPI, Postgres, TypeScript/Next.js; Hatchet is new)",
+    "companyUrl": "https://www.ellipsis.dev/"
+  },
+  "contact": {
+    "name": "Hunter Brooks",
+    "title": "Co-Founder & CEO",
+    "email": null,
+    "emailStatus": "Not found (Snov.io matched existing record with no email; Apollo blocked on free plan)"
+  },
+  "outreach": {
+    "channel": "LinkedIn only",
+    "portfolioPage": "/r/ellipsis",
+    "draftStatus": "Drafted",
+    "approvalStatus": "Not Approved",
+    "sentStatus": "Not Sent"
+  },
+  "riskFlags": ["Role is on-site in New York, NY, not remote"],
+  "notion": { "synced": false, "recordUrl": null }
+}
