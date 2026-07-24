@@ -1,0 +1,25 @@
+{
+  "company": "Dili",
+  "slug": "dili",
+  "status": "Drafted",
+  "lastUpdated": "2026-07-24",
+  "opportunity": {
+    "role": "Founding Engineer, Full Stack, live open req (Python/Django, React, AWS/Terraform); company pivoted from PE/VC diligence to clean-energy compliance automation",
+    "companyUrl": "https://www.dili.ai"
+  },
+  "contact": {
+    "name": "Anand Chaturvedi",
+    "title": "Co-Founder & CEO",
+    "email": null,
+    "emailStatus": "Not found (Snov.io matched existing record with no email; Apollo blocked on free plan)"
+  },
+  "outreach": {
+    "channel": "LinkedIn only",
+    "portfolioPage": "/r/dili",
+    "draftStatus": "Drafted",
+    "approvalStatus": "Not Approved",
+    "sentStatus": "Not Sent"
+  },
+  "riskFlags": ["Company pivoted products since original discovery data; do not reference old PE/VC diligence positioning", "Django and Terraform are stack gaps not currently in profile"],
+  "notion": { "synced": false, "recordUrl": null }
+}
