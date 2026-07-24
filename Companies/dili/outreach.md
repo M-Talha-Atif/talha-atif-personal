@@ -39,4 +39,5 @@ Wrote up the specifics here: https://talha-atif.vercel.app/r/dili
 Talha
 
 ## Approval status
-Email drafted, awaiting explicit send approval. LinkedIn messages also still awaiting approval, not sent.
+Email: **Sent.** User approved, sent via Apollo emailer (talhaatif573@gmail.com to anand@dili.ai) 2026-07-24 18:36 UTC, status `completed`.
+LinkedIn connection note and follow-up: still drafted, not sent.

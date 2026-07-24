@@ -1,7 +1,7 @@
 {
   "company": "Dili",
   "slug": "dili",
-  "status": "Drafted",
+  "status": "Sent",
   "lastUpdated": "2026-07-24",
   "opportunity": {
     "role": "Founding Engineer, Full Stack, live open req (Python/Django, React, AWS/Terraform); company pivoted from PE/VC diligence to clean-energy compliance automation",
@@ -17,8 +17,8 @@
     "channel": "Email + LinkedIn",
     "portfolioPage": "/r/dili",
     "draftStatus": "Drafted",
-    "approvalStatus": "Not Approved",
-    "sentStatus": "Not Sent"
+    "approvalStatus": "Approved (email)",
+    "sentStatus": "Email sent 2026-07-24T18:36:31Z via Apollo; LinkedIn not yet sent"
   },
   "riskFlags": ["Company pivoted products since original discovery data; do not reference old PE/VC diligence positioning", "Django and Terraform are stack gaps not currently in profile"],
   "notion": { "synced": false, "recordUrl": null }
