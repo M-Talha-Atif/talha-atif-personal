@@ -1,0 +1,15 @@
+{
+  "company": "Supabase",
+  "slug": "supabase",
+  "status": "Monitoring",
+  "statusReason": "Current 'Software Engineer - Auth' role requires 4+ years Go (not in documented stack) — rejected on stack/experience fit, not eligibility. Company's own eligibility signal (explicit global hiring, 60+ countries) is exceptional; recheck for a TypeScript/Node-leaning or lower-experience opening.",
+  "lastUpdated": "2026-07-24",
+  "opportunity": {
+    "role": "Software Engineer - Auth (stack-mismatched, not pursued)",
+    "jobUrl": "https://jobs.ashbyhq.com/supabase/e569b7f7-fa8f-4139-86f6-4f52b456882d",
+    "companyUrl": "https://supabase.com"
+  },
+  "contact": { "name": null, "title": null, "email": null, "emailStatus": null },
+  "outreach": { "pageUrl": null, "draftStatus": "Not Started", "approvalStatus": "Not Approved", "sentStatus": "Not Sent" },
+  "notion": { "synced": false, "recordUrl": null }
+}

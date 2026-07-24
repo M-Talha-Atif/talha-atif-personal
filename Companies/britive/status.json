@@ -1,0 +1,14 @@
+{
+  "company": "Britive",
+  "slug": "britive",
+  "status": "Discovered",
+  "lastUpdated": "2026-07-24",
+  "opportunity": {
+    "role": "Senior Software Engineer (Cloud)",
+    "jobUrl": "https://boards.greenhouse.io/britive/jobs/4338334004",
+    "companyUrl": "https://www.britive.com"
+  },
+  "contact": { "name": null, "title": null, "email": null, "emailStatus": null },
+  "outreach": { "pageUrl": null, "draftStatus": "Not Started", "approvalStatus": "Not Approved", "sentStatus": "Not Sent" },
+  "notion": { "synced": false, "recordUrl": null }
+}

@@ -1,6 +1,6 @@
 ---
 name: research-company
-description: Deep-dive research on ONE already-selected company and ONE specific job opportunity — company/product/technical context, role breakdown, match against career.md and Evidence/, Pakistan hiring compatibility, personalization angles, relevant people, risks, and a final recommendation. Takes a specific company/role/URL as input. Does NOT discover new companies or search broadly for jobs (use discover-companies for that) and does NOT draft outreach messages.
+description: Deep-dive research on ONE already-selected company and ONE specific job opportunity — company/product/technical context, role breakdown, match against career.md and Evidence/, Pakistan hiring compatibility, personalization angles, relevant people, risks, and a final recommendation. Takes a specific company/role/URL as input. Reads and updates the local Companies/ record via sync-local-repo instead of relying on pasted conversation context. Does NOT discover new companies or search broadly for jobs (use discover-companies for that) and does NOT draft outreach messages.
 ---
 
 # Research Company
@@ -8,6 +8,15 @@ description: Deep-dive research on ONE already-selected company and ONE specific
 Deep research on a single, already-identified opportunity — one company, one role — to produce a decision-grade report: what the company actually does, what the role actually requires, how that maps to this person's real documented experience, whether a Pakistan-based hire is realistic, who the relevant people are, and what the honest risks are.
 
 This skill does not discover new companies, does not search broadly across job boards, and does not draft outreach messages, cover letters, or portfolio pages. It takes an opportunity that has already been found (by `discover-companies`, or supplied directly by the user) and researches it thoroughly.
+
+## Local Repository Check (do this before anything else)
+
+The local record under `Companies/<slug>/`, not pasted conversation output, is the primary source for "has this already been researched." Before doing any research work:
+
+1. Ask `sync-local-repo` to locate the company record (normalized name/domain/job-URL match against `Companies/*`).
+2. **If a record exists:** read `status.json` first, then `company.md` and `opportunities.md` for this opportunity. If `status` is already `Researched` or later and the content doesn't look stale (no obvious contradiction with anything freshly stated in this conversation), report what's already on file and recommend reusing it instead of re-researching — do the research pass only if the user asks for a refresh, the existing data is thin/missing something this run needs, or something looks outdated. When refreshing, never overwrite a stronger existing fact with a weaker one (see Step 9 below).
+3. **If no record exists:** this skill is a legitimate entry point (it doesn't require `discover-companies` to have run first), so initialize one via `sync-local-repo` using the company/role/URL supplied here, rather than researching into a conversation void with nothing persisted. State plainly that no prior local record existed and a new one is being created.
+4. Never invent a competing local structure — `sync-local-repo` owns the directory layout and duplicate-detection; this skill only reads and requests writes through it.
 
 ## Input
 
@@ -24,6 +33,8 @@ Role: Backend Engineer
 Company URL: https://www.atomicvest.com
 Job URL: https://www.ycombinator.com/companies/atomic/jobs/XWj8902-backend-engineer
 ```
+
+Treat the local record found above as the primary context for anything it already covers (company facts, prior score/category, prior recommendation). Conversation-pasted `discover-companies` output is only a fallback when the local record is missing or thinner than what's supplied directly in the conversation — never the other way around.
 
 If the job URL is missing but the company and role are known, locate the live posting first (via the company's careers page, YC/Work at a Startup, or a targeted search) before proceeding — do not analyze a role from memory or a secondhand summary alone. If no live posting can be found, say so explicitly in the report rather than inventing role requirements.
 
@@ -53,7 +64,7 @@ Treat `career.md` as authoritative for goals and direction. Treat the `Evidence/
 - Never assume someone is the hiring manager, recruiter, or relevant contact without evidence connecting them to the company, team, or posting.
 - Never treat every listed technology in a job posting as equally important — always separate core / secondary / nice-to-have requirements rather than flattening them.
 - Never optimize the final assessment for compensation alone — always explain trade-offs (technical learning, ownership, stability, career direction) alongside comp.
-- Do not draft an outreach email, cover letter, or personalized portfolio content. Do not create or modify any file other than the report output requested in the conversation (this skill produces its report as a response, not as a written file, unless the user explicitly asks for one to be saved).
+- Do not draft an outreach email, cover letter, or personalized portfolio content. Do not directly create or modify any file other than the report output requested in the conversation — the only file-system effect this skill has is persisting research results into the local `Companies/<slug>/` record, and that happens exclusively through `sync-local-repo`, never by writing files itself.
 - Do not discover or evaluate other companies or roles in the same run — stay scoped to the one opportunity given.
 
 ## Fact-Labeling System
@@ -168,6 +179,17 @@ Identify and clearly distinguish confirmed vs. inferred risks: experience-level 
 ### Step 11 — Final recommendation
 Choose exactly one: **Strong pursue / Pursue / Pursue after clarification / Monitor / Pass.** Explain the reasoning in a few sentences, referencing the strongest factors from the research (Pakistan compatibility, technical fit, company quality, risks) rather than restating every section.
 
+### Step 12 — Persist to the local repository
+Invoke `sync-local-repo` to write this run's result before producing the final report:
+- `company.md`: company-level facts from Steps 2-3 (product, stage/size, funding, engineering culture), tagged Confirmed/Public Evidence/Inference/Unknown.
+- `opportunities.md`: this opportunity's requirement breakdown (Step 4), evidence-match table (Step 5), personalization angles (Step 6), Pakistan compatibility (Step 8), risks (Step 10), and final recommendation (Step 11).
+- `status.json`: advance `status` to `"Researched"` — only if the current status isn't already past `Researched` (never regress; if this run is a refresh of an already-more-advanced opportunity, update the content files but leave `status` untouched and say so).
+- If this run contradicts a stronger existing fact already on file (e.g. prior research said Category A, this run finds evidence for Category C), do not silently overwrite it — record both and flag the conflict in the report rather than picking one.
+
+## Local Repository Integration
+
+This skill owns the research-depth content of `company.md` and `opportunities.md` (company facts, role breakdown, evidence-match, personalization angles, Pakistan compatibility, risks, recommendation) and the `"Researched"` status transition — always via `sync-local-repo`, never by writing `Companies/` files directly. It never touches `contacts.md` or `outreach.md`. It may initialize a new company record (Local Repository Check, step 3) only when none exists yet for this exact opportunity; it never overwrites contact or outreach data a later stage already wrote, and never regresses `status` below its current value.
+
 ## Output Format
 
 Produce the report as a response with these sections, in this order:
@@ -218,6 +240,10 @@ Produce the report as a response with these sections, in this order:
 
 ## Recommended Next Action
 [One concrete, specific next step — e.g. "confirm remote-from-Pakistan eligibility directly before applying" or "apply now via the listed posting" — not an outreach draft]
+
+## Local Repository Sync
+- Record: [Created / Updated / Reused without changes] — `Companies/[slug]/`
+- Status: [unchanged at X / advanced to "Researched"]
 ```
 
 Do not draft an outreach email, cover letter, or portfolio content anywhere in this report — that is out of scope for this skill.

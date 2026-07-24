@@ -1,6 +1,6 @@
 ---
 name: prepare-outreach
-description: Transform an already-researched company/role opportunity, existing research-company and find-relevant-contact output, and real career evidence into the specific outreach-page content needed to populate the existing portfolio /r/[slug] template (hero, evidence, culture fit, hiring paths, closing, contact context). Does NOT create or modify React components, pages, design tokens, or frontend architecture, and does NOT draft or send the actual outreach email. Use once a company/role has been discovered, researched, and a contact identified, and it's time to prepare the personalized content for that company's outreach page.
+description: Transform an already-researched company/role opportunity — loaded from the local Companies/ record via sync-local-repo, not re-pasted — and real career evidence into the specific outreach-page content needed to populate the existing portfolio /r/[slug] template (hero, evidence, culture fit, hiring paths, closing, contact context). Does NOT create or modify React components, pages, design tokens, or frontend architecture, and does NOT draft or send the actual outreach email. Use once a company/role has been discovered, researched, and a contact identified, and it's time to prepare the personalized content for that company's outreach page.
 ---
 
 # Prepare Outreach
@@ -29,6 +29,13 @@ A low-friction way to evaluate me
 
 The reader should come away thinking "this person actually understood what we're building and picked evidence relevant to our problems" — not "this is a nice-looking templated page."
 
+## Local Repository Check (do this before anything else)
+
+1. Ask `sync-local-repo` to locate the company/opportunity record under `Companies/<slug>/`.
+2. **If no record is found:** stop. Report plainly: "No local record found for [Company]/[Role]. This step assumes `research-company` and (ideally) `find-relevant-contact` have already run and been persisted via `sync-local-repo`. Run those first, or provide the local record path if this company is tracked under a different slug." Do not proceed on conversation memory alone and do not invent a record.
+3. **If a record is found:** read `status.json` first, then `company.md`, `opportunities.md`, and `contacts.md`. Treat these as already-established fact for company/technical/role context, Pakistan compatibility, and contact info — do not re-research any of it. Only re-verify a specific fact if it looks stale, or research the gap directly if something this skill needs wasn't covered there (e.g. no strong technical-context detail exists) — never by repeating `research-company`'s or `find-relevant-contact`'s full workflow.
+4. Also check `outreach.md` and `status.json.status`. If a prepared outreach package for this exact opportunity already exists at `Outreach Prepared` or later and nothing suggests it's stale (no new research/contact/email since it was written), report the existing package and recommend reusing it instead of regenerating.
+
 ## Input
 
 Expects an already-selected opportunity, supplied as some combination of:
@@ -37,11 +44,8 @@ Expects an already-selected opportunity, supplied as some combination of:
 - Job URL
 - Role title
 
-Preferably also supplied (paste the actual output, don't summarize it from memory):
-- Output from `.claude/skills/research-company/SKILL.md`
-- Output from `.claude/skills/find-relevant-contact/SKILL.md`
+The local record found above is the primary source for company/technical/role context, contact info, and email status. Conversation-pasted `research-company`/`find-relevant-contact` output is only a fallback when the local record is missing or thinner than what's available directly in the conversation:
 
-Example:
 ```
 Company: Atomic
 Role: Backend Engineer
@@ -49,9 +53,7 @@ Company URL: https://www.atomicvest.com
 Job URL: https://www.ycombinator.com/companies/atomic/jobs/XWj8902-backend-engineer
 ```
 
-If `research-company` output is supplied, treat it as already-established fact for company/technical/role context and Pakistan compatibility — do not re-research it. Only re-verify a specific fact if it looks stale or if something this skill needs wasn't covered there (e.g. no strong technical-context detail was found). If `find-relevant-contact` output is supplied, use it directly for the Contact Context section — do not re-research the contact.
-
-If given only a bare company name with no prior research, do the minimum research needed to fill the gaps (do not perform broad discovery, and do not repeat `research-company`'s full workflow) and note explicitly in the output which parts are freshly researched versus reused.
+If given only a bare company name with no prior local research, do the minimum research needed to fill the gaps (do not perform broad discovery, and do not repeat `research-company`'s full workflow) and note explicitly in the output which parts are freshly researched versus reused from the local record.
 
 ## Source of Truth (read these first, every run)
 
@@ -77,9 +79,9 @@ Treat `career.md` and `Evidence/` as the only valid source for claims about this
 - Never write a generic headline like "Backend Engineer Looking for Opportunities" — the hero headline must express the single strongest concrete connection found.
 - In the hiring-paths content: never make Premium sound arrogant or demanding, never imply Premium is objectively better than Silver or Bronze, never criticize or disparage a traditional multi-round process. The throughline is "comfortable being evaluated through whatever process works best for you," not a ranked preference.
 - Never draft the final outreach email or message — that is a future skill's job.
-- Never send anything, update Notion, or discover new companies.
+- Never send anything, update Notion directly, or discover new companies.
 - Never create or modify a React component, page, layout, design token, or any file under `Portfolio/`. This skill's output is a content package, not a code change.
-- Never modify `career.md`, `Evidence/`, `Brand/`, or any other skill file.
+- Never modify `career.md`, `Evidence/`, `Brand/`, or any other skill file. The only local write this skill makes is persisting the prepared package into `outreach.md`/`status.json`, and that happens exclusively through `sync-local-repo`.
 - Never propose a new visual asset — only reference existing images already present in `Portfolio/my-portfolio/public/` (via `projectsMetadata` or the known profile image path) or already-established links (e.g. the existing Calendly URL, the existing contact email).
 
 ## Fact-Labeling System
@@ -133,7 +135,13 @@ If `find-relevant-contact` output was supplied, summarize: primary contact, thei
 ### Step 13 — Brand and visual context
 Confirm which existing assets to reference: the profile image (`/personal/profileImage.png` unless a workspace file says otherwise), and the project image for the selected case-study project (from `projectsMetadata`). Never propose creating a new image or redesigning anything.
 
-### Step 14 — Produce the structured output
+### Step 14 — Persist to the local repository
+Invoke `sync-local-repo` before producing the final output:
+- `outreach.md`: outreach page slug, portfolio URL, hero content, selected evidence/project, culture-fit reasoning, hiring-path options, closing CTA, preparation status.
+- `status.json`: set `outreach.pageUrl`. Advance `status` to `"Outreach Prepared"` — only if the current status isn't already past that point (never regress).
+- Do not touch `company.md`, `opportunities.md`, or `contacts.md` — this step only owns the prepared-package fields of `outreach.md`.
+
+### Step 15 — Produce the structured output
 Use the Output Format below. Tag every claim per the Fact-Labeling System.
 
 ## Output Format
@@ -215,17 +223,26 @@ Structure the output to map directly onto `OutreachPage` (`Portfolio/my-portfoli
 
 ## Evidence and Confidence
 [Every substantive claim, tagged Confirmed / Evidence / Inference / Unknown, source cited]
+
+## Local Repository Sync
+- Record: [Created / Updated / Reused without changes] — `Companies/[slug]/outreach.md`
+- Status: [unchanged at X / advanced to "Outreach Prepared"]
 ```
+
+## Local Repository Integration
+
+This skill owns the prepared-package fields of `outreach.md` (slug, page URL, hero content, evidence selection, culture fit, hiring paths, closing, preparation status) and `status.json.outreach.pageUrl`, plus the `"Outreach Prepared"` status transition — always via `sync-local-repo`. It never touches `company.md`, `opportunities.md`, `contacts.md`, or the draft/send fields of `outreach.md` (those belong to `draft-outreach` and `send-outreach`).
 
 ## Workflow Boundary
 
-This skill stops the moment the outreach package above is produced. It must NOT:
+This skill stops the moment the outreach package above is produced and persisted. It must NOT:
 
 - Draft the final outreach email or message.
 - Send anything on the user's behalf.
-- Update Notion.
+- Update Notion directly.
 - Modify the portfolio frontend, create a new React page, or change any design.
 - Modify `career.md`, `Evidence/`, or `Brand/`.
 - Discover new companies or perform broad job discovery.
+- Write any `Companies/` file directly — only through `sync-local-repo`.
 
 The output is meant to be handed to a future outreach-writing and delivery workflow, or transcribed manually into a new `src/lib/outreach/<slug>.ts` file — this skill does not do either of those itself.

@@ -1,13 +1,20 @@
 ---
 name: find-relevant-contact
-description: Identify the single highest-value public professional contact for ONE already-researched company and role — a founder, CTO, engineering manager, hiring manager, or recruiter, chosen by evidence rather than title seniority. Takes a company/role (optionally with research-company output) as input. Does NOT discover companies, research a company from scratch, draft outreach, or touch the portfolio/Notion.
+description: Identify the single highest-value public professional contact for ONE already-researched company and role — a founder, CTO, engineering manager, hiring manager, or recruiter, chosen by evidence rather than title seniority. Loads the existing company/research record from the local Companies/ directory via sync-local-repo rather than requiring research-company's output to be re-pasted. Does NOT discover companies, research a company from scratch, or draft outreach.
 ---
 
 # Find Relevant Contact
 
 Answer one question: **"Who is the highest-value person to contact about this specific role or engineering opportunity?"** for a company and role that have already been identified (and ideally already researched by `research-company`).
 
-This skill does not discover new companies, does not search broadly for unrelated opportunities, and does not repeat a full company research pass — it consumes existing research (or a light company/role description) and focuses entirely on finding, verifying, and ranking the right person to contact. It stops once the contact and contact strategy are identified; it does not draft an outreach email, build a portfolio page, or update Notion.
+This skill does not discover new companies, does not search broadly for unrelated opportunities, and does not repeat a full company research pass — it consumes existing research and focuses entirely on finding, verifying, and ranking the right person to contact. It stops once the contact and contact strategy are identified; it does not draft an outreach email or build a portfolio page.
+
+## Local Repository Check (do this before anything else)
+
+1. Ask `sync-local-repo` to locate the company/opportunity record under `Companies/<slug>/`.
+2. **If no record is found:** stop. This skill assumes the opportunity has already been discovered/researched. Report plainly: "No local record found for [Company]/[Role]. Run `research-company` (or `discover-companies`) first to initialize this opportunity via `sync-local-repo`, or provide the local record path if this company is tracked under a different name/slug." Do not create a new company directory yourself and do not proceed on conversation memory alone.
+3. **If a record is found:** read `status.json` first, then `company.md` and `opportunities.md` — this is the primary research context (company stage/size, technical context, team context, location/hiring signals, prior personalization angles). Do not ask the user to re-paste `research-company`'s output; only fall back to a conversation-supplied summary if the local record is missing something this step specifically needs (e.g. no engineering leadership context at all).
+4. Also check `contacts.md` and `status.json.status`. If a contact for this exact opportunity already exists at `Contact Found` or later and nothing suggests it's gone stale (e.g. the person is confirmed to have left, or the user asks for a re-check), report the existing contact and recommend reusing it instead of re-running the full search.
 
 ## Input
 
@@ -25,16 +32,14 @@ Company URL: https://www.atomicvest.com
 Job URL: https://www.ycombinator.com/companies/atomic/jobs/XWj8902-backend-engineer
 ```
 
-If the output of `.claude/skills/research-company/SKILL.md` is available (pasted in, or from earlier in the conversation), treat it as the primary research context — company stage/size, technical context, team context, and location/hiring signals are already established there and should not be re-researched from scratch. Only re-verify a fact from that output if it looks stale (e.g. a headcount or funding figure that might have changed) or if something needed for contact-finding wasn't covered there (e.g. no engineering leadership was named).
-
 If given only a bare company name with no role, ask which specific opening this is for — this skill finds a contact for one opportunity, not a general company contact list.
 
 ## Hard Constraints (never violate)
 
 - Never discover new companies or evaluate other opportunities in the same run — stay scoped to the one company/role given.
-- Never repeat the full company-research process if `research-company` output already covers it — reuse it, verify only where necessary.
+- Never repeat the full company-research process if the local record already covers it — reuse it, verify only where necessary.
 - Never draft an outreach email, message, or any personalized content.
-- Never create or modify a portfolio page, Notion page, or any file other than the report produced in this conversation.
+- Never create or modify a portfolio page, Notion page, or any `Companies/` file directly — the only local write this skill makes is via `sync-local-repo`, into `contacts.md` and `status.json` only.
 - Never send a message on the user's behalf.
 - Never guess, generate, or pattern-infer an email address (e.g. first.last@company.com guessing). If no email is publicly verified, state plainly: "Direct email not publicly verified."
 - Never use private, sensitive, or restricted personal information. Only public professional information: company sites, official team/leadership pages, job postings, public professional profiles, engineering blogs, public conference/speaker pages, public GitHub profiles, public interviews.
@@ -139,7 +144,14 @@ Only report what's publicly available: a public professional profile, an officia
 
 Never guess an email address from a naming pattern and never present a guessed address as real, even if labeled as a guess — do not generate one at all.
 
-### Step 8 — Produce the report
+### Step 8 — Persist to the local repository
+Invoke `sync-local-repo` before producing the final report:
+- `contacts.md`: for the selected primary contact (and secondary contacts, if any) — name, title, company, LinkedIn/profile URL, relevance score, confidence, reason for selection, evidence, unknowns.
+- `status.json`: set `contact.name`/`contact.title`, and advance `status` to `"Contact Found"` — only if the current status isn't already past that point (never regress).
+- Do not touch `company.md`, `opportunities.md`, or the email fields in `contacts.md` — those belong to `research-company` and `find-contact-email` respectively.
+- If deduplication finds this exact contact already recorded (by name or LinkedIn URL), update only the fields this run actually adds or changes rather than creating a second entry.
+
+### Step 9 — Produce the report
 Use the Output Format below. Tag every claim per the Fact-Labeling System and give each recommendation a confidence level.
 
 ## Output Format
@@ -188,9 +200,17 @@ Use the Output Format below. Tag every claim per the Fact-Labeling System and gi
 - Any other meaningful uncertainty
 
 ## Recommended Next Action
-[One clear, concrete next step — e.g. "Proceed to an outreach-preparation step targeting [primary contact] via [profile/channel]" — do not draft the actual message here]
+[One clear, concrete next step — e.g. "Proceed to find-contact-email for [primary contact]" — do not draft the actual message here]
+
+## Local Repository Sync
+- Record: [Created / Updated / Reused without changes] — `Companies/[slug]/contacts.md`
+- Status: [unchanged at X / advanced to "Contact Found"]
 ```
+
+## Local Repository Integration
+
+This skill owns the contact-discovery fields of `contacts.md` (name, title, company, LinkedIn, relevance score, confidence, reason, evidence, unknowns) and `status.json.contact.name`/`contact.title`, plus the `"Contact Found"` status transition — always via `sync-local-repo`. It never writes the email/verification fields (`find-contact-email`'s job) and never touches `company.md`, `opportunities.md`, or `outreach.md`.
 
 ## Workflow Boundary
 
-This skill ends the moment the best contact and contact strategy are identified. It must not draft the outreach email, create or modify a portfolio page, update Notion, send any message, or discover new companies. The output is meant to be handed to a future outreach-preparation skill, not to close the loop itself.
+This skill ends the moment the best contact and contact strategy are identified and persisted. It must not draft the outreach email, create or modify a portfolio page, send any message, discover new companies, or write any `Companies/` file directly (only through `sync-local-repo`). The output is meant to be handed to a future outreach-preparation skill, not to close the loop itself.

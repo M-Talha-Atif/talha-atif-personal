@@ -1,0 +1,11 @@
+{
+  "company": "SuperTokens",
+  "slug": "supertokens",
+  "status": "Monitoring",
+  "statusReason": "No open engineering roles as of 2026-07-24. Exceptional domain fit (open-source auth infra, explicit work-anywhere culture) — recheck periodically.",
+  "lastUpdated": "2026-07-24",
+  "opportunity": { "role": null, "jobUrl": null, "companyUrl": "https://supertokens.com" },
+  "contact": { "name": null, "title": null, "email": null, "emailStatus": null },
+  "outreach": { "pageUrl": null, "draftStatus": "Not Started", "approvalStatus": "Not Approved", "sentStatus": "Not Sent" },
+  "notion": { "synced": false, "recordUrl": null }
+}

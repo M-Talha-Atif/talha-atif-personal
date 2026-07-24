@@ -1,0 +1,14 @@
+{
+  "company": "Rocket.Chat",
+  "slug": "rocket-chat",
+  "status": "Discovered",
+  "lastUpdated": "2026-07-24",
+  "opportunity": {
+    "role": "Backend Engineer (Argentina-locked, current req)",
+    "jobUrl": "https://www.rocket.chat/jobs",
+    "companyUrl": "https://www.rocket.chat"
+  },
+  "contact": { "name": null, "title": null, "email": null, "emailStatus": null },
+  "outreach": { "pageUrl": null, "draftStatus": "Not Started", "approvalStatus": "Not Approved", "sentStatus": "Not Sent" },
+  "notion": { "synced": false, "recordUrl": null }
+}

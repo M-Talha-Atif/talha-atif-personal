@@ -1,0 +1,14 @@
+{
+  "company": "Twine",
+  "slug": "twine",
+  "status": "Discovered",
+  "lastUpdated": "2026-07-24",
+  "opportunity": {
+    "role": "AI Engineer",
+    "jobUrl": "https://www.linkedin.com/jobs/view/4431523592",
+    "companyUrl": "https://www.twine.net"
+  },
+  "contact": { "name": null, "title": null, "email": null, "emailStatus": null },
+  "outreach": { "pageUrl": null, "draftStatus": "Not Started", "approvalStatus": "Not Approved", "sentStatus": "Not Sent" },
+  "notion": { "synced": false, "recordUrl": null }
+}

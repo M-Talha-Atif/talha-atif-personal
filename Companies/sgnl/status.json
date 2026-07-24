@@ -1,0 +1,14 @@
+{
+  "company": "SGNL.ai",
+  "slug": "sgnl",
+  "status": "Discovered",
+  "lastUpdated": "2026-07-24",
+  "opportunity": {
+    "role": "Senior Software Engineer",
+    "jobUrl": "https://jobs.ashbyhq.com/sgnlai",
+    "companyUrl": "https://sgnl.ai"
+  },
+  "contact": { "name": null, "title": null, "email": null, "emailStatus": null },
+  "outreach": { "pageUrl": null, "draftStatus": "Not Started", "approvalStatus": "Not Approved", "sentStatus": "Not Sent" },
+  "notion": { "synced": false, "recordUrl": null }
+}

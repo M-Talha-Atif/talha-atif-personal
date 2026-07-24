@@ -1,0 +1,14 @@
+{
+  "company": "Numeral",
+  "slug": "numeral",
+  "status": "Discovered",
+  "lastUpdated": "2026-07-24",
+  "opportunity": {
+    "role": "Software Engineer (AI)",
+    "jobUrl": "https://www.ycombinator.com/companies/numeral/jobs/eCDVy2N-software-engineer-ai",
+    "companyUrl": "https://www.ycombinator.com/companies/numeral"
+  },
+  "contact": { "name": null, "title": null, "email": null, "emailStatus": null },
+  "outreach": { "pageUrl": null, "draftStatus": "Not Started", "approvalStatus": "Not Approved", "sentStatus": "Not Sent" },
+  "notion": { "synced": false, "recordUrl": null }
+}

@@ -1,0 +1,14 @@
+{
+  "company": "Domu Technology",
+  "slug": "domu-technology",
+  "status": "Discovered",
+  "lastUpdated": "2026-07-24",
+  "opportunity": {
+    "role": "Software Engineer (South Africa-locked req)",
+    "jobUrl": "https://www.ycombinator.com/companies/domu-technology-inc/jobs/kQ2XYM7-software-engineer-south-africa",
+    "companyUrl": "https://www.ycombinator.com/companies/domu-technology-inc"
+  },
+  "contact": { "name": null, "title": null, "email": null, "emailStatus": null },
+  "outreach": { "pageUrl": null, "draftStatus": "Not Started", "approvalStatus": "Not Approved", "sentStatus": "Not Sent" },
+  "notion": { "synced": false, "recordUrl": null }
+}

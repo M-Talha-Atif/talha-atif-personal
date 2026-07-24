@@ -1,0 +1,14 @@
+{
+  "company": "Runway",
+  "slug": "runway",
+  "status": "Discovered",
+  "lastUpdated": "2026-07-24",
+  "opportunity": {
+    "role": "Full Stack Engineer",
+    "jobUrl": "https://www.ycombinator.com/companies/runway/jobs/0s9VB2H-full-stack-engineer",
+    "companyUrl": "https://www.ycombinator.com/companies/runway"
+  },
+  "contact": { "name": null, "title": null, "email": null, "emailStatus": null },
+  "outreach": { "pageUrl": null, "draftStatus": "Not Started", "approvalStatus": "Not Approved", "sentStatus": "Not Sent" },
+  "notion": { "synced": false, "recordUrl": null }
+}

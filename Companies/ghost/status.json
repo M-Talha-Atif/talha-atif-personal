@@ -1,0 +1,15 @@
+{
+  "company": "Ghost",
+  "slug": "ghost",
+  "status": "Rejected",
+  "statusReason": "Excluded by seniority filter (Staff Product Engineer) as of 2026-07-24 filter update — company remains worth monitoring for a non-Staff opening.",
+  "lastUpdated": "2026-07-24",
+  "opportunity": {
+    "role": "Staff Product Engineer",
+    "jobUrl": "https://careers.ghost.org/staff-product-engineer/en",
+    "companyUrl": "https://ghost.org"
+  },
+  "contact": { "name": null, "title": null, "email": null, "emailStatus": null },
+  "outreach": { "pageUrl": null, "draftStatus": "Not Started", "approvalStatus": "Not Approved", "sentStatus": "Not Sent" },
+  "notion": { "synced": false, "recordUrl": null }
+}

@@ -1,0 +1,14 @@
+{
+  "company": "WorkOS",
+  "slug": "workos",
+  "status": "Discovered",
+  "lastUpdated": "2026-07-24",
+  "opportunity": {
+    "role": "Product Engineer - Identity and Auth",
+    "jobUrl": "https://jobs.ashbyhq.com/workos/8317f6f4-3d85-4a9f-bec3-753e4b646fc2",
+    "companyUrl": "https://workos.com"
+  },
+  "contact": { "name": null, "title": null, "email": null, "emailStatus": null },
+  "outreach": { "pageUrl": null, "draftStatus": "Not Started", "approvalStatus": "Not Approved", "sentStatus": "Not Sent" },
+  "notion": { "synced": false, "recordUrl": null }
+}

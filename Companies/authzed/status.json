@@ -1,0 +1,14 @@
+{
+  "company": "AuthZed",
+  "slug": "authzed",
+  "status": "Discovered",
+  "lastUpdated": "2026-07-24",
+  "opportunity": {
+    "role": "Software Engineer, Distributed Databases",
+    "jobUrl": "https://authzed.com/careers",
+    "companyUrl": "https://authzed.com"
+  },
+  "contact": { "name": null, "title": null, "email": null, "emailStatus": null },
+  "outreach": { "pageUrl": null, "draftStatus": "Not Started", "approvalStatus": "Not Approved", "sentStatus": "Not Sent" },
+  "notion": { "synced": false, "recordUrl": null }
+}
