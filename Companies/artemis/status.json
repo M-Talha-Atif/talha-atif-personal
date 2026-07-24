@@ -1,0 +1,29 @@
+{
+  "company": "Artemis Security",
+  "slug": "artemis",
+  "status": "Drafted",
+  "lastUpdated": "2026-07-24",
+  "opportunity": {
+    "role": "No matching open role. Only engineering opening (Product Engineer) requires 4+ years and founder background, on-site NYC, work authorization required.",
+    "companyUrl": "https://www.artemissecurity.com"
+  },
+  "contact": {
+    "name": "Dan Shiebler",
+    "title": "Co-Founder & CTO",
+    "email": null,
+    "emailStatus": "Not found (Snov.io search completed with no result)"
+  },
+  "outreach": {
+    "channel": "LinkedIn only",
+    "portfolioPage": "/r/artemis",
+    "draftStatus": "Drafted",
+    "approvalStatus": "Not Approved",
+    "sentStatus": "Not Sent"
+  },
+  "riskFlags": [
+    "Experience mismatch: role requires 4+ years and founder background vs ~2 years profile",
+    "US work authorization required per CEO's own posts; relocation to NYC expected",
+    "No remote engineering track exists at the company at all"
+  ],
+  "notion": { "synced": false, "recordUrl": null }
+}
