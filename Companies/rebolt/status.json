@@ -1,0 +1,25 @@
+{
+  "company": "Rebolt",
+  "slug": "rebolt",
+  "status": "Drafted",
+  "lastUpdated": "2026-07-24",
+  "opportunity": {
+    "role": "Founding Backend Software Engineer, open req, matches profile closely (2+ years, Python/FastAPI, TypeScript/Next.js)",
+    "companyUrl": "https://rebolt.ai"
+  },
+  "contact": {
+    "name": "Manuel Angel Suarez Alvarez",
+    "title": "Co-Founder",
+    "email": null,
+    "emailStatus": "Not found (Apollo inaccessible on free plan; Snov.io returned no result)"
+  },
+  "outreach": {
+    "channel": "LinkedIn",
+    "portfolioPage": "/r/rebolt",
+    "draftStatus": "Drafted",
+    "approvalStatus": "Not Approved",
+    "sentStatus": "Not Sent"
+  },
+  "riskFlags": [],
+  "notion": { "synced": false, "recordUrl": null }
+}
