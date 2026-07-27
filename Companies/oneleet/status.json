@@ -1,7 +1,7 @@
 {
   "company": "Oneleet",
   "slug": "oneleet",
-  "status": "Drafted",
+  "status": "Sent (Ora only)",
   "lastUpdated": "2026-07-27",
   "opportunity": {
     "role": "Backend Engineer / Fullstack Engineer (Series A, security and compliance platform, honest domain-overlap outreach rather than a precise role match)",
@@ -12,24 +12,24 @@
       "name": "Ora Onel",
       "title": "Cofounder at Oneleet",
       "email": "ora@oneleet.com",
-      "emailStatus": "Verified (supplied directly by user)",
+      "emailStatus": "Verified (supplied directly by user, confirmed by Apollo)",
       "channel": "Email",
-      "sentStatus": "Not sent"
+      "sentStatus": "Email sent 2026-07-27T15:28:55Z via Apollo (talhaatif573@gmail.com to ora@oneleet.com), status completed"
     },
     {
       "name": "Bryan Onel",
       "title": "CEO at Oneleet",
       "email": null,
       "channel": "LinkedIn",
-      "sentStatus": "Not sent, drafted only, awaiting approval per standing rule (never auto-send LinkedIn)"
+      "sentStatus": "Not sent. Profile already had a pending connection invite from this account with no note attached (sent at an earlier, undetermined time). No Message option exists pre-connection and no Open Profile/InMail option was available. User chose to leave the pending invite untouched rather than withdraw and resend with the drafted note."
     }
   ],
   "outreach": {
-    "channel": "Email + LinkedIn",
+    "channel": "Email (sent) + LinkedIn (blocked, pending invite already outstanding)",
     "portfolioPage": "/r/oneleet",
     "draftStatus": "Drafted",
-    "approvalStatus": "Awaiting user approval",
-    "sentStatus": "Not sent"
+    "approvalStatus": "Approved",
+    "sentStatus": "Ora: sent. Bryan: not sent, pending invite left as is per user decision."
   },
   "riskFlags": ["Every open Engineering/Dev posting requires 5+ years Go experience; user's profile is 2+ years, no Go. Named honestly in the page and email as a domain-overlap pitch rather than a precise role match."],
   "notion": { "synced": false, "recordUrl": null }
