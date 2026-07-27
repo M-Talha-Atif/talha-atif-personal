@@ -15,7 +15,7 @@ Hi Muhammad, saw your post on the Jr Software Engineer role, exactly my band (fr
 **Subject:** Jr. Software Engineer — Talha Atif (referred by your post)
 
 **Body:**
-Hi Muhammad,
+Hi Muhammad Ahmed,
 
 Saw your post looking for Jr. Software Engineers, fresh grad to 1 year, remote, Pakistan-based. That's exactly my band: Java/Spring Boot, Node.js, React, about 1-2 years of production experience.
 
@@ -23,6 +23,7 @@ Wrote up specifics here: https://talha-atif.vercel.app/r/texagon
 
 Happy to send my resume or jump on a quick call whenever works.
 
+Best regards,
 Talha
 
 ## Personalization rationale
@@ -32,4 +33,5 @@ This is the closest direct role match found so far (exact seniority band, exact 
 `muhammad@thegadgetflow.com` verification was inconclusive via Snov.io (empty result), and the domain belongs to an unrelated company. Recommend leading with LinkedIn; email may bounce or go unread if it's a stale/unrelated address.
 
 ## Approval status
-Not yet approved. Not sent. Waiting on explicit user go-ahead per their instruction to review first.
+Email: **Sent.** User approved (with personalization: "Hi Muhammad Ahmed," / "Best regards, Talha"), sent via Apollo emailer (talhaatif573@gmail.com to muhammad@thegadgetflow.com) 2026-07-27 13:32 UTC, status `completed`.
+LinkedIn connection note: still drafted, not sent.

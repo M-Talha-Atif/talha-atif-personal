@@ -1,7 +1,7 @@
 {
   "company": "Texagon",
   "slug": "texagon",
-  "status": "Drafted",
+  "status": "Sent",
   "lastUpdated": "2026-07-24",
   "opportunity": {
     "role": "Jr. Software Engineer, fresh grad to 1 year, fully remote, Pakistan-based (best direct role match found today)",
@@ -17,8 +17,8 @@
     "channel": "LinkedIn + Email",
     "portfolioPage": "/r/texagon",
     "draftStatus": "Drafted",
-    "approvalStatus": "Not Approved",
-    "sentStatus": "Not Sent"
+    "approvalStatus": "Approved (email)",
+    "sentStatus": "Email sent 2026-07-27T13:32:27Z via Apollo; LinkedIn not yet sent"
   },
   "riskFlags": ["Email domain (thegadgetflow.com) does not match Texagon or Tech Finds Tech; deliverability unconfirmed"],
   "notion": { "synced": false, "recordUrl": null }
