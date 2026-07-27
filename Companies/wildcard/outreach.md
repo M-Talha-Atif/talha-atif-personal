@@ -21,7 +21,13 @@ I build reliability into large scale structured data. At Intimec I built an enti
 
 *(Character count: 484)*
 
-All three versions are for the user to drop into their own Work at a Startup application, not auto submitted (that flow requires their own YC account login).
+## Work at a Startup application note, version 4 (matches the actual field prompt: "Start a conversation with the team at Wildcard. Share something about you, what you're looking for, or why Wildcard interests you.")
+
+Hi team, I am a full stack engineer who makes messy structured data trustworthy at scale, entitlement systems, Kafka pipelines, a zero downtime migration on 5 million plus documents. Wildcard's problem, agentic commerce data brands can trust, is the same shape of problem, just aimed at ecommerce instead of identity. I am looking for a founding role where I own real systems end to end. One honest note, I do not currently hold US work authorization. More here, https://talha-atif.vercel.app/r/wildcard
+
+*(Character count: 503)*
+
+All four versions are for the user to drop into their own Work at a Startup application, not auto submitted (that flow requires their own YC account login). Version 4 is the recommended one since it actually answers the field's three prompts (something about you, what you are looking for, why Wildcard) rather than reading as a resume dump.
 
 ## LinkedIn message to Kaushik Mahorker
 
