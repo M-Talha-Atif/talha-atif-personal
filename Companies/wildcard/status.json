@@ -1,0 +1,28 @@
+{
+  "company": "Wildcard",
+  "slug": "wildcard",
+  "status": "Sent",
+  "lastUpdated": "2026-07-27",
+  "opportunity": {
+    "role": "Founding Engineer (YC W25, agentic commerce for ecommerce/retail, US citizen or visa holder only, San Francisco CA)",
+    "companyUrl": "https://www.workatastartup.com/jobs/97185"
+  },
+  "contact": {
+    "name": "Kaushik Mahorker",
+    "title": "Founder at Wildcard",
+    "email": null,
+    "channel": "LinkedIn"
+  },
+  "outreach": {
+    "channel": "LinkedIn + Work at a Startup application note",
+    "portfolioPage": "/r/wildcard",
+    "draftStatus": "Drafted",
+    "approvalStatus": "Approved",
+    "sentStatus": "LinkedIn message sent to Kaushik Mahorker. Work at a Startup application note written for the user to drop in themselves, not auto submitted."
+  },
+  "riskFlags": [
+    "Hard blocker: posting explicitly requires US citizenship or existing US visa, plus San Francisco onsite location. Real disqualifier, not a soft preference. Named honestly in the page and the LinkedIn message.",
+    "No demonstrated browser automation or scraping infrastructure experience in career.md, named honestly alongside the visa gap."
+  ],
+  "notion": { "synced": false, "recordUrl": null }
+}

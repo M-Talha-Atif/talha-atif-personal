@@ -1,0 +1,11 @@
+# Wildcard (YC W25)
+
+- **Company:** Wildcard, agentic commerce optimization platform for ecommerce and retail (AEO/GEO, agentic commerce visibility, recommendations, execution, attribution, automation). Growing 50% month over month. (Public Evidence, YC listing and workatastartup.com/jobs/97185)
+- **Founder:** Kaushik Mahorker. Previously at Scale AI, built the ecommerce enrichment engine behind the company's largest pilot (400K SKUs, 2.8M attributes, hundreds of taxonomies), helping secure $15M+ in contracts. UCLA. (Public Evidence, LinkedIn and YC listing)
+- **Role:** Founding Engineer (engineer number one). Full stack, frontend, backend, queues, browser automation, reliability, AI agents/MCP servers. $130K to $250K, 0.5 to 4.0% equity.
+- **Hard blocker, named honestly:** Location "San Francisco, CA, US", Visa "US citizen/visa only". This is an explicit, unambiguous requirement in the posting itself, not an inferred restriction. career.md profile is Pakistan based with no US work authorization. This is a real disqualifier for the role as posted, not a soft preference. Named directly in the outreach page and the LinkedIn message rather than glossed over, since the user was already aware of this requirement (pasted it themselves) and explicitly asked to proceed anyway.
+- **Real overlap:** Kaushik's own Scale AI enrichment engine work (structured attribute data at massive scale, taxonomies) maps directly onto the Intimec entitlement rule engine and the OpenSearch zero downtime migration (5M+ documents, high cardinality mapping conflicts). Kafka reliability pipelines and the OpenTracer AI agent observability contribution map onto the role's queues/reliability and AI agent/evals requirements. Named as the central hook.
+- **Second gap:** No demonstrated browser automation or scraping infrastructure experience in career.md. Named honestly alongside the visa gap.
+
+## Discovery source
+User-supplied YC/Work at a Startup job listing (https://www.workatastartup.com/jobs/97185) and founder LinkedIn (https://www.linkedin.com/in/kaushikmahorker/), 2026-07-27. Same company as Leticia Machado (Founding Engineer, Brazil based) contacted earlier the same day for career advice, unrelated to this application outreach.
