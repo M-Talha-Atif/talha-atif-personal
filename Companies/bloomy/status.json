@@ -1,24 +1,24 @@
 {
   "company": "Bloomy",
   "slug": "bloomy",
-  "status": "Drafted",
+  "status": "Sent",
   "lastUpdated": "2026-07-27",
   "opportunity": {
     "role": "Founding Engineer (YC S26, AI tutor/curriculum for K-12, first technical hire)",
     "companyUrl": "https://www.workatastartup.com/companies/bloomy"
   },
   "contact": {
-    "name": "Alex",
+    "name": "Alex Southmayd",
     "title": "Founder & CEO at Bloomy",
     "email": "alex@bloomylearning.com",
-    "emailStatus": "Verified (founder-supplied directly in the public job post)"
+    "emailStatus": "Verified (founder-supplied in the public job post; confirmed verified by Apollo)"
   },
   "outreach": {
     "channel": "Email",
     "portfolioPage": "/r/bloomy",
     "draftStatus": "Drafted",
-    "approvalStatus": "Awaiting user approval",
-    "sentStatus": "Not sent"
+    "approvalStatus": "Approved",
+    "sentStatus": "Email sent 2026-07-27T15:10:24Z via Apollo (talhaatif573@gmail.com to alex@bloomylearning.com), status completed"
   },
   "riskFlags": ["No personal experience orchestrating a multi-agent 'fleet' at Bloomy's specific scale — named honestly in the page and email"],
   "notion": { "synced": false, "recordUrl": null }
