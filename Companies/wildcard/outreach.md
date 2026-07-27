@@ -15,7 +15,13 @@ I build reliability into large scale structured data, entitlement engines, Kafka
 
 *(Character count: 290)*
 
-Both versions are for the user to drop into their own Work at a Startup application, not auto submitted (that flow requires their own YC account login).
+## Work at a Startup application note, version 3 (~500 characters, fuller description, includes Wildcard page link)
+
+I build reliability into large scale structured data. At Intimec I built an entitlement rule engine across 7 categories of conditions, a Kafka pipeline with dead letter queues for failure recovery, and a zero downtime migration on 5 million plus documents, the same shape of problem as your enrichment engine at Scale AI. I am also contributing to an AI agent observability project. Full stack, high schlep tolerance, ready to be engineer one. https://talha-atif.vercel.app/r/wildcard
+
+*(Character count: 484)*
+
+All three versions are for the user to drop into their own Work at a Startup application, not auto submitted (that flow requires their own YC account login).
 
 ## LinkedIn message to Kaushik Mahorker
 
