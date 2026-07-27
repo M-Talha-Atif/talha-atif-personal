@@ -3,11 +3,19 @@
 - **Status:** Drafted, sending LinkedIn message now per explicit user approval
 - **Portfolio outreach page:** src/lib/outreach/wildcard.ts, will be live at https://talha-atif.vercel.app/r/wildcard once pushed and deployed
 
-## Work at a Startup application note (~200 characters, user will drop this into their own application, not auto submitted)
+## Work at a Startup application note, version 1 (~200 characters, no link)
 
 I build reliability into large scale structured data, entitlement engines, Kafka pipelines, zero downtime migrations. Now contributing to an AI agent observability project. Ready to be engineer one.
 
 *(Character count: 198)*
+
+## Work at a Startup application note, version 2 (~300 characters, includes Wildcard page link)
+
+I build reliability into large scale structured data, entitlement engines, Kafka pipelines, a zero downtime migration on 5 million plus documents, the same shape of problem as your enrichment engine at Scale AI. Full stack, ready to be engineer one. https://talha-atif.vercel.app/r/wildcard
+
+*(Character count: 290)*
+
+Both versions are for the user to drop into their own Work at a Startup application, not auto submitted (that flow requires their own YC account login).
 
 ## LinkedIn message to Kaushik Mahorker
 
