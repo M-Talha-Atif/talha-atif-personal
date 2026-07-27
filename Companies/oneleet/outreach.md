@@ -27,7 +27,7 @@ https://talha-atif.vercel.app
 
 ## LinkedIn Connection Note to Bryan Onel (not sent, drafted for review)
 
-Hi Bryan, I have spent two years building the compliance grade IAM and audit systems Oneleet now sells as a platform. Wrote up the direct overlap here. https://talha-atif.vercel.app/r/oneleet Would value a conversation.
+Hi Bryan, I built the compliance grade IAM and audit systems Oneleet now sells as a platform, entitlement engine included. Wrote up the direct overlap here. https://talha-atif.vercel.app/r/oneleet Would value a conversation.
 
 *(Character count: 214, within typical LinkedIn connection note limits)*
 
