@@ -1,0 +1,25 @@
+{
+  "company": "Texagon",
+  "slug": "texagon",
+  "status": "Drafted",
+  "lastUpdated": "2026-07-24",
+  "opportunity": {
+    "role": "Jr. Software Engineer, fresh grad to 1 year, fully remote, Pakistan-based (best direct role match found today)",
+    "companyUrl": "https://www.linkedin.com/company/tech-finds-tech/"
+  },
+  "contact": {
+    "name": "Muhammad Ahmed",
+    "title": "Co-Founder / CSO at Texagon",
+    "email": "muhammad@thegadgetflow.com",
+    "emailStatus": "Inconclusive (Snov.io verification returned empty result; domain belongs to an unrelated company, Gadget Flow)"
+  },
+  "outreach": {
+    "channel": "LinkedIn + Email",
+    "portfolioPage": "/r/texagon",
+    "draftStatus": "Drafted",
+    "approvalStatus": "Not Approved",
+    "sentStatus": "Not Sent"
+  },
+  "riskFlags": ["Email domain (thegadgetflow.com) does not match Texagon or Tech Finds Tech; deliverability unconfirmed"],
+  "notion": { "synced": false, "recordUrl": null }
+}
