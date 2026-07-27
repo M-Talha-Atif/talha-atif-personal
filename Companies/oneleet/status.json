@@ -1,0 +1,36 @@
+{
+  "company": "Oneleet",
+  "slug": "oneleet",
+  "status": "Drafted",
+  "lastUpdated": "2026-07-27",
+  "opportunity": {
+    "role": "Backend Engineer / Fullstack Engineer (Series A, security and compliance platform, honest domain-overlap outreach rather than a precise role match)",
+    "companyUrl": "https://jobs.ashbyhq.com/oneleet"
+  },
+  "contacts": [
+    {
+      "name": "Ora Onel",
+      "title": "Cofounder at Oneleet",
+      "email": "ora@oneleet.com",
+      "emailStatus": "Verified (supplied directly by user)",
+      "channel": "Email",
+      "sentStatus": "Not sent"
+    },
+    {
+      "name": "Bryan Onel",
+      "title": "CEO at Oneleet",
+      "email": null,
+      "channel": "LinkedIn",
+      "sentStatus": "Not sent, drafted only, awaiting approval per standing rule (never auto-send LinkedIn)"
+    }
+  ],
+  "outreach": {
+    "channel": "Email + LinkedIn",
+    "portfolioPage": "/r/oneleet",
+    "draftStatus": "Drafted",
+    "approvalStatus": "Awaiting user approval",
+    "sentStatus": "Not sent"
+  },
+  "riskFlags": ["Every open Engineering/Dev posting requires 5+ years Go experience; user's profile is 2+ years, no Go. Named honestly in the page and email as a domain-overlap pitch rather than a precise role match."],
+  "notion": { "synced": false, "recordUrl": null }
+}
