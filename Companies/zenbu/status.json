@@ -1,0 +1,25 @@
+{
+  "company": "Zenbu",
+  "slug": "zenbu",
+  "status": "Drafted",
+  "lastUpdated": "2026-07-28",
+  "opportunity": {
+    "role": "Not a job outreach. Genuine open source appreciation and a direct question about contributing to zenbu-labs/zenbu.js",
+    "companyUrl": "https://github.com/zenbu-labs/zenbu.js"
+  },
+  "contact": {
+    "name": "Rob Pruzan",
+    "title": "Founder at Zenbu Labs",
+    "email": "rob@zenbu.dev",
+    "emailStatus": "Supplied directly by user, matches own product domain"
+  },
+  "outreach": {
+    "channel": "Email",
+    "portfolioPage": "/r/zenbu",
+    "draftStatus": "Drafted",
+    "approvalStatus": "Awaiting user approval",
+    "sentStatus": "Not sent"
+  },
+  "riskFlags": [],
+  "notion": { "synced": false, "recordUrl": null }
+}
