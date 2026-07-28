@@ -4,7 +4,7 @@
 - **Channel:** Email to rob@zenbu.dev
 - **Portfolio outreach page:** src/lib/outreach/zenbu.ts, will be live at https://talha-atif.vercel.app/r/zenbu once pushed and deployed
 
-## Email
+## Email, version 1 (fuller, not sent)
 
 **Subject:** Genuine Appreciation For Zenbu.js, Not A Job Inquiry
 
@@ -22,8 +22,22 @@ This is not a job inquiry. I have no ask attached beyond the question above.
 Best regards,
 Talha
 
+## Email, version 2 (short, to the point, per explicit follow up instruction, not sent)
+
+**Subject:** Genuine Appreciation For Zenbu.js
+
+**Body:**
+Dear Rob,
+
+I wanted to write directly rather than just star the repository. Zenbu.js is genuinely well built, and the throughline from React Scan to the Next.js team at Vercel to Zenbu is rare.
+
+One honest thing I noticed, the review process on pull requests feels slow right now. I say that with real appreciation for the project, not as a criticism.
+
+Best regards,
+Talha
+
 ## Personalization rationale
-User was explicit that this outreach must not be job focused. The email leads with genuine, specific praise (React Scan, Vercel/Next.js, the Zenbu.js architecture itself), verified directly against the real repo state (13 open issues, 16 open PRs, real outside contributors) rather than assumed, and frames the observation about backlog as care, not criticism, per explicit instruction ("dont disgrade appreciate and show genuine concern"). The ask ("do you accept outside help") is stated plainly once, not repeated or hedged. No em or en dashes, no colons, formal Dear/Best regards register, per standing style rule.
+User was explicit that this outreach must not be job focused, and later asked for a much shorter version that only admires the project and names the slow PR review process, nothing else. Version 2 drops the issue and PR counts, the contributing offer, and the portfolio page link to stay strictly to the point per that instruction. No em or en dashes, no colons, formal Dear/Best regards register, per standing style rule.
 
 ## Approval status
-Not yet sent. Awaiting explicit user approval.
+Not sent. User explicitly said not to send yet.
