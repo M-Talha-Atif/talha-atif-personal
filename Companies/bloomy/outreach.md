@@ -31,3 +31,26 @@ Alex's post explicitly asks for "something you've built that real people used", 
 
 ## Approval status
 **Sent.** User approved after requesting a formal revision (no em dashes, no colons). Sent via Apollo emailer (talhaatif573@gmail.com to alex@bloomylearning.com) 2026-07-27 15:10 UTC, status `completed`.
+
+## Founder reply and follow up (2026-07-27 / 2026-07-28)
+
+Alex replied same day asking directly where Talha is based, flagging that the role is in person in San Francisco.
+
+**Reply sent** (subject "Re: Something I Have Built That Real People Used"), formal tone, no em dashes, no colons, per standing style rule:
+
+Dear Alex,
+
+Thank you for asking directly. I am currently based in Pakistan.
+
+I wanted to ask if there is any flexibility for this role to start remotely or in a hybrid arrangement, given the distance involved.
+
+Relocating to San Francisco is something I would genuinely consider, but I want to be honest that it would be a longer process on my end, given visa timelines, rather than something immediate.
+
+I did not want to assume either way, so I would rather ask directly than take up more of your time on an assumption. Happy to talk through what might realistically work.
+
+Best regards,
+Talha
+
+**Sent** via Apollo emailer 2026-07-28 11:08 UTC, status `completed`. A duplicate draft also exists in the user's Gmail drafts folder (created first, before the Apollo send, since the Gmail connector used can only create drafts, not send) and was left for the user to discard manually.
+
+**Content decision:** stated Pakistan location plainly, asked about remote or hybrid flexibility directly rather than assuming, and named relocation as a genuine but slow possibility (visa timelines) rather than an immediate option, per explicit user direction.
