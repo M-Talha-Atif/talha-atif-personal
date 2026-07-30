@@ -1,0 +1,28 @@
+{
+  "company": "Precisely",
+  "slug": "precisely",
+  "status": "Drafted",
+  "lastUpdated": "2026-07-30",
+  "opportunity": {
+    "role": "Associate Software Engineer, Master Data Management (Remote, AI-first culture, 1-2 years experience, strong genuine fit)",
+    "companyUrl": "https://www.precisely.com"
+  },
+  "contacts": [
+    {
+      "name": "Hasan Khan",
+      "title": "Software Engineer, Support at Precisely",
+      "email": null,
+      "channel": "LinkedIn",
+      "sentStatus": "Drafted, not sent, awaiting approval"
+    }
+  ],
+  "outreach": {
+    "channel": "LinkedIn (application itself submitted directly by user via ATS, not tracked here)",
+    "portfolioPage": "/r/precisely",
+    "draftStatus": "Drafted",
+    "approvalStatus": "Awaiting user approval",
+    "sentStatus": "Not sent"
+  },
+  "riskFlags": ["No direct MDM product experience; named honestly as a soft gap, not a disqualifier, since the underlying single-source-of-truth problem is the same shape as IAM/Identity Governance work already done."],
+  "notion": { "synced": false, "recordUrl": null }
+}
