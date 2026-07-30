@@ -1,0 +1,77 @@
+%==============================================================
+% Muhammad Talha Atif - Cover Letter
+% Tailored: Precisely Associate Software Engineer, MDM
+% Compile with: pdflatex precisely-cover-letter.tex
+%==============================================================
+\documentclass[10pt, letterpaper]{article}
+
+\usepackage[top=0.85in,bottom=0.85in,left=0.9in,right=0.9in]{geometry}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{parskip}
+\usepackage{microtype}
+\usepackage{lmodern}
+
+\definecolor{navy}{HTML}{1A1A2E}
+\definecolor{accentblue}{HTML}{1565C0}
+\definecolor{medgray}{HTML}{555555}
+\definecolor{lightgray}{HTML}{777777}
+
+\hypersetup{colorlinks=true,urlcolor=accentblue,linkcolor=accentblue}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{8pt}
+
+\begin{document}
+\pagestyle{empty}
+
+{\Large\bfseries\color{navy} Muhammad Talha Atif}\\[2pt]
+{\small\color{lightgray}
+  talhaatif573@gmail.com\enspace$\diamond$\enspace
+  +923064391520\enspace$\diamond$\enspace
+  \href{https://linkedin.com/in/muhammad-talha-atif}{LinkedIn}\enspace$\diamond$\enspace
+  \href{https://github.com/M-Talha-Atif}{GitHub}\enspace$\diamond$\enspace
+  \href{https://talha-atif.vercel.app}{Portfolio}}
+
+\vspace{14pt}
+
+{\small\color{medgray} Hiring Team, Precisely}
+
+\vspace{14pt}
+
+Dear Precisely Hiring Team,
+
+I am writing to apply for the Associate Software Engineer role on the Master Data Management
+product line.
+
+My most recent role was on a compliance-heavy Identity Governance platform, and while that is
+not MDM specifically, it is the same underlying problem, keeping a single, trusted source of
+truth correct under strict rules, with every decision explainable after the fact. I owned the
+Access Portal end to end, the Spring Boot service layer and the React/Next.js frontend, and
+built a Kafka-based event-driven approval pipeline with dead-letter queues so one failure
+could not cascade through the chain.
+
+On concurrency and correctness specifically, I traced and fixed a duplicate-notification bug
+caused by a race condition, two simultaneous requests both passing an existence check before
+either wrote, by wrapping the check-and-create in a transaction with a unique constraint as a
+second line of defense. Separately, I caught a compliance-critical rule-engine bug by building
+a deliberate adversarial test dataset designed specifically to expose that class of edge case,
+rather than trusting code review alone, the kind of test-driven discipline I understand this
+role expects.
+
+Claude and GitHub Copilot are part of my daily workflow already, not an occasional tool, and I
+treat every AI-generated suggestion as something to verify against real call sites and edge
+cases, not something to accept by default. That distinction matters more to me than the tools
+themselves.
+
+I would welcome the chance to talk through where my background fits. Thank you for considering
+my application.
+
+\vspace{10pt}
+
+Best regards,\\
+Muhammad Talha Atif
+
+\end{document}
