@@ -1,0 +1,211 @@
+%==============================================================
+% Muhammad Talha Atif - Full Stack Engineer
+% Tailored: Dawnguard Medior Software Engineer - Full Stack
+% Compile with: pdflatex dawnguard-engineer.tex
+%==============================================================
+\documentclass[10pt, letterpaper]{article}
+
+\usepackage[top=0.55in,bottom=0.55in,left=0.65in,right=0.65in]{geometry}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{parskip}
+\usepackage{microtype}
+\usepackage{lmodern}
+
+\definecolor{navy}{HTML}{1A1A2E}
+\definecolor{accentblue}{HTML}{1565C0}
+\definecolor{medgray}{HTML}{555555}
+\definecolor{lightgray}{HTML}{777777}
+
+\hypersetup{colorlinks=true,urlcolor=accentblue,linkcolor=accentblue}
+
+\titleformat{\section}
+  {\normalsize\bfseries\color{navy}}{}{0em}{\MakeUppercase}
+  [\vspace{-4pt}\color{lightgray}\rule{\linewidth}{0.4pt}\vspace{2pt}]
+\titlespacing{\section}{0pt}{10pt}{4pt}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+\setlist[itemize]{leftmargin=14pt,itemsep=2pt,parsep=0pt,topsep=3pt,label=\textbullet}
+
+\newcommand{\jobheader}[2]{%
+  \noindent\textbf{#1}\hfill{\small\color{lightgray}\textit{#2}}\\[-2pt]}
+\newcommand{\jobsub}[2]{%
+  \noindent{\small\color{accentblue}\textbf{#1}}\quad{\small\color{lightgray}#2}\\[2pt]}
+\newcommand{\jobdesc}[1]{%
+  \noindent{\small\color{lightgray}\textit{#1}}\\[2pt]}
+\newcommand{\projheader}[3]{%
+  \noindent\textbf{#1}\;{\color{lightgray}|}\;{\small #2}\;{\color{lightgray}|}\;
+  {\small\color{accentblue}\href{#3}{Demo}}\\[-2pt]}
+\newcommand{\skillrow}[2]{%
+  \noindent\textbf{#1}\quad{\color{medgray}#2}\\[3pt]}
+\newcommand{\awardrow}[3]{%
+  \noindent\textbf{#1}\hfill{\small\color{lightgray}\textit{#3}}\\
+  {\small\color{lightgray}#2}\\[4pt]}
+
+\begin{document}
+\pagestyle{empty}
+
+%--------------------------------------------------------------
+% HEADER
+%--------------------------------------------------------------
+\begin{center}
+  {\Large\bfseries\color{navy} Muhammad Talha Atif}\\[4pt]
+  {\normalsize\color{medgray} Full Stack Engineer}\\[4pt]
+  {\small\color{lightgray}
+    +923064391520\enspace$\diamond$\enspace
+    talhaatif573@gmail.com\enspace$\diamond$\enspace
+    Lahore, Pakistan\enspace$\diamond$\enspace
+    \href{https://linkedin.com/in/muhammad-talha-atif}{LinkedIn}\enspace$\diamond$\enspace
+    \href{https://github.com/M-Talha-Atif}{GitHub}\enspace$\diamond$\enspace
+    \href{https://talha-atif.vercel.app/r/dawnguard}{Dawnguard Intro}}
+\end{center}
+
+\vspace{2pt}
+
+%--------------------------------------------------------------
+% SUMMARY
+% Dawnguard keywords: TypeScript, NestJS/Express, Angular-adjacent
+% frontend, NoSQL, event driven, security/compliance domain, AI
+% agents writing TypeScript, small team, cloud-native
+%--------------------------------------------------------------
+\section{Summary}
+
+Full stack engineer with 2+ years of production experience shipping TypeScript services and
+typed frontend interfaces end to end inside a compliance-heavy Identity Governance and Access
+Management platform, where security and auditability were core product requirements, not an
+afterthought. Built event-driven pipelines with Kafka and RabbitMQ, NestJS and Express backend
+services, and Next.js/TypeScript frontends consuming those services through typed APIs. Ship
+daily with AI coding agents (Claude, GitHub Copilot) as a core part of the engineering workflow,
+the same way Dawnguard uses AI agents to write TypeScript. Comfortable owning real surface area
+in a small team, from service and data design through the interface a user actually touches.
+
+%--------------------------------------------------------------
+% WORK EXPERIENCE
+%--------------------------------------------------------------
+\section{Work Experience}
+
+%-- Intimec --%
+% Dawnguard alignment: security/compliance domain, event driven,
+% TypeScript frontend ownership, AI agents, small team, product calls
+\jobheader{Full Stack Engineer}{Dec '25 -- Jun '26}
+\jobsub{Intimec via MicroTechX}{Remote}
+\jobdesc{Owned product slices end to end across backend services, event-driven pipelines, and
+a Next.js/TypeScript frontend on a compliance-heavy Identity Governance and Access Management
+platform where security and auditability were core requirements, not an afterthought.}
+\begin{itemize}
+  \item Owned the Access Portal end to end: designed the service layer handling request
+        lifecycle state transitions, built the Next.js and TypeScript operational UI for
+        approvals and moderation, and shipped the user-facing dashboard, making product
+        trade-offs directly with the CEO in a team of three.
+  \item Built a Kafka-based event-driven approval pipeline with dead-letter queues for
+        reliable failure recovery, and a generic rule-based engine automating policy
+        evaluation on identities, the same class of problem as validating a security policy
+        before it reaches production.
+  \item Refactored the entire audit log schema to be PII-free while preserving forensic
+        traceability, and migrated inter-service communication from REST to gRPC, reducing
+        latency by 50\%.
+  \item Standardised the frontend theme, TypeScript component contracts, and shared component
+        library across the Next.js dashboard, documenting conventions that improved
+        consistency and reduced UI drift across the team.
+  \item Shipped every feature using Claude and GitHub Copilot as daily workflow tools for
+        writing and reviewing TypeScript and backend code, while owning all architectural
+        decisions and debugging independently.
+\end{itemize}
+
+\vspace{4pt}
+
+%-- Digital Upgraders --%
+% Dawnguard alignment: end-to-end ownership, small team, performance,
+% infra migration
+\jobheader{Full Stack Engineer}{Sep '25 -- Jan '26}
+\jobsub{Digital Upgraders LLC}{Remote}
+\jobdesc{Shipped full stack features end to end on a production social platform, owning
+backend services, the Next.js frontend, and infrastructure with no separate team to hand off to.}
+\begin{itemize}
+  \item Cut feed load time from 3s to 700ms by diagnosing bottlenecks across query
+        structure, indexing, payload, and caching, then fixing each layer independently
+        rather than waiting for a spec or handing off to another team.
+  \item Fixed a duplicate-notification bug caused by a race condition in concurrent writes,
+        redesigning the write path with proper transaction boundaries.
+  \item Led a zero-downtime infrastructure migration from AWS to Fly.io, reworking Docker,
+        CI/CD, DNS, and service configuration on a live platform.
+\end{itemize}
+
+%--------------------------------------------------------------
+% PROJECTS
+%--------------------------------------------------------------
+\section{Projects}
+
+\projheader{Moodly}{AI Experience Booking Platform}{https://talha-atif.vercel.app/projects/moodly}
+\begin{itemize}
+  \item Owned the entire product end to end: NestJS backend services, FastAPI AI inference
+        pipeline, React Native mobile app, and AWS deployment. Made every product and
+        architecture decision solo, from data model through user-facing screens.
+  \item Built an async RabbitMQ pipeline decoupling AI inference from the booking engine,
+        with retry logic and graceful partial-failure handling, cutting perceived wait time
+        from 4-8 seconds down to under 1 second.
+\end{itemize}
+
+\vspace{4pt}
+
+\projheader{Memingo}{Language Learning Platform}{https://talha-atif.vercel.app/projects/memingo}
+\begin{itemize}
+  \item Replaced per-request leaderboard computation with a precomputed Redis cache,
+        cutting API response time from 30 seconds to 90 milliseconds.
+  \item Integrated the Gemini API with session-aware context and structured output parsing
+        for personalised recommendations across sessions.
+\end{itemize}
+
+%--------------------------------------------------------------
+% SKILLS
+%--------------------------------------------------------------
+\section{Skills}
+
+\skillrow{Frontend}{TypeScript, Next.js, React.js, HTML5, CSS3, Tailwind CSS}
+\skillrow{Backend}{Node.js, NestJS, Express.js, Java, Spring Boot, FastAPI, Python}
+\skillrow{Architecture}{Event-driven design, Kafka, RabbitMQ, gRPC, WebSockets, microservices}
+\skillrow{Data}{PostgreSQL, MongoDB, Redis, MySQL, OpenSearch, Supabase}
+\skillrow{Auth}{OAuth 2.0, JWT, RBAC, secure credential handling}
+\skillrow{Cloud \& DevOps}{AWS (S3, RDS, EC2), Docker, GitHub Actions, CI/CD, Fly.io, Dokploy}
+\skillrow{AI Workflow}{Claude, GitHub Copilot, Gemini API, Hugging Face, LangChain, daily AI-assisted engineering}
+
+%--------------------------------------------------------------
+% OPEN SOURCE
+%--------------------------------------------------------------
+\section{Open Source}
+
+\noindent\textbf{6 merged PRs across 2 open source projects, including a security-critical module}\\[4pt]
+\noindent{\small\color{accentblue}\href{https://github.com/checkstyle/checkstyle/pull/18807}{Apache Checkstyle PR \#18807}}
+\quad{\small\color{medgray}JVM static analysis tool used across thousands of production Java projects globally}\\[3pt]
+\noindent{\small\color{accentblue}\href{https://github.com/Tracer-Cloud/opensre/pull/4459}{OpenSRE PR \#4459}}
+\quad{\small\color{medgray}Security-aware cleanup of a messaging authorization module, preserving every comment documenting a real security invariant}\\[3pt]
+\noindent{\small\color{accentblue}\href{https://github.com/Tracer-Cloud/opensre/pull/3702}{PR \#3702}}
+\enspace{\small\color{lightgray}|}\enspace
+{\small\color{accentblue}\href{https://github.com/Tracer-Cloud/opensre/pull/4434}{PR \#4434}}
+\quad{\small\color{medgray}Exception-handling refactor and dead-code removal verified through git-history archaeology, on a 9.6k-star observability platform}
+
+\vspace{8pt}
+
+%--------------------------------------------------------------
+% AWARDS
+%--------------------------------------------------------------
+\section{Awards}
+
+\awardrow{Runner-up, App Development Hackathon 2025}{Punjab University}{May '25}
+\awardrow{Ranked, ICPC Asia Topi Online Programming Contest 2024}{International Collegiate Programming Contests}{Nov '24}
+
+%--------------------------------------------------------------
+% EDUCATION
+%--------------------------------------------------------------
+\section{Education}
+
+\noindent\textbf{Bachelor's degree in Computer Science, University of Management and Technology, UMT}
+\hfill{\small\color{lightgray}\textit{Oct '21 -- Aug '25}}
+
+\end{document}
