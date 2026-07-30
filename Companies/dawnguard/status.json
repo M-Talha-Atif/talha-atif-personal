@@ -1,0 +1,30 @@
+{
+  "company": "Dawnguard",
+  "slug": "dawnguard",
+  "status": "Sent",
+  "lastUpdated": "2026-07-30",
+  "opportunity": {
+    "role": "Medior Software Engineer, Full Stack (Remote CET to CET+3, requires independent EU work authorization)",
+    "companyUrl": "https://www.dawnguard.ai"
+  },
+  "contact": {
+    "name": "Kim Van Lavieren",
+    "title": "Co-Founder & CTO at Dawnguard",
+    "email": "kim@dawnguard.ai",
+    "emailStatus": "Verified (supplied directly by user, confirmed and identity-resolved by Apollo)"
+  },
+  "outreach": {
+    "channel": "Email",
+    "portfolioPage": "/r/dawnguard",
+    "draftStatus": "Drafted",
+    "approvalStatus": "Approved",
+    "sentStatus": "Email sent 2026-07-30T13:07:16Z via Apollo (talhaatif573@gmail.com to kim@dawnguard.ai), status completed"
+  },
+  "riskFlags": [
+    "Hard blocker: posting explicitly requires independent EU work authorization; user is Pakistan based. Named honestly in the page, resume cover letter, and the sent email.",
+    "3-5 years experience required vs 2+ years actual.",
+    "No Angular experience (real frontend experience is React/Next.js).",
+    "No Pulumi or Azure experience specifically."
+  ],
+  "notion": { "synced": false, "recordUrl": null }
+}
