@@ -1,0 +1,25 @@
+{
+  "company": "QFEX",
+  "slug": "qfex",
+  "status": "Drafted",
+  "lastUpdated": "2026-08-06",
+  "opportunity": {
+    "role": "Backend Engineer (Work at a Startup / YC application, on-site London, 3+ years, significant stretch fit)",
+    "companyUrl": "https://www.workatastartup.com/companies/qfex"
+  },
+  "contacts": [],
+  "outreach": {
+    "channel": "Work at a Startup / YC application message field",
+    "portfolioPage": "/r/qfex",
+    "draftStatus": "Drafted",
+    "approvalStatus": "Awaiting user approval",
+    "sentStatus": "Not sent"
+  },
+  "riskFlags": [
+    "No production Rust, C, or C++ experience against a hard requirement.",
+    "No direct real time exchange or HFT production experience against a 3+ year hard requirement.",
+    "University tier requirement (Oxbridge/Imperial/HYMPS/top IIT) not confirmed as met.",
+    "Role is on-site in London; user is based in Lahore, Pakistan, with no settled relocation answer yet."
+  ],
+  "notion": { "synced": false, "recordUrl": null }
+}
