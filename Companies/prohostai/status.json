@@ -1,0 +1,22 @@
+{
+  "company": "ProhostAI",
+  "slug": "prohostai",
+  "status": "Drafted",
+  "lastUpdated": "2026-08-06",
+  "opportunity": {
+    "role": "Founding Engineer, Full Stack (Work at a Startup / YC application, hybrid San Francisco, will sponsor, strong genuine fit)",
+    "companyUrl": "https://www.workatastartup.com/companies/prohostai"
+  },
+  "contacts": [],
+  "outreach": {
+    "channel": "Work at a Startup / YC application message field",
+    "portfolioPage": "/r/prohostai",
+    "draftStatus": "Drafted",
+    "approvalStatus": "Awaiting user approval",
+    "sentStatus": "Not sent"
+  },
+  "riskFlags": [
+    "Role is hybrid in San Francisco; user is based in Lahore, Pakistan. Sponsorship is listed as available, but relocation timing is unresolved."
+  ],
+  "notion": { "synced": false, "recordUrl": null }
+}
