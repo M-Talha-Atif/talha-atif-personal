@@ -1,0 +1,22 @@
+{
+  "company": "HappyRobot",
+  "slug": "happyrobot",
+  "status": "Drafted",
+  "lastUpdated": "2026-08-06",
+  "opportunity": {
+    "role": "Forward Deployed Engineer (channel and location not yet confirmed, strong overlap on full stack and customer facing engineering)",
+    "companyUrl": null
+  },
+  "contacts": [],
+  "outreach": {
+    "channel": "Not yet confirmed",
+    "portfolioPage": "/r/happyrobot",
+    "draftStatus": "Drafted",
+    "approvalStatus": "Awaiting user approval",
+    "sentStatus": "Not sent"
+  },
+  "riskFlags": [
+    "No voice specific AI experience (tuning transcribers or voices), and no Kubernetes, Rust, or PyTorch model training experience, both part of this posting's stack. Named directly on the outreach page as an honest gap, not a disqualifier."
+  ],
+  "notion": { "synced": false, "recordUrl": null }
+}
