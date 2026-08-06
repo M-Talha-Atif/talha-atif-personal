@@ -1,0 +1,20 @@
+{
+  "company": "Conductor",
+  "slug": "conductor",
+  "status": "Drafted",
+  "lastUpdated": "2026-08-06",
+  "opportunity": {
+    "role": "Software Engineer (YC application message, in person San Francisco)",
+    "companyUrl": "https://conductor.build/"
+  },
+  "contacts": [],
+  "outreach": {
+    "channel": "YC application message field",
+    "portfolioPage": "/r/conductor",
+    "draftStatus": "Drafted",
+    "approvalStatus": "Awaiting user approval",
+    "sentStatus": "Not sent"
+  },
+  "riskFlags": ["Role is in person in San Francisco. User is based in Lahore, Pakistan. Named honestly upfront on the outreach page and has no settled relocation answer yet."],
+  "notion": { "synced": false, "recordUrl": null }
+}
