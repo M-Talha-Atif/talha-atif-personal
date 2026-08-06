@@ -1,0 +1,22 @@
+{
+  "company": "The Company Company",
+  "slug": "the-company-company",
+  "status": "Drafted",
+  "lastUpdated": "2026-08-06",
+  "opportunity": {
+    "role": "Founding Engineer (Work at a Startup / YC application, SF or Remote, will sponsor, strong genuine fit on fundamentals)",
+    "companyUrl": "https://www.workatastartup.com/companies/the-company-company"
+  },
+  "contacts": [],
+  "outreach": {
+    "channel": "Work at a Startup / YC application message field",
+    "portfolioPage": "/r/the-company-company",
+    "draftStatus": "Drafted",
+    "approvalStatus": "Awaiting user approval",
+    "sentStatus": "Not sent"
+  },
+  "riskFlags": [
+    "No hands on experience with Effect-TS, Bun, Drizzle, ClickHouse, Electric SQL, e2b, Tauri, or Pulumi, the specific stack this role runs on. Named directly on the outreach page as a fast-learner gap, not a disqualifier."
+  ],
+  "notion": { "synced": false, "recordUrl": null }
+}
