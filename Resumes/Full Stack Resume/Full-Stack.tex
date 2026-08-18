@@ -21,7 +21,7 @@
 \definecolor{navy}{HTML}{1A1A2E}
 \definecolor{accentblue}{HTML}{1565C0}
 \definecolor{medgray}{HTML}{555555}
-\definecolor{lightgray}{HTML}{777777}
+\definecolor{lightgray}{HTML}{1A1A2E}
 
 \hypersetup{colorlinks=true,urlcolor=accentblue,linkcolor=accentblue}
 
@@ -37,10 +37,12 @@
 
 \newcommand{\jobheader}[2]{%
   \noindent\textbf{#1}\hfill{\small\color{lightgray}\textit{#2}}\\[-2pt]}
-\newcommand{\jobsub}[2]{%
-  \noindent{\small\color{accentblue}\textbf{#1}}\quad{\small\color{lightgray}#2}\\[2pt]}
+\newcommand{\jobsub}[3]{%
+  \noindent{\small\color{accentblue}\textbf{#1}}\quad{\small\color{lightgray}#2, #3}\\[2pt]}
 \newcommand{\jobdesc}[1]{%
   \noindent{\small\color{lightgray}\textit{#1}}\\[2pt]}
+\newcommand{\demolink}[1]{%
+  \noindent{\small\color{accentblue}\href{#1}{Demo}}\\[2pt]}
 \newcommand{\projheader}[4]{%
   \noindent\textbf{#1}\;{\color{lightgray}|}\;{\small #2}\;{\color{lightgray}|}\;
   {\small\color{accentblue}\href{#3}{Demo}}%
@@ -58,11 +60,11 @@
   {\Large\bfseries\color{navy} Muhammad Talha Atif}\\[4pt]
   {\normalsize\color{medgray} Full Stack Engineer}\\[4pt]
   {\small\color{lightgray}
-    +923064391520\enspace$\diamond$\enspace
-    talhaatif573@gmail.com\enspace$\diamond$\enspace
-    Lahore, Pakistan\enspace$\diamond$\enspace
-    \href{https://linkedin.com/in/muhammad-talha-atif}{LinkedIn}\enspace$\diamond$\enspace
-    \href{https://github.com/M-Talha-Atif}{GitHub}\enspace$\diamond$\enspace
+    +923064391520\enspace\textperiodcentered\enspace
+    talhaatif573@gmail.com\enspace\textperiodcentered\enspace
+    Lahore, Pakistan\enspace\textperiodcentered\enspace
+    \href{https://linkedin.com/in/muhammad-talha-atif}{LinkedIn}\enspace\textperiodcentered\enspace
+    \href{https://github.com/M-Talha-Atif}{GitHub}\enspace\textperiodcentered\enspace
     \href{https://talha-atif.vercel.app}{Portfolio}}
 \end{center}
 
@@ -73,41 +75,51 @@
 %--------------------------------------------------------------
 \section{Summary}
 
-Full Stack Engineer with 2+ years of production experience building distributed backend systems, full
-stack web platforms, and AI-integrated applications. Delivered enterprise Identity Governance
-infrastructure across 8+ Spring Boot microservices with Kafka event pipelines, gRPC inter-service
-communication, and compliance-grade audit infrastructure. Shipped a complete production social platform
-on Node.js and Next.js with zero-downtime infrastructure migration. Comfortable owning features end to
-end from database schema to UI layer with a consistent focus on system reliability, clean architecture,
-and engineering correctness.
+Full Stack Engineer with 2+ years of production experience across full stack web, Android, backend, and AI agent applications. Domain experience spans identity governance and administration, social media platforms, ed tech, and AI-powered booking. Frontend expertise in React.js and Next.js. Backend expertise in Spring Boot and Node.js, building event-driven systems with Kafka, gRPC for inter-service communication, and Redis and BullMQ for caching and async job processing. Working experience in Python and FastAPI, and hands-on with LangChain and LangGraph for AI agent workflows. Particular strength in backend optimization, database schema, API, and cache layer. Comfortable across the full cloud and deployment lifecycle, AWS, Dokploy, Docker, and CI/CD, with a proven record in production Android development.
 
 %--------------------------------------------------------------
 % WORK EXPERIENCE
 %--------------------------------------------------------------
 \section{Work Experience}
 
-\jobheader{Full Stack Engineer}{Dec '25 -- Present}
-\jobsub{Intimec via MicroTechX}{Remote}
+\jobheader{Full Stack Engineer}{Dec '25 -- Jun '26}
+\jobsub{Intimec via MicroTechX}{Remote}{Malaysia}
+\demolink{https://www.aidentx.com/igax}
 \jobdesc{Owned the Access Portal end to end across Spring Boot microservices and the Next.js dashboard,
 and contributed to platform-wide architecture across audit, logging, and inter-service communication
 on a compliance-heavy Identity Governance platform.}
 \begin{itemize}
-  \item Migrated synchronous service-to-service communication from REST to gRPC reducing inter-service
-        latency by 50\% across Auth, Identity, and Access Portal workflows.
-  \item Architected the generic rule-based engine assigning roles, entitlements, and access items to
-        identities through grouped condition evaluation with CRON and event-based scheduling.
+  \item Migrated synchronous service-to-service communication from REST to gRPC across Auth, Identity,
+        and Access Portal, cutting inter-service latency by 50\%, with retries and a circuit breaker
+        handling downstream failures, and deliberately prioritizing consistency over availability so
+        the system fails safely rather than serving stale identity or access data in a compliance
+        heavy environment.
+  \item Architected a rule-based engine in Java and Spring Boot, using a dynamic SQL predicate builder
+        against PostgreSQL to evaluate attribute-based condition groups that can be added per identity
+        without engine changes, triggered on CRON schedules or Kafka events to assign roles,
+        entitlements, and access items, replacing fully manual provisioning as the platform's core
+        access decision system.
   \item Refactored the audit log schema to be PII-free, restoring compliance alignment without losing
         forensic traceability, and resolved a Spring AOP self-invocation bypass that was silently
         skipping audit advice on critical methods.
-  \item Standardised the frontend theme, color system, and shared component library across the
-        Next.js dashboard and documented the conventions that the team now applies to every new
-        feature, eliminating UI drift across the platform.
+  \item Built a shared component library and standardized the theme and color system across the
+        Next.js dashboard, replacing ad hoc, duplicated UI code with components the whole team
+        adopted, cutting UI code duplication by 50\% and eliminating visual drift across every new
+        feature.
+  \item Diagnosed a schema drift issue causing production analytics failures on a 5M+ document
+        OpenSearch index, then executed a zero-downtime migration using alias switching, new index,
+        background reindex, verify, atomic swap, restoring analytics to handle 100K+ logs per cycle
+        without failure.
+  \item Designed an event-driven Kafka pipeline for approval, rejection, and provisioning workflows,
+        replacing synchronous REST calls where one service outage could break the entire approval
+        chain, with dead letter queues catching failures instead of losing them silently.
 \end{itemize}
 
 \vspace{4pt}
 
 \jobheader{Full Stack Engineer}{Sep '25 -- Jan '26}
-\jobsub{Digital Upgraders LLC}{Remote}
+\jobsub{Digital Upgraders LLC}{Remote}{Dubai}
+\demolink{https://cc-prod-user.fly.dev/}
 \jobdesc{Built and maintained backend APIs and frontend features for a production social platform serving
 photographers, videographers, and creative professionals across web and mobile.}
 \begin{itemize}
@@ -115,13 +127,22 @@ photographers, videographers, and creative professionals across web and mobile.}
         and caching bottlenecks across the production feed system.
   \item Fixed duplicate notifications by redesigning concurrent write flows with proper database
         transactions, restoring consistency across the notification system.
-  \item Resolved Android, iOS, and Safari rendering issues by tracing client-side performance
-        bottlenecks and restoring consistent cross-platform behaviour.
-  \item Led a zero-downtime migration from AWS to Fly.io, reworking infrastructure, CI/CD,
-        DNS, and service configuration on a live production platform.
+  \item Fixed inconsistent scroll-to-hide header behavior across Android, iOS, and Safari by tracing
+        how each platform actually fired scroll events, since Safari's scroll mechanism diverged
+        sharply from Android's, and adjusting the tracking logic per platform instead of assuming one
+        implementation would work everywhere.
+  \item AWS's operational cost and infrastructure overhead had become hard to justify and manage at
+        the platform's scale, so I led a zero-downtime migration to Fly.io, reworking infrastructure,
+        CI/CD, DNS, and service configuration on a live production platform without disrupting real
+        users.
+  \item Fixed a production authentication bug where the OAuth token and JWT token were both being
+        stored under the same cookie key, silently overwriting each other and dropping user sessions,
+        tracing the root cause through production logs and redesigning token storage so each token
+        persists under its own key.
+  \item Refactored the frontend codebase by applying separation-of-concerns design patterns, splitting
+        logic into hooks, types, and components instead of one tangled structure, so the codebase
+        could actually scale without repeatedly re-touching the same files.
 \end{itemize}
-
-
 
 %--------------------------------------------------------------
 % PROJECTS
@@ -130,15 +151,25 @@ photographers, videographers, and creative professionals across web and mobile.}
 
 \projheader{Moodly}{AI Experience Booking Platform}{https://talha-atif.vercel.app/projects/moodly}{}
 \begin{itemize}
-  \item Designed a multimodal emotion detection pipeline processing voice recordings and facial images
-        through separate classification models, routing results via an async message queue to a booking
-        recommendation engine that selects experiences based on detected mood state.
-  \item Built RESTful backend APIs for the full booking lifecycle and a cross-platform React Native
-        frontend with one-tap booking flows, mood visualisation components, and a voice-command interface
-        for hosts, all connected through a real-time event-driven architecture.
-  \item Implemented strict input validation, secure authentication, and unit-tested business logic across
-        all backend critical paths, while enforcing TypeScript-strict component architecture on the
-        frontend to reduce edge-case bugs in production.
+  \item Built a production-ready mood detection pipeline classifying across 5 emotions, engineered
+        for sub-2-second latency and 85\%+ accuracy, fast and trustworthy enough to actually drive
+        booking recommendations, not just a research-grade demo.
+  \item Replaced a 15+ minute manual listing form with an AI voice onboarding flow, transcribing the
+        host's spoken description through voice-to-text and automatically populating the experience
+        data fields from it, cutting listing creation time to under 3 minutes.
+  \item Cut mood-based recommendation latency from 3.2s to 380ms, an 88\% improvement, by pre-computing
+        mood-to-experience mappings and serving them from Redis instead of hitting the database on
+        every request, with a 5 minute TTL explicitly invalidated whenever the underlying experience
+        data changes.
+  \item Implemented the event booking flow with idempotency guarantees so a retried or duplicate
+        request can never create a duplicate booking, and built the notification channel on BullMQ to
+        handle delivery reliably outside the booking request path.
+  \item Shifted mood detection from an async background job to a synchronous call in the request path,
+        prioritizing a correct, immediate result over an always-available but incomplete one, since
+        the feature only works if the user sees their mood-based recommendation the moment they ask.
+  \item Owned the full infrastructure stack as a solo engineer, containerizing every service with
+        Docker and using Docker Compose for consistent parity between development and production,
+        backed by RDS for managed Postgres and S3 for voice and image storage.
 \end{itemize}
 
 \vspace{4pt}

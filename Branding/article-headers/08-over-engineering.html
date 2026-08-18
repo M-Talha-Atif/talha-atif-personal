@@ -1,0 +1,94 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap" />
+<link rel="stylesheet" href="https://fonts.cdnfonts.com/css/satoshi" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1200px; height: 630px; overflow: hidden; background: #0b0b0d; }
+
+  .card { position: relative; width: 1200px; height: 630px; background: #0b0b0d; font-family: 'Inter', ui-sans-serif, system-ui; }
+
+  .bg-grid {
+    position: absolute; inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px);
+    background-size: 26px 26px;
+    mask-image: radial-gradient(ellipse 900px 500px at 30% 50%, black 40%, transparent 85%);
+  }
+
+  .glow {
+    position: absolute; width: 520px; height: 520px; right: -80px; top: 50%; transform: translateY(-50%);
+    border-radius: 50%; background: linear-gradient(135deg, #7dd3fc, #c4b5fd); filter: blur(90px); opacity: 0.28;
+  }
+
+  .content { position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; justify-content: center; padding-left: 76px; max-width: 660px; }
+  .kicker { font-family: 'Space Grotesk', ui-monospace, monospace; text-transform: uppercase; letter-spacing: 3px; font-size: 15px; font-weight: 600; color: #CFFFDC; margin-bottom: 22px; }
+  .title { font-family: 'Satoshi', 'Inter', ui-sans-serif; font-weight: 700; font-size: 60px; line-height: 1.08; letter-spacing: -1.2px; color: #f5f5f5; margin-bottom: 22px; }
+  .subtitle { font-family: 'Inter', ui-sans-serif; font-size: 22px; line-height: 1.45; color: #bdbdbd; max-width: 540px; }
+
+  .brand { position: absolute; left: 76px; bottom: 44px; z-index: 2; display: flex; flex-direction: column; gap: 4px; }
+  .brand-name { font-family: 'Satoshi', 'Inter', ui-sans-serif; font-weight: 600; font-size: 17px; color: #e6e6e6; }
+  .brand-role { font-family: 'Space Grotesk', ui-monospace, monospace; font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; color: #7dd3fc; }
+
+  .critter { position: absolute; right: 96px; top: 50%; transform: translateY(-50%); width: 320px; height: 320px; z-index: 2; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.55)); }
+  .badge-ring { position: absolute; right: 96px; top: 50%; transform: translateY(-50%); width: 320px; height: 320px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.08); }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="bg-grid"></div>
+    <div class="glow"></div>
+    <div class="badge-ring"></div>
+
+    <div class="content">
+      <span class="kicker">Simplicity</span>
+      <h1 class="title">Over Engineering</h1>
+      <p class="subtitle">Solving a problem that never showed up.</p>
+    </div>
+
+    <div class="brand">
+      <div class="brand-name">M. Talha Atif</div>
+      <div class="brand-role">Full Stack Engineer</div>
+    </div>
+
+    <svg class="critter" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="shellGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#7dd3fc"/>
+          <stop offset="1" stop-color="#c4b5fd"/>
+        </linearGradient>
+      </defs>
+
+      <!-- absurdly oversized knight helmet, gradient so it reads as a distinct object -->
+      <path d="M165,8 Q150,34 165,64 Q180,34 165,8 Z" fill="url(#shellGrad)"/>
+      <ellipse cx="165" cy="130" rx="98" ry="86" fill="url(#shellGrad)"/>
+
+      <!-- ornate rivets, pure decoration -->
+      <circle cx="88" cy="118" r="8" fill="#CFFFDC"/>
+      <circle cx="242" cy="118" r="8" fill="#CFFFDC"/>
+      <circle cx="100" cy="78" r="6" fill="#CFFFDC" opacity="0.85"/>
+      <circle cx="230" cy="78" r="6" fill="#CFFFDC" opacity="0.85"/>
+
+      <!-- brim / bottom rim of the helmet -->
+      <path d="M85,180 Q165,205 245,180 Q245,200 165,214 Q85,200 85,180 Z" fill="url(#shellGrad)"/>
+
+      <!-- the actual mouse, small and mint, clearly peeking out underneath all of it -->
+      <ellipse cx="140" cy="272" rx="10" ry="7" fill="#CFFFDC"/>
+      <ellipse cx="190" cy="272" rx="10" ry="7" fill="#CFFFDC"/>
+      <circle cx="142" cy="222" r="14" fill="#CFFFDC"/>
+      <circle cx="188" cy="222" r="14" fill="#CFFFDC"/>
+      <circle cx="165" cy="250" r="34" fill="#CFFFDC"/>
+      <circle cx="154" cy="245" r="4" fill="#0b0b0d"/>
+      <circle cx="176" cy="245" r="4" fill="#0b0b0d"/>
+      <ellipse cx="165" cy="259" rx="4.5" ry="3.5" fill="#0b0b0d"/>
+      <path d="M161,262 Q165,267 169,262" stroke="#0b0b0d" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <line x1="136" y1="256" x2="112" y2="250" stroke="#0b0b0d" stroke-opacity="0.3" stroke-width="2"/>
+      <line x1="136" y1="263" x2="112" y2="266" stroke="#0b0b0d" stroke-opacity="0.3" stroke-width="2"/>
+      <line x1="194" y1="256" x2="218" y2="250" stroke="#0b0b0d" stroke-opacity="0.3" stroke-width="2"/>
+      <line x1="194" y1="263" x2="218" y2="266" stroke="#0b0b0d" stroke-opacity="0.3" stroke-width="2"/>
+    </svg>
+  </div>
+</body>
+</html>

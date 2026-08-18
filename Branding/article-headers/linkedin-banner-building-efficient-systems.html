@@ -1,0 +1,78 @@
+<!-- LinkedIn banner, 1584x396 (LinkedIn's recommended cover size).
+     Profile photo overlaps roughly the bottom-left ~220x220px on desktop,
+     so all text starts at x=300 to stay clear of it on every layout. -->
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap" />
+<link rel="stylesheet" href="https://fonts.cdnfonts.com/css/satoshi" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1584px; height: 396px; overflow: hidden; background: #0b0b0d; }
+
+  .card { position: relative; width: 1584px; height: 396px; background: #0b0b0d; font-family: 'Inter', ui-sans-serif, system-ui; }
+
+  .bg-grid {
+    position: absolute; inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px);
+    background-size: 26px 26px;
+    mask-image: radial-gradient(ellipse 1100px 400px at 50% 50%, black 40%, transparent 85%);
+  }
+
+  .glow {
+    position: absolute; width: 520px; height: 520px; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    border-radius: 50%; background: linear-gradient(135deg, #7dd3fc, #c4b5fd); filter: blur(110px); opacity: 0.2;
+  }
+
+  .content {
+    position: absolute; z-index: 2; left: 0; width: 100%; top: 34px;
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+  }
+  .title { font-family: 'Satoshi', 'Inter', ui-sans-serif; font-weight: 700; font-size: 54px; line-height: 1.1; letter-spacing: -1px; color: #f5f5f5; margin-bottom: 16px; }
+  .subtitle { font-family: 'Inter', ui-sans-serif; font-size: 22px; line-height: 1.4; color: #bdbdbd; }
+
+  .corner-critter { position: absolute; width: 92px; height: 92px; z-index: 2; filter: drop-shadow(0 10px 18px rgba(0,0,0,0.5)); }
+  .corner-critter.top-left { top: 28px; left: 28px; }
+  .corner-critter.bottom-right { bottom: 28px; right: 28px; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="bg-grid"></div>
+    <div class="glow"></div>
+
+    <div class="content">
+      <h1 class="title">Building Efficient Systems</h1>
+      <p class="subtitle">Fault tolerant engineering systems</p>
+    </div>
+
+    <svg class="corner-critter top-left" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="255" cy="165" rx="14" ry="9" fill="#CFFFDC"/>
+      <ellipse cx="160" cy="150" rx="100" ry="75" fill="#CFFFDC"/>
+      <path d="M100,150 Q160,102 220,150" stroke="#0b0b0d" stroke-opacity="0.18" stroke-width="4" fill="none"/>
+      <path d="M112,182 Q160,146 208,182" stroke="#0b0b0d" stroke-opacity="0.18" stroke-width="4" fill="none"/>
+      <line x1="160" y1="82" x2="160" y2="220" stroke="#0b0b0d" stroke-opacity="0.12" stroke-width="4"/>
+      <ellipse cx="112" cy="216" rx="19" ry="14" fill="#CFFFDC"/>
+      <ellipse cx="208" cy="216" rx="19" ry="14" fill="#CFFFDC"/>
+      <ellipse cx="75" cy="150" rx="34" ry="27" fill="#CFFFDC"/>
+      <circle cx="64" cy="141" r="4.5" fill="#0b0b0d"/>
+      <path d="M58,159 Q68,165 78,159" stroke="#0b0b0d" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    </svg>
+
+    <svg class="corner-critter bottom-right" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="255" cy="165" rx="14" ry="9" fill="#CFFFDC"/>
+      <ellipse cx="160" cy="150" rx="100" ry="75" fill="#CFFFDC"/>
+      <path d="M100,150 Q160,102 220,150" stroke="#0b0b0d" stroke-opacity="0.18" stroke-width="4" fill="none"/>
+      <path d="M112,182 Q160,146 208,182" stroke="#0b0b0d" stroke-opacity="0.18" stroke-width="4" fill="none"/>
+      <line x1="160" y1="82" x2="160" y2="220" stroke="#0b0b0d" stroke-opacity="0.12" stroke-width="4"/>
+      <ellipse cx="112" cy="216" rx="19" ry="14" fill="#CFFFDC"/>
+      <ellipse cx="208" cy="216" rx="19" ry="14" fill="#CFFFDC"/>
+      <ellipse cx="75" cy="150" rx="34" ry="27" fill="#CFFFDC"/>
+      <circle cx="64" cy="141" r="4.5" fill="#0b0b0d"/>
+      <path d="M58,159 Q68,165 78,159" stroke="#0b0b0d" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    </svg>
+  </div>
+</body>
+</html>
