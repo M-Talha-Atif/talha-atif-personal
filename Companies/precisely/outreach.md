@@ -1,7 +1,7 @@
 # Outreach — Precisely (Associate Software Engineer, MDM)
 
 - **Status:** Drafted, awaiting explicit send approval
-- **Portfolio outreach page:** src/lib/outreach/precisely.ts, live at https://talha-atif.vercel.app/r/precisely
+- **Portfolio outreach page:** src/lib/outreach/precisely.ts, live at https://talhaatif.tech/r/precisely
 - **Tailored documents:** Resumes/Precisely Resume/precisely-engineer.tex and precisely-cover-letter.tex, both link to the outreach page.
 
 ## LinkedIn connection note for Hasan Khan (not sent, drafted for review)

@@ -1,0 +1,1091 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kubernetes Interview Prep</title>
+<script>try{var t=localStorage.getItem('ip-theme');document.documentElement.dataset.theme=t||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}catch(e){}</script>
+<link rel="stylesheet" href="../../../assets/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script defer src="../../../assets/app.js"></script>
+</head>
+<body>
+<div id="progress"></div>
+<svg width="0" height="0" style="position:absolute"><defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" style="fill:var(--muted)"/></marker></defs></svg>
+<button class="btn menu-btn" id="menu-btn">☰ Menu</button>
+
+<aside class="sidebar">
+  <div class="logo">☸️ Kubernetes</div>
+  <div class="sub">Interview prep</div>
+  <nav id="toc"></nav>
+  <div class="tools"><button class="btn" id="theme-btn">🌓 Theme</button><a class="btn" href="../../../index.html" style="text-decoration:none">All topics</a></div>
+</aside>
+
+<main>
+<h1>Kubernetes Interview Prep</h1>
+<p class="lead">Understand what Kubernetes actually does, deploy real apps with it, and debug the failures interviewers love to ask about. Assumes you already know Docker.</p>
+
+<div class="callout say"><b class="t">Your one-minute pitch (memorize)</b>
+<p>"Kubernetes is a container orchestrator. I tell it the <b>desired state</b>, like 'run 3 copies of this image, expose them on port 80', and its controllers keep reality matching that, restarting crashed pods, replacing dead nodes and rolling out new versions without downtime. I deploy with Deployments and Services, configure with ConfigMaps and Secrets, protect apps with readiness and liveness probes plus resource requests and limits, and run stateful things like databases with StatefulSets and PersistentVolumes. When something breaks I go <code>get</code> → <code>describe</code> → <code>logs --previous</code> → <code>exec</code>, because the events usually name the cause."</p></div>
+
+<h2 id="plan"><span class="num">0</span>Study plan</h2>
+<div class="grid">
+  <div class="card"><span class="pill">Day 1</span><h4>Concepts + Lab 1</h4><p>Architecture, Pods, Deployments, Services. Deploy nginx, scale it, roll it back.</p></div>
+  <div class="card"><span class="pill">Day 2</span><h4>Config + Lab 2</h4><p>ConfigMaps, Secrets, probes, resources, securityContext.</p></div>
+  <div class="card"><span class="pill">Day 3</span><h4>Real-world + Labs 3, 4</h4><p>Microservices, ingress, HPA, and a stateful Postgres.</p></div>
+  <div class="card"><span class="pill">Day 4</span><h4>Bugs + Lab 5 + Q&amp;A</h4><p>Fix six broken workloads, then answer out loud.</p></div>
+</div>
+<p><b>What interviewers test:</b> (1) the mental model (desired state, controllers), (2) core objects and how they connect, (3) networking (Service, Ingress, DNS), (4) config and storage, (5) production concerns (probes, resources, rollouts, autoscaling, security), (6) debugging a broken pod.</p>
+<p><b>Readiness checklist</b> (ticks are saved in your browser):</p>
+<ul class="checklist">
+  <li>I can draw the cluster architecture and say what each component does</li>
+  <li>I can explain Deployment → ReplicaSet → Pod and how a rolling update works</li>
+  <li>I can explain how a Service finds pods, and the four Service types</li>
+  <li>I can explain liveness vs readiness vs startup probes, and requests vs limits</li>
+  <li>I can explain Deployment vs StatefulSet vs DaemonSet</li>
+  <li>I can write a Deployment + Service from memory</li>
+  <li>I've completed the labs, including the troubleshooting dojo</li>
+  <li>I can walk through debugging <code>CrashLoopBackOff</code>, <code>Pending</code> and <code>ImagePullBackOff</code> without notes</li>
+</ul>
+
+<!-- ============================ 01 ============================ -->
+<h2 id="s1"><span class="num">01</span>Core concepts</h2>
+
+<h3>What problem does Kubernetes solve?</h3>
+<p>Docker runs a container on <b>one machine</b>. In production you need many containers over many machines: what restarts a crashed one, spreads load, rolls out v2 safely, or moves work when a server dies? That's orchestration. Kubernetes (K8s) is the standard answer.</p>
+<div class="callout say"><b class="t">The key idea: declarative desired state</b><p>You don't say "start 3 containers". You say "I want 3 replicas of this image" and Kubernetes keeps making it true. Kill a pod and it creates another. That's why it's called <b>self-healing</b>.</p></div>
+
+<h3>Cluster architecture</h3>
+<figure class="diagram">
+<svg class="d" viewBox="0 0 760 330">
+  <rect class="v dash" x="10" y="10" width="740" height="130" rx="12"/><text class="h" x="26" y="34">Control plane (the brain)</text>
+  <rect class="v" x="30" y="50" width="160" height="70" rx="8"/><text class="h" x="44" y="76">API server</text><text class="m" x="44" y="96">front door for everything</text>
+  <rect class="o" x="210" y="50" width="150" height="70" rx="8"/><text class="h" x="224" y="76">etcd</text><text class="m" x="224" y="96">cluster state database</text>
+  <rect class="p" x="380" y="50" width="150" height="70" rx="8"/><text class="h" x="394" y="76">Scheduler</text><text class="m" x="394" y="96">picks a node per pod</text>
+  <rect class="g" x="550" y="50" width="180" height="70" rx="8"/><text class="h" x="564" y="76">Controllers</text><text class="m" x="564" y="96">reconcile desired vs actual</text>
+  <path class="ln2" d="M200 150 V180"/><path class="ln2" d="M560 150 V180"/>
+  <text class="m" x="212" y="168">kubelets and kubectl talk only to the API server</text>
+  <rect class="n" x="10" y="182" width="360" height="136" rx="12"/><text class="h" x="26" y="206">Worker node 1</text>
+  <rect class="n" x="390" y="182" width="360" height="136" rx="12"/><text class="h" x="406" y="206">Worker node 2</text>
+  <rect class="v" x="24" y="218" width="100" height="34" rx="6"/><text x="40" y="240">kubelet</text>
+  <rect class="v" x="132" y="218" width="110" height="34" rx="6"/><text x="146" y="240">kube-proxy</text>
+  <rect class="v" x="250" y="218" width="104" height="34" rx="6"/><text x="262" y="240">containerd</text>
+  <rect class="p" x="24" y="266" width="100" height="40" rx="6"/><text x="56" y="291">Pod</text>
+  <rect class="p" x="132" y="266" width="110" height="40" rx="6"/><text x="168" y="291">Pod</text>
+  <rect class="p" x="250" y="266" width="104" height="40" rx="6"/><text x="282" y="291">Pod</text>
+  <rect class="v" x="404" y="218" width="100" height="34" rx="6"/><text x="420" y="240">kubelet</text>
+  <rect class="v" x="512" y="218" width="110" height="34" rx="6"/><text x="526" y="240">kube-proxy</text>
+  <rect class="v" x="630" y="218" width="104" height="34" rx="6"/><text x="642" y="240">containerd</text>
+  <rect class="p" x="404" y="266" width="100" height="40" rx="6"/><text x="436" y="291">Pod</text>
+  <rect class="p" x="512" y="266" width="110" height="40" rx="6"/><text x="548" y="291">Pod</text>
+  <rect class="p" x="630" y="266" width="104" height="40" rx="6"/><text x="662" y="291">Pod</text>
+</svg>
+<figcaption>Control plane decides; worker nodes run pods. <b>kubelet</b> runs the pods the API server assigns. <b>kube-proxy</b> implements Service networking. <b>containerd</b> runs the containers.</figcaption>
+</figure>
+<div class="tablewrap"><table>
+<tr><th>Component</th><th>Job (one line)</th></tr>
+<tr><td><b>kube-apiserver</b></td><td>The only thing that talks to etcd. Every component and <code>kubectl</code> goes through it (REST + auth + admission).</td></tr>
+<tr><td><b>etcd</b></td><td>Key-value store holding all cluster state. Lose it, lose the cluster, so back it up.</td></tr>
+<tr><td><b>scheduler</b></td><td>Assigns unscheduled pods to nodes: <i>filter</i> (what fits: resources, taints, affinity) then <i>score</i> (what's best).</td></tr>
+<tr><td><b>controller-manager</b></td><td>Runs the control loops (Deployment, ReplicaSet, Node, Job…). Each one compares desired vs actual and acts.</td></tr>
+<tr><td><b>kubelet</b></td><td>Agent on each node: starts containers, runs probes, reports status.</td></tr>
+<tr><td><b>kube-proxy</b></td><td>Programs iptables/IPVS rules so Service virtual IPs reach pod IPs.</td></tr>
+<tr><td><b>container runtime</b></td><td>containerd or CRI-O. Docker Engine itself is no longer the runtime, but Docker-built images work unchanged.</td></tr>
+</table></div>
+
+<h3>The reconciliation loop</h3>
+<figure class="diagram">
+<svg class="d" viewBox="0 0 760 170">
+  <rect class="p" x="10" y="20" width="160" height="70" rx="8"/><text class="h" x="24" y="48">You</text><text class="m" x="24" y="68">desired: 3 replicas</text>
+  <rect class="v" x="200" y="20" width="160" height="70" rx="8"/><text class="h" x="214" y="48">API server</text><text class="m" x="214" y="68">stored in etcd</text>
+  <rect class="o" x="390" y="20" width="160" height="70" rx="8"/><text class="h" x="404" y="48">Controller</text><text class="m" x="404" y="68">actual 2 ≠ desired 3</text>
+  <rect class="g" x="580" y="20" width="170" height="70" rx="8"/><text class="h" x="594" y="48">Scheduler + kubelet</text><text class="m" x="594" y="68">start 1 more pod</text>
+  <path class="ln" d="M170 55 H198"/><path class="ln" d="M360 55 H388"/><path class="ln" d="M550 55 H578"/>
+  <path class="ln" d="M665 90 V130 H90 V92"/>
+  <text class="m" x="250" y="152">observe → compare → act, forever. Pods die, the loop notices, the loop fixes it.</text>
+</svg>
+<figcaption>This single pattern powers everything in Kubernetes.</figcaption>
+</figure>
+
+<h3>Pod: the smallest unit</h3>
+<p>A <b>Pod</b> wraps one or more containers that share a network namespace (one IP, <code>localhost</code> between them) and can share volumes. Usually 1 app container. Extra containers are <b>sidecars</b> (log shipper, proxy) or <b>init containers</b> (run to completion first, e.g. wait for DB or run migrations).</p>
+<div class="callout warn"><b class="t">Pods are disposable</b><p>A pod's IP and name change every time it's recreated. Never depend on a pod IP. Never run bare Pods in production; use a controller (Deployment etc.) that recreates them.</p></div>
+
+<h3>Deployment → ReplicaSet → Pods</h3>
+<figure class="diagram">
+<svg class="d" viewBox="0 0 760 240">
+  <rect class="p" x="20" y="90" width="160" height="62" rx="8"/><text class="h" x="36" y="118">Deployment</text><text class="m" x="36" y="138">web · image 1.26</text>
+  <rect class="n dash" x="260" y="20" width="170" height="52" rx="8"/><text class="h" x="274" y="42">ReplicaSet v1</text><text class="m" x="274" y="60">scaled to 0 (for rollback)</text>
+  <rect class="g" x="260" y="150" width="170" height="62" rx="8"/><text class="h" x="274" y="176">ReplicaSet v2</text><text class="m" x="274" y="196">replicas: 3 (current)</text>
+  <path class="ln" d="M180 108 L258 55"/><path class="ln" d="M180 134 L258 172"/>
+  <rect class="g dash" x="480" y="140" width="260" height="82" rx="10"/><text class="m" x="496" y="160">Pods created and owned by v2</text>
+  <rect class="p" x="494" y="170" width="70" height="40" rx="6"/><text x="512" y="195">Pod</text>
+  <rect class="p" x="574" y="170" width="70" height="40" rx="6"/><text x="592" y="195">Pod</text>
+  <rect class="p" x="654" y="170" width="70" height="40" rx="6"/><text x="672" y="195">Pod</text>
+  <path class="ln" d="M430 181 H478"/>
+</svg>
+<figcaption>You manage the Deployment. It manages ReplicaSets (one per version). Each ReplicaSet manages Pods. Rollback = scale the old ReplicaSet back up.</figcaption>
+</figure>
+
+<h3>Labels and selectors: how objects find each other</h3>
+<p>Almost everything connects through <b>labels</b> (key/value tags like <code>app=web</code>) and <b>selectors</b> (queries on those tags). A Deployment selects its pods; a Service selects the pods to send traffic to. <b>A selector typo = a Service with no endpoints</b> (the classic bug).</p>
+
+<h3>Service: a stable address for changing pods</h3>
+<figure class="diagram">
+<svg class="d" viewBox="0 0 760 250">
+  <rect class="n" x="10" y="90" width="110" height="52" rx="8"/><text class="h" x="26" y="114">client Pod</text><text class="m" x="26" y="132">calls http://web</text>
+  <rect class="p" x="210" y="70" width="190" height="92" rx="10"/><text class="h" x="226" y="96">Service: web</text><text class="m" x="226" y="116">ClusterIP 10.96.0.12:80</text><text class="m" x="226" y="134">selector: app=web</text><text class="m" x="226" y="152">load-balances</text>
+  <rect class="g" x="520" y="20" width="220" height="50" rx="8"/><text x="534" y="50">web-1 · app=web · Ready ✔</text>
+  <rect class="g" x="520" y="100" width="220" height="50" rx="8"/><text x="534" y="130">web-2 · app=web · Ready ✔</text>
+  <rect class="r dash" x="520" y="180" width="220" height="50" rx="8"/><text x="534" y="210">web-3 · app=web · NOT ready</text>
+  <path class="ln" d="M120 116 H208"/>
+  <path class="ln" d="M400 100 L518 48"/><path class="ln" d="M400 116 H518"/><path class="lnx" d="M400 134 L518 200"/>
+  <text class="m" x="10" y="200">DNS name: web (same namespace)</text><text class="m" x="10" y="218">or web.default.svc.cluster.local</text>
+</svg>
+<figcaption>The Service gets a stable virtual IP and DNS name, and sends traffic only to <b>Ready</b> pods matching its selector. Failing readiness = removed from rotation, not restarted.</figcaption>
+</figure>
+<figure class="diagram">
+<svg class="d" viewBox="0 0 760 250">
+  <rect class="o" x="20" y="10" width="720" height="230" rx="12"/><text class="h" x="36" y="34">LoadBalancer</text><text class="m" x="140" y="34">asks the cloud for a public load balancer, plus everything below</text>
+  <rect class="p" x="50" y="50" width="660" height="178" rx="12"/><text class="h" x="66" y="74">NodePort</text><text class="m" x="150" y="74">opens a port (30000–32767) on every node, plus everything below</text>
+  <rect class="g" x="80" y="90" width="600" height="126" rx="12"/><text class="h" x="96" y="114">ClusterIP</text><text class="m" x="176" y="114">(default) virtual IP, reachable only inside the cluster</text>
+  <rect class="n" x="110" y="130" width="540" height="64" rx="8"/><text x="130" y="168">Pods matching the selector (only the Ready ones receive traffic)</text>
+</svg>
+<figcaption>Each Service type builds on the previous one.</figcaption>
+</figure>
+<div class="tablewrap"><table>
+<tr><th>Service type</th><th>Use it for</th></tr>
+<tr><td><code>ClusterIP</code></td><td>Internal service-to-service traffic (the default, used 90% of the time)</td></tr>
+<tr><td><code>NodePort</code></td><td>Quick external access in dev; rarely used directly in production</td></tr>
+<tr><td><code>LoadBalancer</code></td><td>Public endpoint on a cloud (one cloud LB per Service, so costly at scale)</td></tr>
+<tr><td>Headless (<code>clusterIP: None</code>)</td><td>No virtual IP; DNS returns pod IPs. Used with StatefulSets for stable per-pod names</td></tr>
+<tr><td><code>ExternalName</code></td><td>DNS alias to an outside hostname (e.g. a managed DB)</td></tr>
+</table></div>
+
+<h3>Ingress: one entry point, many services</h3>
+<figure class="diagram">
+<svg class="d" viewBox="0 0 760 250">
+  <rect class="n" x="10" y="100" width="90" height="50" rx="8"/><text x="24" y="130">Internet</text>
+  <rect class="o" x="124" y="100" width="100" height="50" rx="8"/><text x="138" y="130">Cloud LB</text>
+  <rect class="v" x="250" y="85" width="160" height="80" rx="8"/><text class="h" x="264" y="112">Ingress controller</text><text class="m" x="264" y="132">nginx pods, apply the</text><text class="m" x="264" y="148">Ingress rules (routing)</text>
+  <rect class="p" x="470" y="20" width="130" height="44" rx="8"/><text x="484" y="48">/api → api</text>
+  <rect class="p" x="470" y="103" width="130" height="44" rx="8"/><text x="484" y="131">/ → web</text>
+  <rect class="p" x="470" y="186" width="130" height="44" rx="8"/><text x="484" y="214">/orders → orders</text>
+  <rect class="g" x="640" y="20" width="100" height="44" rx="8"/><text x="668" y="48">Pods</text>
+  <rect class="g" x="640" y="103" width="100" height="44" rx="8"/><text x="668" y="131">Pods</text>
+  <rect class="g" x="640" y="186" width="100" height="44" rx="8"/><text x="668" y="214">Pods</text>
+  <path class="ln" d="M100 125 H122"/><path class="ln" d="M224 125 H248"/>
+  <path class="ln" d="M410 110 L468 42"/><path class="ln" d="M410 125 H468"/><path class="ln" d="M410 140 L468 208"/>
+  <path class="ln" d="M600 42 H638"/><path class="ln" d="M600 125 H638"/><path class="ln" d="M600 208 H638"/>
+</svg>
+<figcaption>An <b>Ingress</b> is just routing rules (host/path → Service). It does nothing unless an <b>Ingress controller</b> (ingress-nginx, Traefik, a cloud ALB…) is installed. One public LB serves many services.</figcaption>
+</figure>
+
+<h3>Config and Secrets</h3>
+<figure class="diagram">
+<svg class="d" viewBox="0 0 760 200">
+  <rect class="g" x="10" y="20" width="200" height="50" rx="8"/><text x="24" y="50">ConfigMap (plain config)</text>
+  <rect class="o" x="10" y="120" width="200" height="50" rx="8"/><text x="24" y="150">Secret (base64, not crypto)</text>
+  <rect class="p" x="330" y="20" width="200" height="150" rx="10"/><text class="h" x="346" y="44">Pod</text>
+  <rect class="n" x="346" y="58" width="168" height="40" rx="6"/><text x="360" y="83">env: APP_GREETING</text>
+  <rect class="n" x="346" y="112" width="168" height="40" rx="6"/><text x="360" y="137">file: /app/server.js</text>
+  <path class="ln" d="M210 45 C270 45 280 130 344 132"/><path class="ln" d="M210 145 C270 145 280 82 344 80"/>
+  <text class="m" x="548" y="62">env vars: read once at start</text><text class="m" x="548" y="84">mounted files: refresh in ~1 min</text><text class="m" x="548" y="106">(subPath mounts never refresh)</text><text class="m" x="548" y="128">hash-named ConfigMap → auto rollout</text>
+</svg>
+<figcaption>Inject config as env vars or mounted files. Changing a ConfigMap does <b>not</b> restart pods by itself.</figcaption>
+</figure>
+<div class="callout bad"><b class="t">Secrets are not secret by default</b><p>They're only base64-encoded in etcd. Anyone who can read the Secret (RBAC) or etcd can decode them. Enable encryption at rest, lock down RBAC, and prefer an external manager (Vault, AWS Secrets Manager via External Secrets).</p></div>
+
+<h3>Workload types: pick the right controller</h3>
+<div class="tablewrap"><table>
+<tr><th>Kind</th><th>Use it for</th><th>Key property</th></tr>
+<tr><td><b>Deployment</b></td><td>Stateless apps (APIs, web)</td><td>Interchangeable pods, rolling updates, rollback</td></tr>
+<tr><td><b>StatefulSet</b></td><td>Databases, Kafka, anything with identity or per-pod disk</td><td>Stable names (<code>pg-0</code>), ordered start/stop, <b>one PVC per pod</b></td></tr>
+<tr><td><b>DaemonSet</b></td><td>Per-node agents (log collector, monitoring, CNI)</td><td>Exactly one pod on every node</td></tr>
+<tr><td><b>Job</b></td><td>Run-to-completion task (migration, batch)</td><td>Retries until success</td></tr>
+<tr><td><b>CronJob</b></td><td>Scheduled Jobs</td><td>Cron syntax; set <code>concurrencyPolicy</code></td></tr>
+</table></div>
+
+<h3>Probes and pod lifecycle</h3>
+<figure class="diagram">
+<svg class="d" viewBox="0 0 760 220">
+  <rect class="n" x="6" y="20" width="108" height="56" rx="8"/><text class="h" x="16" y="44">Pending</text><text class="m" x="16" y="62">schedule, pull</text>
+  <rect class="n" x="132" y="20" width="108" height="56" rx="8"/><text class="h" x="142" y="44">Init</text><text class="m" x="142" y="62">must finish</text>
+  <rect class="p" x="258" y="20" width="108" height="56" rx="8"/><text class="h" x="268" y="44">Running</text><text class="m" x="268" y="62">process is up</text>
+  <rect class="o" x="384" y="20" width="108" height="56" rx="8"/><text class="h" x="394" y="44">Startup ✔</text><text class="m" x="394" y="62">slow-start grace</text>
+  <rect class="g" x="510" y="20" width="108" height="56" rx="8"/><text class="h" x="520" y="44">Ready ✔</text><text class="m" x="520" y="62">readiness ok</text>
+  <rect class="g" x="636" y="20" width="108" height="56" rx="8"/><text class="h" x="646" y="44">In Service</text><text class="m" x="646" y="62">gets traffic</text>
+  <path class="ln" d="M114 48 H130"/><path class="ln" d="M240 48 H256"/><path class="ln" d="M366 48 H382"/><path class="ln" d="M492 48 H508"/><path class="ln" d="M618 48 H634"/>
+  <rect class="r" x="6" y="110" width="360" height="86" rx="8"/><text class="h" x="20" y="134">Liveness fails N times</text><text class="m" x="20" y="154">kubelet RESTARTS the container.</text><text class="m" x="20" y="172">Use for "stuck forever" (deadlock).</text>
+  <rect class="o" x="384" y="110" width="360" height="86" rx="8"/><text class="h" x="398" y="134">Readiness fails</text><text class="m" x="398" y="154">Removed from Service endpoints. NO restart.</text><text class="m" x="398" y="172">Use for "not able to serve right now".</text>
+</svg>
+<figcaption>Startup protects slow boots (it holds the other two off). Readiness gates traffic. Liveness restarts.</figcaption>
+</figure>
+<div class="tablewrap"><table>
+<tr><th>Probe</th><th>Question it answers</th><th>On failure</th></tr>
+<tr><td><code>startupProbe</code></td><td>Has the app finished booting?</td><td>Restart (after its long budget); liveness/readiness wait for it</td></tr>
+<tr><td><code>readinessProbe</code></td><td>Can it take traffic right now?</td><td>Pulled from Service endpoints</td></tr>
+<tr><td><code>livenessProbe</code></td><td>Is it irrecoverably stuck?</td><td>Container restarted</td></tr>
+</table></div>
+<div class="callout warn"><b class="t">Gotcha</b><p>Don't make liveness depend on the database or another service. If the DB hiccups, every pod gets restarted at once and you turn a blip into an outage. Keep liveness cheap and local; put dependencies in readiness.</p></div>
+
+<h3>Requests and limits</h3>
+<figure class="diagram">
+<svg class="d" viewBox="0 0 760 220">
+  <text class="h" x="20" y="24">requests = the scheduler's reservation</text>
+  <rect class="p" x="20" y="40" width="110" height="40" rx="4"/><text x="34" y="65">A 500m</text>
+  <rect class="p" x="130" y="40" width="90" height="40" rx="4"/><text x="144" y="65">B 400m</text>
+  <rect class="p" x="220" y="40" width="70" height="40" rx="4"/><text x="232" y="65">C 300m</text>
+  <rect class="n dash" x="290" y="40" width="70" height="40" rx="4"/><text x="308" y="65">free</text>
+  <text class="m" x="20" y="102">Pods are placed where the SUM of requests fits on the node.</text>
+  <text class="m" x="20" y="120">No node fits → Pending ("Insufficient cpu").</text>
+  <text class="h" x="400" y="24">limits = the kubelet's ceiling</text>
+  <rect class="o" x="400" y="40" width="340" height="36" rx="6"/><text x="414" y="63">CPU over limit → throttled (slower)</text>
+  <rect class="r" x="400" y="84" width="340" height="36" rx="6"/><text x="414" y="107">Memory over limit → OOMKilled (exit 137)</text>
+  <text class="m" x="20" y="170">QoS class (decides who is evicted first under pressure):</text>
+  <text class="m" x="20" y="190">Guaranteed (requests = limits) &gt; Burstable &gt; BestEffort (no requests, evicted first)</text>
+</svg>
+<figcaption>Requests drive <b>scheduling</b> (and HPA math). Limits drive <b>enforcement</b>. CPU is compressible (throttle), memory is not (kill).</figcaption>
+</figure>
+
+<h3>Storage</h3>
+<figure class="diagram">
+<svg class="d" viewBox="0 0 760 190">
+  <rect class="v" x="330" y="8" width="340" height="40" rx="8"/><text x="344" y="33">StorageClass: auto-creates a PV on demand</text>
+  <rect class="p" x="10" y="80" width="140" height="60" rx="8"/><text class="h" x="24" y="106">Pod</text><text class="m" x="24" y="126">mounts a claim</text>
+  <rect class="g" x="170" y="80" width="140" height="60" rx="8"/><text class="h" x="184" y="106">PVC</text><text class="m" x="184" y="126">"I need 1Gi RWO"</text>
+  <rect class="g" x="330" y="80" width="140" height="60" rx="8"/><text class="h" x="344" y="106">PV</text><text class="m" x="344" y="126">the actual volume</text>
+  <rect class="o" x="490" y="80" width="140" height="60" rx="8"/><text class="h" x="504" y="106">Disk</text><text class="m" x="504" y="126">EBS / PD / local</text>
+  <path class="ln" d="M150 110 H168"/><path class="ln" d="M310 110 H328"/><path class="ln" d="M470 110 H488"/><path class="ln" d="M400 48 V78"/>
+  <text class="m" x="10" y="170">Pods come and go; the PVC and PV keep the data. Deleting a StatefulSet does NOT delete its PVCs.</text>
+</svg>
+<figcaption>Pod → PVC (request) → PV (volume) → disk. A StorageClass provisions the PV dynamically.</figcaption>
+</figure>
+
+<h3>Mixed-up pairs interviewers probe</h3>
+<div class="tablewrap"><table>
+<tr><th>Pair</th><th>Difference</th></tr>
+<tr><td>Pod vs Deployment</td><td>A Pod is one instance. A Deployment keeps N pods running and handles updates.</td></tr>
+<tr><td>Service vs Ingress</td><td>Service = stable internal address (L4). Ingress = HTTP routing rules from outside (L7) pointing at Services.</td></tr>
+<tr><td>ConfigMap vs Secret</td><td>Same mechanism; Secret is for sensitive values (base64, tighter RBAC, optional encryption at rest).</td></tr>
+<tr><td>requests vs limits</td><td>Requests = guaranteed/scheduling. Limits = hard ceiling.</td></tr>
+<tr><td>liveness vs readiness</td><td>Liveness restarts. Readiness removes from traffic.</td></tr>
+<tr><td><code>kubectl apply</code> vs <code>create</code></td><td><code>create</code> fails if it exists. <code>apply</code> is declarative, creates or updates (what you use with Git).</td></tr>
+<tr><td>Role vs ClusterRole</td><td>Role is namespaced; ClusterRole is cluster-wide (or reusable across namespaces).</td></tr>
+<tr><td>Docker Compose vs K8s</td><td>Compose: one host, dev/small. K8s: many hosts, self-healing, rollouts, autoscaling, RBAC.</td></tr>
+<tr><td>Helm vs Kustomize</td><td>Helm = templated, packaged, versioned charts. Kustomize = patch plain YAML with overlays. Often used together.</td></tr>
+<tr><td>Taint vs affinity</td><td>Taint (on node) repels pods unless they tolerate it. Affinity (on pod) attracts pods to nodes or each other.</td></tr>
+</table></div>
+
+<h3>kubectl you must know cold</h3>
+<script type="text/plain" class="code" data-lang="bash" data-title="essential kubectl">
+kubectl config current-context                 # WHICH cluster am I about to change? (check before every prod command)
+kubectl get pods -o wide                       # status, node, pod IP     (-A = all namespaces, -n NS, -w = watch)
+kubectl describe pod NAME                      # config + EVENTS at the bottom (answers most "why")
+kubectl logs NAME [-c CONTAINER] [-f] [--previous]   # --previous = the crashed container's logs
+kubectl exec -it NAME -- sh                    # shell inside
+kubectl port-forward svc/web 8080:80           # reach a service from your laptop
+kubectl apply -f app.yaml | -k DIR             # declarative create/update (-k = kustomize)
+kubectl get endpoints web                      # which pod IPs is the Service really sending to?
+kubectl rollout status|history|undo deploy/web # watch / list / roll back a deployment
+kubectl rollout restart deploy/web             # recreate pods (e.g. to pick up a changed Secret)
+kubectl scale deploy/web --replicas=5
+kubectl set image deploy/web nginx=nginx:1.27-alpine
+kubectl top pods | nodes                       # needs metrics-server
+kubectl get events --sort-by=.lastTimestamp
+kubectl debug -it POD --image=busybox --target=CONTAINER   # ephemeral debug container
+kubectl auth can-i list pods --as system:serviceaccount:ns:sa
+kubectl explain deployment.spec.strategy       # built-in docs for any field
+</script>
+
+<!-- ============================ 02 ============================ -->
+<h2 id="s2"><span class="num">02</span>Production best practices</h2>
+<ol class="steps">
+<li><b>Set resource requests and limits on every container.</b> Without requests the scheduler is blind and HPA can't work. Without a memory limit one leak hurts the whole node.</li>
+<li><b>Add readiness and liveness (and startup for slow apps) probes.</b> Readiness is what makes rolling updates zero-downtime.</li>
+<li><b>Never use <code>:latest</code>.</b> Pin a version or digest, tag images with the git SHA. <code>imagePullPolicy</code> defaults to <code>Always</code> for <code>:latest</code>.</li>
+<li><b>Run replicas ≥ 2</b> for anything user-facing, with <code>topologySpreadConstraints</code> or pod anti-affinity so replicas don't share a node or zone.</li>
+<li><b>Use a PodDisruptionBudget</b> (<code>minAvailable: 1</code>) so node drains and upgrades can't evict all replicas at once.</li>
+<li><b>Autoscale:</b> HPA for pods, Cluster Autoscaler/Karpenter for nodes. HPA needs requests and metrics-server.</li>
+<li><b>Handle shutdown gracefully:</b> handle SIGTERM, add a short <code>preStop</code> sleep, set <code>terminationGracePeriodSeconds</code> above your longest request.</li>
+<li><b>Use namespaces + ResourceQuota/LimitRange</b> to separate teams and environments and cap blast radius.</li>
+<li><b>RBAC with least privilege.</b> One ServiceAccount per app, no <code>cluster-admin</code> for workloads, disable token automount if the pod doesn't call the API.</li>
+<li><b>Harden pods:</b> <code>runAsNonRoot</code>, <code>readOnlyRootFilesystem</code>, <code>allowPrivilegeEscalation: false</code>, <code>capabilities.drop: [ALL]</code>, Pod Security Standards (<code>restricted</code>).</li>
+<li><b>NetworkPolicies:</b> default deny, then allow only the flows you need (and DNS egress).</li>
+<li><b>Keep config out of images:</b> ConfigMaps/Secrets, one image for every environment; per-env differences via Kustomize overlays or Helm values.</li>
+<li><b>Ship via GitOps</b> (Argo CD / Flux): Git is the source of truth, rollbacks are <code>git revert</code>.</li>
+<li><b>Observe:</b> logs to stdout (collected by Fluent Bit/Loki), metrics (Prometheus + Grafana), alerts on restarts, Pending pods and error rates.</li>
+</ol>
+
+<h3>Zero-downtime shutdown: the race to know</h3>
+<figure class="diagram">
+<svg class="d" viewBox="0 0 760 210">
+  <text class="h" x="10" y="22">Pod is deleted (rolling update, drain, scale-down). Two things start at the same moment:</text>
+  <rect class="o" x="10" y="40" width="390" height="40" rx="6"/><text x="24" y="65">A. removed from Service endpoints (takes time to propagate)</text>
+  <rect class="v" x="10" y="100" width="160" height="40" rx="6"/><text x="24" y="125">B. preStop: sleep 10</text>
+  <rect class="g" x="180" y="100" width="200" height="40" rx="6"/><text x="194" y="125">SIGTERM → app drains</text>
+  <rect class="r" x="390" y="100" width="250" height="40" rx="6"/><text x="404" y="125">grace period (30 s) ends → SIGKILL</text>
+  <path class="ln" d="M170 120 H178"/><path class="ln" d="M380 120 H388"/>
+  <text class="m" x="10" y="172">Without the preStop sleep, SIGTERM can arrive while proxies still route requests to this pod, which causes 502s during deploys.</text>
+  <text class="m" x="10" y="190">The sleep gives A time to finish before B starts shutting the app down.</text>
+</svg>
+<figcaption>The classic cause of errors during rollouts.</figcaption>
+</figure>
+
+<h3>Security checklist</h3>
+<ul class="checklist">
+<li>Non-root, read-only root filesystem, no privilege escalation, capabilities dropped</li>
+<li>Pinned image tags/digests; images scanned in CI (Trivy/Grype); signed if possible</li>
+<li>Secrets encrypted at rest or from an external manager; not committed to Git</li>
+<li>RBAC least privilege; no wildcard roles; audit logging on</li>
+<li>NetworkPolicies default-deny</li>
+<li>Namespaces with ResourceQuota/LimitRange</li>
+<li>API server not exposed publicly; admin access via SSO/IAM, short-lived credentials</li>
+<li>Regular upgrades (control plane + nodes); etcd backups tested</li>
+</ul>
+
+<!-- ============================ 03 ============================ -->
+<h2 id="s3"><span class="num">03</span>Real-world scenarios</h2>
+
+<h3>From Docker Compose to Kubernetes</h3>
+<p>You already know Compose, so map it. This is a strong answer to "how would you migrate?".</p>
+<div class="tablewrap"><table>
+<tr><th>Compose</th><th>Kubernetes</th></tr>
+<tr><td><code>services: api:</code></td><td>Deployment (+ Service for a stable name)</td></tr>
+<tr><td>service name as DNS (<code>http://api:3000</code>)</td><td>Service name as DNS (same idea; add <code>.namespace</code> across namespaces)</td></tr>
+<tr><td><code>ports: "8080:80"</code></td><td>Service + Ingress (or LoadBalancer)</td></tr>
+<tr><td><code>environment:</code> / <code>env_file</code></td><td>ConfigMap / Secret → env</td></tr>
+<tr><td><code>volumes: pgdata:</code></td><td>PVC (StatefulSet <code>volumeClaimTemplates</code> for DBs)</td></tr>
+<tr><td><code>healthcheck:</code></td><td>readiness / liveness / startup probes</td></tr>
+<tr><td><code>depends_on: service_healthy</code></td><td>No equivalent. Use readiness probes, init containers, and retries in code</td></tr>
+<tr><td><code>deploy.resources.limits</code></td><td><code>resources.requests/limits</code></td></tr>
+<tr><td><code>restart: unless-stopped</code></td><td>Built in: controllers always recreate pods</td></tr>
+<tr><td><code>--scale api=3</code></td><td><code>replicas: 3</code> (or HPA)</td></tr>
+</table></div>
+<div class="callout tip"><b class="t">Tooling</b><p><code>kompose convert</code> can bootstrap manifests from a Compose file. Treat the output as a draft, since you'll still add probes, resources and security settings.</p></div>
+
+<h3>Monolith on Kubernetes</h3>
+<p>One Deployment (with a readiness probe), one Service, an Ingress, config in a ConfigMap/Secret, and a managed database outside the cluster (RDS/Cloud SQL) or a StatefulSet. You gain rolling updates, restart-on-failure, and horizontal scaling for free, even without splitting the app.</p>
+
+<h3>Microservices on Kubernetes</h3>
+<figure class="diagram">
+<svg class="d" viewBox="0 0 760 320">
+  <rect class="n" x="10" y="135" width="110" height="50" rx="8"/><text x="32" y="165">Ingress</text>
+  <rect class="g dash" x="150" y="10" width="600" height="300" rx="12"/><text class="m" x="164" y="30">namespace: shop</text>
+  <rect class="p" x="180" y="50" width="160" height="64" rx="8"/><text class="h" x="194" y="76">users</text><text class="m" x="194" y="96">Service + Deployment ×2</text>
+  <rect class="p" x="180" y="200" width="160" height="64" rx="8"/><text class="h" x="194" y="226">orders</text><text class="m" x="194" y="246">Deployment ×2 + HPA</text>
+  <rect class="o" x="570" y="50" width="160" height="64" rx="8"/><text class="h" x="584" y="76">users-db</text><text class="m" x="584" y="96">StatefulSet + PVC</text>
+  <rect class="o" x="570" y="200" width="160" height="64" rx="8"/><text class="h" x="584" y="226">orders-db</text><text class="m" x="584" y="246">StatefulSet + PVC</text>
+  <path class="ln" d="M120 150 L178 90"/><path class="ln" d="M120 170 L178 228"/>
+  <path class="ln" d="M260 200 V116"/><text class="m" x="270" y="162">http://users:3000</text>
+  <path class="ln" d="M340 82 H568"/><path class="ln" d="M340 232 H568"/>
+  <text class="m" x="360" y="150">NetworkPolicy: only orders → users</text>
+  <text class="m" x="360" y="170">ConfigMap/Secret → env · own DB per service</text>
+</svg>
+<figcaption>Same rules as Docker microservices: database per service, call by service name, expose only the edge. Kubernetes adds autoscaling, policies and rollouts per service.</figcaption>
+</figure>
+<ul>
+<li><b>One Deployment + Service per microservice</b>, versioned and rolled out independently.</li>
+<li><b>Service discovery is built in</b> (cluster DNS). Cross-namespace: <code>users.shop.svc.cluster.local</code>.</li>
+<li><b>Service mesh</b> (Istio, Linkerd) adds mTLS, retries, traffic splitting, and tracing without code changes. Mention it as "when you need it", not by default.</li>
+<li><b>Resilience still lives in your code or mesh:</b> timeouts, retries with backoff, circuit breakers. Kubernetes doesn't add those.</li>
+</ul>
+
+<h3>Deployment strategies</h3>
+<div class="tablewrap"><table>
+<tr><th>Strategy</th><th>How</th><th>Trade-off</th></tr>
+<tr><td><b>Rolling</b> (default)</td><td>Replace pods gradually (<code>maxSurge</code>, <code>maxUnavailable</code>)</td><td>Simple, no extra capacity; both versions live briefly, so be backward-compatible</td></tr>
+<tr><td><b>Recreate</b></td><td>Kill all, then start new</td><td>Downtime; use when versions can't coexist</td></tr>
+<tr><td><b>Blue/green</b></td><td>Run a full second copy, flip the Service selector or Ingress</td><td>Instant rollback; double the resources</td></tr>
+<tr><td><b>Canary</b></td><td>Send 5% to the new version, then increase</td><td>Safest; needs traffic splitting (Argo Rollouts, ingress annotations, mesh)</td></tr>
+</table></div>
+<figure class="diagram">
+<svg class="d" viewBox="0 0 760 250">
+  <text class="h" x="10" y="38">1. Steady state</text>
+  <rect class="p" x="230" y="14" width="100" height="36" rx="6"/><text x="266" y="37">v1</text>
+  <rect class="p" x="340" y="14" width="100" height="36" rx="6"/><text x="376" y="37">v1</text>
+  <rect class="p" x="450" y="14" width="100" height="36" rx="6"/><text x="486" y="37">v1</text>
+  <text class="h" x="10" y="88">2. Surge +1</text>
+  <rect class="p" x="230" y="64" width="100" height="36" rx="6"/><text x="266" y="87">v1</text>
+  <rect class="p" x="340" y="64" width="100" height="36" rx="6"/><text x="376" y="87">v1</text>
+  <rect class="p" x="450" y="64" width="100" height="36" rx="6"/><text x="486" y="87">v1</text>
+  <rect class="o dash" x="560" y="64" width="100" height="36" rx="6"/><text x="580" y="87">v2 starting</text>
+  <text class="h" x="10" y="138">3. v2 Ready → stop 1 old</text>
+  <rect class="p" x="230" y="114" width="100" height="36" rx="6"/><text x="266" y="137">v1</text>
+  <rect class="p" x="340" y="114" width="100" height="36" rx="6"/><text x="376" y="137">v1</text>
+  <rect class="r dash" x="450" y="114" width="100" height="36" rx="6"/><text x="466" y="137">v1 stopping</text>
+  <rect class="g" x="560" y="114" width="100" height="36" rx="6"/><text x="590" y="137">v2 ✔</text>
+  <text class="h" x="10" y="188">4. Repeat → done</text>
+  <rect class="g" x="230" y="164" width="100" height="36" rx="6"/><text x="266" y="187">v2</text>
+  <rect class="g" x="340" y="164" width="100" height="36" rx="6"/><text x="376" y="187">v2</text>
+  <rect class="g" x="450" y="164" width="100" height="36" rx="6"/><text x="486" y="187">v2</text>
+  <text class="m" x="10" y="232">maxSurge: 1, maxUnavailable: 0 → never fewer than 3 Ready pods, as long as readiness probes are correct.</text>
+</svg>
+<figcaption>A rolling update with <code>maxSurge: 1, maxUnavailable: 0</code>. It's only safe if readiness probes tell the truth.</figcaption>
+</figure>
+
+<h3>Autoscaling: three layers</h3>
+<ul>
+<li><b>HPA</b> (Horizontal Pod Autoscaler): more/fewer pods based on CPU, memory or custom metrics. Formula: <code>desired = ceil(current × currentMetric / target)</code>. Needs metrics-server and CPU <i>requests</i>.</li>
+<li><b>VPA</b>: adjusts a pod's requests/limits (don't combine with HPA on the same metric).</li>
+<li><b>Cluster Autoscaler / Karpenter</b>: adds nodes when pods are <code>Pending</code> for lack of resources, and removes idle ones.</li>
+</ul>
+
+<h3>Config per environment: Helm vs Kustomize</h3>
+<p><b>Kustomize</b>: base YAML + overlays (<code>dev</code>, <code>prod</code>) that patch replicas, images, resources. No templating, built into <code>kubectl -k</code>. <b>Helm</b>: templated packages (charts) with <code>values.yaml</code>, versioned releases and rollbacks; great for installing third-party software (ingress-nginx, Prometheus). Common combo: Helm for third-party, Kustomize for your own apps.</p>
+
+<h3>GitOps delivery</h3>
+<figure class="diagram">
+<svg class="d" viewBox="0 0 760 170">
+  <rect class="n" x="6" y="30" width="136" height="64" rx="8"/><text class="h" x="18" y="56">git push</text><text class="m" x="18" y="76">app repo</text>
+  <rect class="p" x="162" y="30" width="136" height="64" rx="8"/><text class="h" x="174" y="56">CI</text><text class="m" x="174" y="76">test · build · scan</text>
+  <rect class="v" x="318" y="30" width="136" height="64" rx="8"/><text class="h" x="330" y="56">Registry + Git</text><text class="m" x="330" y="76">image + manifest PR</text>
+  <rect class="o" x="474" y="30" width="136" height="64" rx="8"/><text class="h" x="486" y="56">Argo CD / Flux</text><text class="m" x="486" y="76">pulls and syncs</text>
+  <rect class="g" x="630" y="30" width="120" height="64" rx="8"/><text class="h" x="642" y="56">Cluster</text><text class="m" x="642" y="76">rolling update ✔</text>
+  <path class="ln" d="M142 62 H160"/><path class="ln" d="M298 62 H316"/><path class="ln" d="M454 62 H472"/><path class="ln" d="M610 62 H628"/>
+  <text class="m" x="6" y="130">Git is the source of truth. Rollback = git revert. Manual drift in the cluster is detected and corrected.</text>
+</svg>
+<figcaption>The cluster pulls desired state from Git, so CI never needs cluster credentials.</figcaption>
+</figure>
+
+<h3>Managed vs self-managed</h3>
+<p>EKS, GKE and AKS run the control plane for you (upgrades, etcd, HA). You manage nodes (or use serverless/auto modes), networking add-ons and workloads. Self-managing (kubeadm, k3s) is for on-prem or learning. In most interviews: "managed unless there's a reason not to".</p>
+
+<!-- ============================ 04 ============================ -->
+<h2 id="s4"><span class="num">04</span>34 common bugs and fixes</h2>
+<p>Tell these as stories: "I hit X, diagnosed it with Y, fixed it with Z." Search by status or error text.</p>
+<div id="bugs-list"></div>
+
+<h3>Your universal debugging flow</h3>
+<figure class="diagram">
+<svg class="d" viewBox="0 0 760 220">
+  <rect class="p" x="6" y="20" width="138" height="66" rx="8"/><text class="h" x="16" y="44">1. Status</text><text class="m" x="16" y="64">get pods -o wide</text>
+  <rect class="p" x="156" y="20" width="138" height="66" rx="8"/><text class="h" x="166" y="44">2. Events</text><text class="m" x="166" y="64">describe pod</text>
+  <rect class="p" x="306" y="20" width="138" height="66" rx="8"/><text class="h" x="316" y="44">3. Logs</text><text class="m" x="316" y="64">logs --previous</text>
+  <rect class="p" x="456" y="20" width="138" height="66" rx="8"/><text class="h" x="466" y="44">4. Inside</text><text class="m" x="466" y="64">exec / debug</text>
+  <rect class="p" x="606" y="20" width="148" height="66" rx="8"/><text class="h" x="616" y="44">5. Network</text><text class="m" x="616" y="64">get endpoints</text>
+  <path class="ln" d="M144 53 H154"/><path class="ln" d="M294 53 H304"/><path class="ln" d="M444 53 H454"/><path class="ln" d="M594 53 H604"/>
+  <rect class="o" x="156" y="120" width="290" height="66" rx="8"/><text class="h" x="168" y="144">6. Cluster-wide</text><text class="m" x="168" y="164">get events -A · top pods · describe quota</text>
+  <rect class="o" x="466" y="120" width="288" height="66" rx="8"/><text class="h" x="478" y="144">7. Node</text><text class="m" x="478" y="164">describe node · cordon · drain</text>
+  <path class="ln" d="M446 153 H464"/>
+</svg>
+<figcaption>Read the STATUS word first: <b>Pending</b> = scheduling/volumes, <b>ImagePullBackOff</b> = image, <b>CrashLoopBackOff</b> = the app, <b>0/1 Ready</b> = readiness probe.</figcaption>
+</figure>
+<div class="tablewrap"><table>
+<tr><th>Status you see</th><th>Look first at</th></tr>
+<tr><td><code>Pending</code></td><td><code>describe pod</code> Events: resources, taints, unbound PVC</td></tr>
+<tr><td><code>ImagePullBackOff / ErrImagePull</code></td><td>Image name/tag, registry credentials</td></tr>
+<tr><td><code>CrashLoopBackOff</code></td><td><code>logs --previous</code>, exit code in describe</td></tr>
+<tr><td><code>CreateContainerConfigError</code></td><td>Missing ConfigMap/Secret/key</td></tr>
+<tr><td><code>Running</code> but <code>0/1</code> Ready</td><td>Readiness probe path/port, app startup time</td></tr>
+<tr><td><code>OOMKilled</code> / exit 137</td><td>Memory limit vs real usage</td></tr>
+<tr><td><code>Terminating</code> forever</td><td>Finalizers, unreachable node, app ignoring SIGTERM</td></tr>
+<tr><td><code>Evicted</code></td><td>Node pressure; add requests/limits</td></tr>
+</table></div>
+
+<!-- ============================ 05 ============================ -->
+<h2 id="s5"><span class="num">05</span>Interview Q&amp;A</h2>
+<p>Click a question, answer out loud first, then reveal. Use 🎲 to practice randomly.</p>
+<div id="qa-list"></div>
+<div class="callout say"><b class="t">"Tell me about your Kubernetes experience" (template)</b>
+<p>"I deployed a Node API and a Spring Boot service to Kubernetes using Deployments, Services and an Ingress, with config in ConfigMaps and Secrets and readiness, liveness and startup probes. I set resource requests and limits and added an HPA. I hit a rollout that stalled because the readiness probe pointed at the wrong path, so new pods never became Ready. <code>kubectl describe</code> showed the probe failures, I fixed the path, and <code>rollout undo</code> gave me a safe rollback in the meantime. I ran Postgres as a StatefulSet with a PVC, and I used a preStop hook so deploys didn't drop requests."</p></div>
+
+<!-- ============================ LABS ============================ -->
+<h2 id="labs"><span class="num">06</span>Hands-on labs</h2>
+<div class="callout warn"><b class="t">Honest status of these labs</b>
+<p>All manifests were parse-checked and, for Labs 2 and 3, rendered with <code>kubectl kustomize</code>. They were <b>not run on a live cluster</b> here (no cluster was available), so the "you should see" notes describe expected behavior. If anything differs on your cluster, treat it as a bonus debugging exercise. All files are in <code>interview-prep/backend-engineering/tools/kubernetes/labs/</code>.</p></div>
+
+<h3>Lab 0: get a local cluster (pick one)</h3>
+<div class="tablewrap"><table>
+<tr><th>Option</th><th>How</th><th>Notes</th></tr>
+<tr><td><b>Docker Desktop</b></td><td>Settings → Kubernetes → Enable</td><td>Easiest if you already have it. Single node. No metrics-server by default.</td></tr>
+<tr><td><b>kind</b></td><td><code>kind create cluster</code></td><td>Clusters in containers; load local images with <code>kind load docker-image</code>.</td></tr>
+<tr><td><b>minikube</b></td><td><code>minikube start</code></td><td><code>minikube addons enable metrics-server ingress</code> gives HPA and Ingress easily.</td></tr>
+</table></div>
+<script type="text/plain" class="code" data-lang="bash" data-title="verify">
+kubectl config current-context
+kubectl get nodes          # should show Ready
+kubectl create ns lab      # use a throwaway namespace for experiments
+kubectl config set-context --current --namespace=lab
+</script>
+
+<h3>Lab 1: Deployment + Service (self-healing, scaling, rollouts)</h3>
+<script type="text/plain" class="code" data-lang="yaml" data-title="lab1-deploy/app.yaml">
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  labels: { app: web }
+spec:
+  replicas: 3
+  selector:
+    matchLabels: { app: web }          # must match the pod template labels below
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: { maxSurge: 1, maxUnavailable: 0 }   # never drop below 3 ready pods
+  template:
+    metadata:
+      labels: { app: web }
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.26-alpine     # pinned tag, never :latest
+          ports: [{ containerPort: 80 }]
+          readinessProbe:
+            httpGet: { path: /, port: 80 }
+            periodSeconds: 3
+          resources:
+            requests: { cpu: 50m, memory: 32Mi }
+            limits: { memory: 64Mi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+spec:
+  selector: { app: web }               # routes to every READY pod with this label
+  ports:
+    - port: 80                         # the Service's port
+      targetPort: 80                   # the container's port
+</script>
+<script type="text/plain" class="code" data-lang="bash" data-title="run lab 1">
+cd interview-prep/backend-engineering/tools/kubernetes/labs/lab1-deploy
+kubectl apply -f app.yaml
+kubectl get pods -o wide -w            # Ctrl+C when 3/3 Ready
+kubectl get svc,endpoints web          # endpoints = the 3 pod IPs
+kubectl port-forward svc/web 8080:80   # in another terminal: curl localhost:8080
+</script>
+<ol class="steps">
+<li><b>Self-healing:</b> <code>kubectl delete pod &lt;one-web-pod&gt;</code> → a new one appears within seconds (ReplicaSet controller). Note the new name and IP.</li>
+<li><b>Scale:</b> <code>kubectl scale deploy/web --replicas=5</code>, then check <code>get endpoints web</code>. Scale back to 3.</li>
+<li><b>Rolling update:</b> <code>kubectl set image deploy/web nginx=nginx:1.27-alpine</code> and watch <code>kubectl get pods -w</code>. Note old and new pods overlapping (maxSurge). Then <code>kubectl get rs</code>: two ReplicaSets.</li>
+<li><b>Break it:</b> <code>kubectl set image deploy/web nginx=nginx:1.99-doesnotexist</code> → new pod goes <code>ImagePullBackOff</code>, but the old pods keep serving (maxUnavailable 0). <code>kubectl rollout status deploy/web</code> hangs. Diagnose with <code>describe pod</code>, then recover with <code>kubectl rollout undo deploy/web</code>.</li>
+<li><b>History:</b> <code>kubectl rollout history deploy/web</code>.</li>
+<li><b>Selector mismatch:</b> <code>kubectl edit svc web</code>, change the selector to <code>app: wbe</code> → <code>get endpoints web</code> is empty, curl fails. Explain why, then fix it (Bug #13).</li>
+<li><b>Declarative proof:</b> edit <code>replicas: 2</code> in the file and <code>kubectl apply -f app.yaml</code>. Compare with <code>kubectl scale</code> and say why Git should hold the truth.</li>
+</ol>
+
+<h3>Lab 2: ConfigMap, Secret, probes, resources, security context</h3>
+<p>The app is a tiny dependency-free Node server. Its code travels in a ConfigMap (generated by Kustomize), so there is no image to build.</p>
+<script type="text/plain" class="code" data-lang="javascript" data-title="lab2-config-probes/server.js">
+// Tiny app to demonstrate ConfigMap/Secret injection, probes and load balancing. No dependencies.
+const http = require('http');
+const os = require('os');
+
+const START_DELAY = Number(process.env.STARTUP_DELAY_MS || 5000);
+let ready = false;
+setTimeout(() => { ready = true; console.log('ready'); }, START_DELAY);
+
+const server = http.createServer((req, res) => {
+  if (req.url === '/healthz') { res.end('alive'); return; }                    // liveness
+  if (req.url === '/readyz') {                                                  // readiness
+    res.statusCode = ready ? 200 : 503; res.end(ready ? 'ready' : 'starting'); return;
+  }
+  if (req.url === '/unready') { ready = false; res.end('now NOT ready'); return; }
+  if (req.url === '/crash') { res.end('bye'); setTimeout(() => process.exit(1), 100); return; }
+  res.setHeader('Content-Type', 'application/json');
+  res.end(JSON.stringify({
+    pod: os.hostname(),                                    // changes per pod → proves load balancing
+    greeting: process.env.APP_GREETING || '(unset)',       // from ConfigMap
+    apiKeyConfigured: Boolean(process.env.API_KEY),        // from Secret (never print secrets)
+  }));
+});
+server.listen(3000, '0.0.0.0', () => console.log('listening on 3000'));
+process.on('SIGTERM', () => { console.log('SIGTERM'); server.close(() => process.exit(0)); });
+</script>
+<script type="text/plain" class="code" data-lang="yaml" data-title="lab2-config-probes/deployment.yaml">
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app: api }
+  template:
+    metadata:
+      labels: { app: api }
+    spec:
+      containers:
+        - name: api
+          image: node:20-alpine
+          command: ["node", "/app/server.js"]
+          ports: [{ containerPort: 3000 }]
+          env:
+            - name: APP_GREETING             # single key from a ConfigMap
+              valueFrom:
+                configMapKeyRef: { name: api-settings, key: APP_GREETING }
+            - name: API_KEY                  # single key from a Secret
+              valueFrom:
+                secretKeyRef: { name: api-secret, key: API_KEY }
+            - name: STARTUP_DELAY_MS
+              value: "8000"
+          volumeMounts:
+            - { name: code, mountPath: /app }   # server.js comes from a ConfigMap volume
+          startupProbe:                       # gives slow starters time; disables the others until it passes
+            httpGet: { path: /healthz, port: 3000 }
+            periodSeconds: 2
+            failureThreshold: 15
+          readinessProbe:                     # NOT ready → removed from Service endpoints (no restart)
+            httpGet: { path: /readyz, port: 3000 }
+            periodSeconds: 3
+          livenessProbe:                      # fails → kubelet RESTARTS the container
+            httpGet: { path: /healthz, port: 3000 }
+            periodSeconds: 10
+            failureThreshold: 3
+          resources:
+            requests: { cpu: 50m, memory: 64Mi }
+            limits: { memory: 128Mi }
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000                   # the node image's "node" user
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ["ALL"] }
+      volumes:
+        - name: code
+          configMap:
+            name: api-code                    # name gets a content-hash suffix from kustomize
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api
+spec:
+  selector: { app: api }
+  ports:
+    - { port: 80, targetPort: 3000 }
+</script>
+<script type="text/plain" class="code" data-lang="yaml" data-title="lab2-config-probes/kustomization.yaml">
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - deployment.yaml
+configMapGenerator:
+  - name: api-code
+    files: [server.js]                  # change server.js → new hash → pods roll automatically
+  - name: api-settings
+    literals: [APP_GREETING=hello from a ConfigMap]
+secretGenerator:
+  - name: api-secret
+    literals: [API_KEY=demo-only-not-a-real-secret]
+</script>
+<script type="text/plain" class="code" data-lang="bash" data-title="run lab 2">
+cd interview-prep/backend-engineering/tools/kubernetes/labs/lab2-config-probes
+kubectl kustomize . | head -40         # see what will be applied (names have hash suffixes)
+kubectl apply -k .
+kubectl get pods -w                    # 0/1 for ~8 s (startup delay), then 1/1
+kubectl port-forward svc/api 8080:80   # another terminal: curl localhost:8080 (repeat; see pod names)
+</script>
+<ol class="steps">
+<li><b>Probes in action:</b> watch <code>get pods</code> during the first 8 s. Pods are Running but <b>not Ready</b>. Run <code>kubectl get endpoints api</code> during that window: empty.</li>
+<li><b>Readiness vs liveness:</b> <code>curl localhost:8080/unready</code> on one pod → it drops out of <code>get endpoints api</code>, <b>RESTARTS stays 0</b>. Then <code>curl localhost:8080/crash</code> → the container exits and <b>RESTARTS</b> increases. Explain the difference.</li>
+<li><b>Config injection:</b> the JSON shows <code>greeting</code> and <code>apiKeyConfigured: true</code>. Decode the secret: <code>kubectl get secret -o jsonpath='{.items[0].data.API_KEY}' | base64 -d</code>. Say why base64 is not encryption.</li>
+<li><b>ConfigMap change → rollout:</b> edit the literal in <code>kustomization.yaml</code>, <code>kubectl apply -k .</code>, and watch a rolling update start by itself. The hash-suffixed name changed, so the Deployment spec changed.</li>
+<li><b>Resources:</b> lower the memory limit to <code>16Mi</code>, apply → <code>describe pod</code> shows <code>OOMKilled</code> / exit 137 (Bug #6). Put it back.</li>
+<li><b>Security context:</b> <code>kubectl exec deploy/api -- id</code> shows uid 1000. Try <code>kubectl exec deploy/api -- touch /x</code> → fails (read-only root FS).</li>
+<li><b>Break it:</b> change <code>configMapKeyRef.key</code> to <code>NOPE</code> → pod goes <code>CreateContainerConfigError</code> (Bug #4). Read the event, fix it.</li>
+</ol>
+
+<h3>Lab 3: Microservices (users + orders), DNS, HPA, NetworkPolicy</h3>
+<p>The same two services as the Docker Lab 4, now with Deployments and Services. <code>orders</code> calls <code>http://users:3000</code>, resolved by cluster DNS.</p>
+<script type="text/plain" class="code" data-lang="yaml" data-title="lab3-microservices/kustomization.yaml">
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: shop
+resources:
+  - namespace.yaml
+  - services.yaml
+  - hpa.yaml
+  - networkpolicy.yaml
+configMapGenerator:
+  - name: users-code
+    files: [users/server.js]
+  - name: orders-code
+    files: [orders/server.js]
+</script>
+<script type="text/plain" class="code" data-lang="yaml" data-title="lab3-microservices/services.yaml">
+# Two Deployments + two ClusterIP Services. orders reaches users at http://users:3000 (cluster DNS).
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: users }
+spec:
+  replicas: 2
+  selector: { matchLabels: { app: users } }
+  template:
+    metadata: { labels: { app: users, tier: backend } }
+    spec:
+      containers:
+        - name: users
+          image: node:20-alpine
+          command: ["node", "/app/server.js"]
+          ports: [{ containerPort: 3000 }]
+          volumeMounts: [{ name: code, mountPath: /app }]
+          readinessProbe: { httpGet: { path: /health, port: 3000 }, periodSeconds: 3 }
+          livenessProbe:  { httpGet: { path: /health, port: 3000 }, periodSeconds: 10 }
+          resources:
+            requests: { cpu: 50m, memory: 48Mi }
+            limits: { memory: 96Mi }
+      volumes:
+        - { name: code, configMap: { name: users-code } }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: users }
+spec:
+  selector: { app: users }
+  ports: [{ port: 3000, targetPort: 3000 }]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: orders }
+spec:
+  replicas: 2
+  selector: { matchLabels: { app: orders } }
+  template:
+    metadata: { labels: { app: orders, tier: backend } }
+    spec:
+      containers:
+        - name: orders
+          image: node:20-alpine
+          command: ["node", "/app/server.js"]
+          env:
+            - { name: USERS_URL, value: "http://users:3000" }   # Service name, same namespace
+          ports: [{ containerPort: 3000 }]
+          volumeMounts: [{ name: code, mountPath: /app }]
+          readinessProbe: { httpGet: { path: /health, port: 3000 }, periodSeconds: 3 }
+          livenessProbe:  { httpGet: { path: /health, port: 3000 }, periodSeconds: 10 }
+          resources:
+            requests: { cpu: 50m, memory: 48Mi }
+            limits: { memory: 96Mi }
+      volumes:
+        - { name: code, configMap: { name: orders-code } }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: orders }
+spec:
+  selector: { app: orders }
+  ports: [{ port: 3000, targetPort: 3000 }]
+</script>
+<script type="text/plain" class="code" data-lang="yaml" data-title="lab3-microservices/hpa.yaml + networkpolicy.yaml + namespace.yaml">
+# --- hpa.yaml --- needs metrics-server; utilization is measured against the CPU *request*
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata: { name: orders }
+spec:
+  scaleTargetRef: { apiVersion: apps/v1, kind: Deployment, name: orders }
+  minReplicas: 2
+  maxReplicas: 6
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target: { type: Utilization, averageUtilization: 60 }
+---
+# --- networkpolicy.yaml --- only "orders" may call "users" (needs a CNI that enforces policies)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: { name: users-only-from-orders }
+spec:
+  podSelector: { matchLabels: { app: users } }
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector: { matchLabels: { app: orders } }
+      ports: [{ port: 3000 }]
+---
+# --- namespace.yaml ---
+apiVersion: v1
+kind: Namespace
+metadata: { name: shop }
+</script>
+<p class="small">On disk these are separate files (<code>hpa.yaml</code>, <code>networkpolicy.yaml</code>, <code>namespace.yaml</code>) plus <code>users/server.js</code> and <code>orders/server.js</code> (identical to the Docker Lab 4 services) and an optional <code>ingress.yaml</code>.</p>
+<script type="text/plain" class="code" data-lang="bash" data-title="run lab 3">
+cd interview-prep/backend-engineering/tools/kubernetes/labs/lab3-microservices
+kubectl apply -k .
+kubectl get all -n shop
+kubectl port-forward -n shop svc/orders 8081:3000    # another terminal:
+curl localhost:8081/orders/1                         # orders → users via DNS
+</script>
+<ol class="steps">
+<li><b>Service DNS:</b> <code>kubectl run -n shop dns --rm -it --image=busybox:1.36 -- nslookup users</code> → resolves to the ClusterIP. Then try <code>nslookup users.shop.svc.cluster.local</code> from the <code>default</code> namespace and plain <code>users</code> from <code>default</code> (fails, so explain why: Bug #16).</li>
+<li><b>Resilience:</b> <code>kubectl scale -n shop deploy/users --replicas=0</code> → <code>curl /orders/1</code> returns the 502 JSON from the app, and <code>get endpoints users</code> is empty. Scale back up and it recovers with no restart of orders.</li>
+<li><b>Load balancing:</b> scale users to 3 and watch <code>get endpoints -n shop users</code> list 3 IPs.</li>
+<li><b>HPA:</b> <code>kubectl get hpa -n shop</code>. If it shows <code>&lt;unknown&gt;</code> you don't have metrics-server (Bug #27). Install it, then generate load: <code>kubectl run -n shop load --rm -it --image=busybox:1.36 -- sh -c "while true; do wget -qO- http://orders:3000/orders/1 &gt;/dev/null; done"</code> and watch replicas grow.</li>
+<li><b>NetworkPolicy</b> (only on a CNI that enforces it, e.g. Calico/Cilium): from a temporary pod without the <code>app=orders</code> label, <code>wget -qO- -T2 http://users:3000/health</code> should time out.</li>
+<li><b>Ingress (optional):</b> install ingress-nginx, apply <code>ingress.yaml</code>, then <code>curl -H "Host: shop.localhost" http://localhost/orders/1</code>. Explain the role of the controller vs the Ingress object.</li>
+<li><b>Rolling update on a code change:</b> edit <code>users/server.js</code> (e.g. add a user), <code>kubectl apply -k .</code> → the ConfigMap hash changes → users pods roll automatically.</li>
+</ol>
+
+<h3>Lab 4: StatefulSet Postgres with persistent storage</h3>
+<script type="text/plain" class="code" data-lang="yaml" data-title="lab4-stateful-postgres/postgres.yaml">
+apiVersion: v1
+kind: Secret
+metadata: { name: pg-secret }
+type: Opaque
+stringData: { POSTGRES_PASSWORD: demo-only-change-me }   # stringData = plain text here, stored base64 by the API
+---
+apiVersion: v1
+kind: Service
+metadata: { name: pg }
+spec:
+  clusterIP: None                      # HEADLESS: DNS returns pod IPs → stable name pg-0.pg
+  selector: { app: pg }
+  ports: [{ port: 5432 }]
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata: { name: pg }
+spec:
+  serviceName: pg                      # ties pods to the headless Service for stable DNS
+  replicas: 1
+  selector: { matchLabels: { app: pg } }
+  template:
+    metadata: { labels: { app: pg } }
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          ports: [{ containerPort: 5432 }]
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom: { secretKeyRef: { name: pg-secret, key: POSTGRES_PASSWORD } }
+            - name: PGDATA                          # sub-dir avoids the volume's lost+found breaking initdb
+              value: /var/lib/postgresql/data/pgdata
+          readinessProbe:
+            exec: { command: ["pg_isready", "-U", "postgres"] }
+            periodSeconds: 5
+          resources:
+            requests: { cpu: 100m, memory: 128Mi }
+            limits: { memory: 256Mi }
+          volumeMounts: [{ name: data, mountPath: /var/lib/postgresql/data }]
+  volumeClaimTemplates:                # one PVC per pod: data-pg-0, data-pg-1 …
+    - metadata: { name: data }
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources: { requests: { storage: 1Gi } }
+</script>
+<script type="text/plain" class="code" data-lang="bash" data-title="run lab 4">
+cd interview-prep/backend-engineering/tools/kubernetes/labs/lab4-stateful-postgres
+kubectl apply -f postgres.yaml
+kubectl get pods,pvc -w                                  # pg-0 Running 1/1; PVC data-pg-0 Bound
+kubectl exec -it pg-0 -- psql -U postgres -c "create table t(i int); insert into t values (42);"
+kubectl delete pod pg-0                                  # StatefulSet recreates the SAME name
+kubectl exec -it pg-0 -- psql -U postgres -c "select * from t;"    # row 42 survived
+</script>
+<ol class="steps">
+<li><b>Persistence:</b> run the commands above. The pod was destroyed but the data survived because the same PVC (<code>data-pg-0</code>) re-attached to the new <code>pg-0</code>.</li>
+<li><b>Stable identity:</b> <code>kubectl run -it --rm c --image=busybox:1.36 -- nslookup pg-0.pg</code>. Explain headless Service + StatefulSet DNS.</li>
+<li><b>PVC outlives the StatefulSet:</b> <code>kubectl delete sts pg</code> then <code>kubectl get pvc</code> → still there. Re-apply and the data returns. Say why that is a safety feature (and when you must delete PVCs manually).</li>
+<li><b>Break it:</b> remove the <code>PGDATA</code> env var on a cluster whose volume has <code>lost+found</code> → initdb error (Bug #23).</li>
+<li><b>Discuss:</b> why many teams use a managed DB (RDS/Cloud SQL) or an operator (CloudNativePG, Zalando) instead of a hand-written StatefulSet: backups, failover, upgrades.</li>
+</ol>
+
+<h3>Lab 5: Troubleshooting dojo (six broken workloads)</h3>
+<p>Apply the file, then find and fix each problem using only <code>get</code>, <code>describe</code>, <code>logs</code> and <code>get endpoints</code>. Try before opening the answers.</p>
+<script type="text/plain" class="code" data-lang="yaml" data-title="lab5-broken/broken.yaml">
+# TROUBLESHOOTING DOJO: six deliberately broken workloads. Apply, diagnose, fix.
+#   kubectl create ns dojo && kubectl apply -f broken.yaml -n dojo && kubectl get pods -n dojo
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: b1 }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: b1 } }
+  template:
+    metadata: { labels: { app: b1 } }
+    spec:
+      containers:
+        - { name: web, image: "nginx:1.26-alpne" }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: b2 }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: b2 } }
+  template:
+    metadata: { labels: { app: b2 } }
+    spec:
+      containers:
+        - name: job
+          image: busybox:1.36
+          command: ["sh", "-c", "echo 'starting'; echo 'DB_URL not set' >&2; exit 1"]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: b3 }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: b3 } }
+  template:
+    metadata: { labels: { app: b3 } }
+    spec:
+      containers:
+        - name: web
+          image: nginx:1.26-alpine
+          resources:
+            requests: { cpu: "64", memory: 512Gi }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: b4 }
+spec:
+  replicas: 2
+  selector: { matchLabels: { app: b4 } }
+  template:
+    metadata: { labels: { app: b4 } }
+    spec:
+      containers:
+        - { name: web, image: "nginx:1.26-alpine", ports: [{ containerPort: 80 }] }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: b4 }
+spec:
+  selector: { app: b-4 }
+  ports: [{ port: 80, targetPort: 80 }]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: b5 }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: b5 } }
+  template:
+    metadata: { labels: { app: b5 } }
+    spec:
+      containers:
+        - name: web
+          image: nginx:1.26-alpine
+          envFrom:
+            - configMapRef: { name: does-not-exist }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: b6 }
+spec:
+  replicas: 2
+  selector: { matchLabels: { app: b6 } }
+  template:
+    metadata: { labels: { app: b6 } }
+    spec:
+      containers:
+        - name: web
+          image: nginx:1.26-alpine
+          ports: [{ containerPort: 80 }]
+          readinessProbe:
+            httpGet: { path: /healthz, port: 80 }
+            periodSeconds: 3
+</script>
+<details class="acc"><summary>Answers (try first!)</summary><div class="body">
+<div class="tablewrap"><table>
+<tr><th>#</th><th>Status you see</th><th>Cause</th><th>Fix</th></tr>
+<tr><td>b1</td><td><code>ErrImagePull</code> → <code>ImagePullBackOff</code></td><td>Typo in tag: <code>1.26-alpne</code>. Event: "manifest unknown".</td><td>Fix to <code>1.26-alpine</code>, apply.</td></tr>
+<tr><td>b2</td><td><code>CrashLoopBackOff</code></td><td>Command prints "DB_URL not set" and exits 1. <code>logs --previous</code> shows it.</td><td>Provide <code>DB_URL</code> (env/ConfigMap) or fix the command.</td></tr>
+<tr><td>b3</td><td><code>Pending</code></td><td>Requests 64 CPUs and 512Gi; Event: "Insufficient cpu / memory".</td><td>Request realistic values (e.g. <code>100m</code> / <code>128Mi</code>).</td></tr>
+<tr><td>b4</td><td>Pods Running, Service unreachable</td><td>Selector <code>app: b-4</code> ≠ pod label <code>app: b4</code>. <code>get endpoints b4</code> is empty.</td><td>Fix the selector.</td></tr>
+<tr><td>b5</td><td><code>CreateContainerConfigError</code></td><td>ConfigMap <code>does-not-exist</code> missing. Event says so.</td><td>Create the ConfigMap (or fix the name, or <code>optional: true</code>).</td></tr>
+<tr><td>b6</td><td>Running but <code>0/1</code> Ready</td><td>nginx has no <code>/healthz</code> → 404 → readiness fails. Event: "Readiness probe failed: HTTP probe failed with statuscode: 404".</td><td>Probe <code>/</code> (or add the endpoint).</td></tr>
+</table></div></div></details>
+
+<div class="callout tip"><b class="t">After the labs you can honestly say you've</b>
+<p>Deployed and scaled apps with Deployments and Services · performed and rolled back rolling updates · injected config with ConfigMaps and Secrets and used Kustomize · used startup, readiness and liveness probes, resources and security contexts · wired microservices with cluster DNS, HPA and NetworkPolicy · run Postgres on a StatefulSet with a PVC · diagnosed Pending, ImagePullBackOff, CrashLoopBackOff, config and selector failures.</p></div>
+<script type="text/plain" class="code" data-lang="bash" data-title="cleanup">
+kubectl delete ns lab shop dojo --ignore-not-found
+kubectl delete -f lab4-stateful-postgres/postgres.yaml --ignore-not-found
+kubectl delete pvc data-pg-0 --ignore-not-found     # PVCs are not removed by deleting the StatefulSet
+</script>
+
+<!-- ============================ CHEATSHEET ============================ -->
+<h2 id="cheat"><span class="num">07</span>Last-minute cheatsheet</h2>
+<div class="grid">
+<div class="card"><h4>Mental model</h4><p>Declare desired state; controllers reconcile forever. Pods are disposable.</p></div>
+<div class="card"><h4>Objects</h4><p>Deployment → ReplicaSet → Pod. Service finds pods by label. Ingress routes HTTP to Services.</p></div>
+<div class="card"><h4>Workloads</h4><p>Deployment stateless · StatefulSet identity + disk · DaemonSet per node · Job/CronJob batch.</p></div>
+<div class="card"><h4>Probes</h4><p>Startup holds off the rest · readiness = traffic · liveness = restart. Liveness never checks dependencies.</p></div>
+<div class="card"><h4>Resources</h4><p>Requests = scheduling + HPA. Limits = ceiling. CPU throttles, memory OOMKills (137).</p></div>
+<div class="card"><h4>Config</h4><p>ConfigMap/Secret via env or volume. Env needs a restart. Secrets are base64, not encryption.</p></div>
+<div class="card"><h4>Rollouts</h4><p>maxSurge/maxUnavailable + readiness. <code>rollout status/undo</code>. preStop sleep for zero-downtime.</p></div>
+<div class="card"><h4>Debug</h4><p>get → describe (Events) → logs --previous → exec → get endpoints → events -A → node.</p></div>
+</div>
+</main>
+
+<script>
+window.BUGS = [
+ {n:1,cat:"Pods and images",title:"`ImagePullBackOff` / `ErrImagePull`",why:"Wrong image name or tag (typo), a private registry without credentials, a registry rate limit, or the node can't reach the registry.",fix:"`kubectl describe pod` → Events show the exact pull error. Fix the tag; for private registries create a `docker-registry` Secret and reference it in `imagePullSecrets`; check egress/network and rate limits."},
+ {n:2,cat:"Pods and images",title:"`ErrImageNeverPull` or image not found for a locally built image (kind/minikube)",why:"The image exists in your Docker daemon but not on the cluster nodes, which have their own image store.",fix:"`kind load docker-image app:1.0`, `minikube image load app:1.0`, or push to a registry. Remember `imagePullPolicy` defaults to `Always` for `:latest` and `IfNotPresent` otherwise."},
+ {n:3,cat:"Pods and images",title:"`CrashLoopBackOff`",why:"The container starts and exits repeatedly, and kubelet backs off between restarts. Common causes: missing env var, bad command, can't reach the DB, wrong permissions, port already in use.",fix:"`kubectl logs POD --previous` (the crashed instance) and `describe pod` for the exit code and last state. Fix the root cause. Don't just raise backoff or restart policy."},
+ {n:4,cat:"Pods and images",title:"`CreateContainerConfigError`: `configmap \"x\" not found` / secret key missing",why:"The pod references a ConfigMap, Secret or key that doesn't exist in that namespace (often created later, or in another namespace).",fix:"Create it first, check the name, key and namespace (`kubectl get cm,secret -n NS`). `optional: true` lets the pod start without it."},
+ {n:5,cat:"Pods and images",title:"`exec format error` in a pod",why:"CPU architecture mismatch: an arm64 image on amd64 nodes (or vice versa), often built on an Apple Silicon laptop.",fix:"Build multi-arch (`docker buildx build --platform linux/amd64,linux/arm64`) or target the node arch; `nodeSelector: kubernetes.io/arch`."},
+ {n:6,cat:"Pods and images",title:"OOMKilled / exit code 137, pod restarts under load",why:"The container exceeded its **memory limit**. `describe pod` → Last State: Terminated, Reason: OOMKilled.",fix:"Raise the limit to real needs, fix the leak, and size runtimes to the limit (JVM `-XX:MaxRAMPercentage=75`, Node `--max-old-space-size`). Watch with `kubectl top pod`."},
+ {n:7,cat:"Pods and images",title:"Pod stuck in `Terminating`",why:"A finalizer is blocking deletion, the node is unreachable, the app ignores SIGTERM (waits for the grace period), or a volume won't detach.",fix:"Wait out `terminationGracePeriodSeconds`; inspect `metadata.finalizers`; fix the node. Last resort: `kubectl delete pod X --force --grace-period=0` (dangerous for StatefulSets: it can cause two pods with the same identity)."},
+ {n:8,cat:"Scheduling and resources",title:"Pod `Pending`: `0/3 nodes are available: Insufficient cpu/memory`",why:"The scheduler sums **requests**, not actual usage, and no node has enough unreserved capacity.",fix:"`kubectl describe node` → Allocated resources. Lower over-sized requests, add nodes, or let Cluster Autoscaler add them."},
+ {n:9,cat:"Scheduling and resources",title:"Pod `Pending`: `had untolerated taint` / `didn't match Pod's node affinity/selector`",why:"Nodes are tainted (e.g. control-plane, GPU) or the pod's `nodeSelector`/affinity matches no node label.",fix:"Add a `toleration`, fix the labels (`kubectl get nodes --show-labels`), or remove the constraint."},
+ {n:10,cat:"Scheduling and resources",title:"Pods `Evicted`, node `DiskPressure` / `MemoryPressure`",why:"The node ran low on resources. BestEffort pods (no requests/limits) are evicted first; unbounded logs or ephemeral storage fill disks.",fix:"Set requests/limits (better QoS), add `ephemeral-storage` limits, clean images/logs, right-size nodes."},
+ {n:11,cat:"Scheduling and resources",title:"`exceeded quota` / `must specify limits.cpu`: pod creation rejected",why:"A ResourceQuota or LimitRange in the namespace requires requests/limits or caps the total. The ReplicaSet can't create pods.",fix:"`kubectl describe quota -n NS`, add the required requests/limits, or raise the quota. The error is in the **ReplicaSet** events, not the Deployment."},
+ {n:12,cat:"Scheduling and resources",title:"Node `NotReady`",why:"kubelet stopped reporting: kubelet crashed, network partition, disk/memory exhaustion, runtime failure.",fix:"`kubectl describe node` → Conditions; check kubelet and runtime logs on the node; `cordon`/`drain` and replace the node if needed."},
+ {n:13,cat:"Networking",title:"Service exists but traffic fails; `kubectl get endpoints svc` is empty",why:"The Service **selector doesn't match** the pod labels, or no pod is Ready.",fix:"Compare `kubectl get pods --show-labels` with the Service selector; check readiness with `describe pod`."},
+ {n:14,cat:"Networking",title:"Connection refused through the Service, but the pod is healthy",why:"`targetPort` doesn't match the port the app listens on, or the app binds to `127.0.0.1` instead of `0.0.0.0`.",fix:"Check `targetPort`, then `kubectl exec POD -- netstat -tlnp` (or `ss`). Listen on `0.0.0.0`."},
+ {n:15,cat:"Networking",title:"Pod `Running` but `0/1 Ready`",why:"The readiness probe fails: wrong path/port, app slower to start than the probe allows.",fix:"`describe pod` → \"Readiness probe failed: … 404/connection refused\". Fix path/port; add a `startupProbe` or increase `initialDelaySeconds`/`failureThreshold`."},
+ {n:16,cat:"Networking",title:"`could not resolve host` / `no such host` for another service",why:"A short name like `users` only resolves **within the same namespace**; or CoreDNS is unhealthy.",fix:"Use `users.shop` or `users.shop.svc.cluster.local` across namespaces. Test with `kubectl run -it --rm dns --image=busybox:1.36 -- nslookup users.shop`; check `kubectl get pods -n kube-system -l k8s-app=kube-dns`."},
+ {n:17,cat:"Networking",title:"Ingress returns 404 / 502 / 503",why:"No ingress controller installed, wrong `ingressClassName`, host/path mismatch, Service port wrong, or no ready endpoints behind it.",fix:"`kubectl describe ingress`, controller pod logs, `kubectl get endpoints`. 404 = no rule matched; 502/503 = backend unreachable or not ready."},
+ {n:18,cat:"Networking",title:"`LoadBalancer` Service stays `<pending>` on a local cluster",why:"There's no cloud provider to allocate a load balancer.",fix:"Use `kubectl port-forward`, `minikube tunnel`, MetalLB, kind's port mappings, or an Ingress controller."},
+ {n:19,cat:"Networking",title:"Added a NetworkPolicy and everything broke (or it has no effect)",why:"Once a policy selects a pod, all other traffic of that type is denied, including DNS egress. Or your CNI doesn't enforce NetworkPolicy at all.",fix:"Allow DNS (UDP/TCP 53 to kube-dns) and required flows explicitly; verify your CNI (Calico/Cilium) supports policies."},
+ {n:20,cat:"Config and storage",title:"Changed a ConfigMap/Secret but the app still uses the old value",why:"Env vars are read once at container start; mounted files refresh slowly (~1 min) and the app must re-read them; `subPath` mounts never refresh.",fix:"`kubectl rollout restart deploy/x`; better, make the name content-hashed (Kustomize generators) or add a checksum annotation (Helm) so changes trigger a rollout."},
+ {n:21,cat:"Config and storage",title:"Secret value is wrong: auth fails, hidden newline",why:"Created with `echo` (adds a trailing newline) before base64-encoding, or double-encoded.",fix:"`echo -n`, or use `kubectl create secret generic --from-literal=K=V` / `stringData`. Verify with `kubectl get secret X -o jsonpath='{.data.K}' | base64 -d`."},
+ {n:22,cat:"Config and storage",title:"Pod `Pending`: `unbound immediate PersistentVolumeClaims`",why:"No PV/StorageClass can satisfy the PVC: no default StorageClass, wrong `storageClassName`, no provisioner, or size/access mode mismatch.",fix:"`kubectl get pvc,pv,storageclass`, `describe pvc` events. Set/mark a default StorageClass or install a provisioner."},
+ {n:23,cat:"Config and storage",title:"Postgres on a StatefulSet fails: `initdb: directory exists but is not empty` (lost+found)",why:"The mounted volume's root contains `lost+found`, and initdb refuses a non-empty directory.",fix:"Set `PGDATA=/var/lib/postgresql/data/pgdata` so Postgres uses a subdirectory."},
+ {n:24,cat:"Config and storage",title:"StatefulSet pod stuck `Pending` after a node/zone failure",why:"Block volumes (EBS/PD) are bound to one availability zone; the pod can only run where the volume is.",fix:"Make sure nodes exist in that zone, use `volumeBindingMode: WaitForFirstConsumer`, and plan DR with backups or replication."},
+ {n:25,cat:"Rollouts and scaling",title:"Rollout stuck: `Waiting for rollout to finish: 1 old replicas pending` / `ProgressDeadlineExceeded`",why:"New pods never become Ready: bad image, failing readiness probe, insufficient resources or a missing config.",fix:"`kubectl rollout status`, `describe` the new pod. Recover with `kubectl rollout undo deploy/x`, then fix forward."},
+ {n:26,cat:"Rollouts and scaling",title:"Errors (502/connection reset) during deployments",why:"No/incorrect readiness probe, no graceful shutdown (SIGTERM ignored), propagation lag before the pod leaves endpoints, only one replica, or `maxUnavailable` too high.",fix:"Correct readiness probe, handle SIGTERM, add `preStop: sleep 5–10`, ≥2 replicas with a PodDisruptionBudget, `maxUnavailable: 0`."},
+ {n:27,cat:"Rollouts and scaling",title:"HPA shows `<unknown>/60%` and never scales",why:"metrics-server isn't installed, or the pods have no CPU **requests** (utilization is a percentage of requests).",fix:"Install metrics-server (on kind/Docker Desktop it may need `--kubelet-insecure-tls`) and set CPU requests. Check `kubectl top pods`."},
+ {n:28,cat:"Rollouts and scaling",title:"`field is immutable` when applying (selector, Job template, volumeClaimTemplates)",why:"Some fields can't change after creation, like a Deployment's `spec.selector`.",fix:"Delete and recreate the object (with care for traffic), or create a new one and migrate. Design label selectors up front."},
+ {n:29,cat:"Rollouts and scaling",title:"Liveness probe kills a healthy but slow-starting app: restart loop",why:"Liveness starts counting before the app has finished booting; the container is killed repeatedly. Or liveness checks a dependency that blipped.",fix:"Add a `startupProbe`; raise `initialDelaySeconds`/`failureThreshold`; keep liveness local and cheap (no DB calls)."},
+ {n:30,cat:"Cluster and access",title:"`No resources found` / `NotFound` for something that surely exists",why:"kubectl defaults to the `default` namespace (or you're in the wrong context).",fix:"`-n NS` or `-A`; set it permanently with `kubectl config set-context --current --namespace=NS`."},
+ {n:31,cat:"Cluster and access",title:"Applied manifests to the wrong cluster (prod instead of dev)",why:"The current kubectl context pointed at another cluster. A very common, very costly mistake.",fix:"`kubectl config current-context` before every change; show context/namespace in your prompt; use `kubectx`/`kubens`; separate kubeconfigs and read-only prod access; deploy via GitOps rather than laptops."},
+ {n:32,cat:"Cluster and access",title:"`forbidden: User \"x\" cannot list resource \"pods\"` (or a pod gets 403 from the API)",why:"RBAC: the user or ServiceAccount has no Role/ClusterRole binding granting that verb on that resource.",fix:"`kubectl auth can-i list pods --as=...`, then add a Role + RoleBinding (least privilege) and assign a dedicated ServiceAccount to the pod."},
+ {n:33,cat:"Cluster and access",title:"`kubectl port-forward` works but real clients can't connect",why:"port-forward talks straight to a pod/Service through the API server and bypasses Ingress, LoadBalancer and NetworkPolicy, so it doesn't prove the external path works.",fix:"Test each hop: in-cluster call to the Service, then Ingress rules/controller, then DNS and the cloud LB and security groups."},
+ {n:34,cat:"Cluster and access",title:"Everything is slow or flaky after nodes were replaced: workloads rescheduled onto few nodes",why:"No topology spread or anti-affinity, no PodDisruptionBudget: all replicas landed on one node and went down together during a drain.",fix:"Add `topologySpreadConstraints`/anti-affinity and a PDB (`minAvailable`), and test with `kubectl drain`."}
+];
+
+window.QA = [
+ {cat:"Fundamentals",q:"What is Kubernetes and why use it?",a:"An open-source container orchestrator. You declare desired state and controllers keep reality matching it: scheduling, self-healing, scaling, rolling updates and service discovery across many machines."},
+ {cat:"Fundamentals",q:"Docker vs Docker Compose vs Kubernetes?",a:"Docker builds and runs containers. Compose defines multi-container apps on one host. Kubernetes runs them across a cluster with self-healing, autoscaling, rollouts, RBAC and a rich API. You still build images with Docker; Kubernetes runs them."},
+ {cat:"Fundamentals",q:"Explain the architecture.",a:"Control plane: API server (the front door, the only thing talking to etcd), etcd (state), scheduler (picks nodes), controller-manager (reconciliation loops). Worker nodes: kubelet (runs pods), kube-proxy (Service networking), container runtime (containerd)."},
+ {cat:"Fundamentals",q:"What happens when you run `kubectl apply -f deployment.yaml`?",a:"kubectl sends it to the API server, which authenticates, authorizes, validates and stores it in etcd. The Deployment controller creates a ReplicaSet, which creates Pods. The scheduler assigns each pod to a node, the kubelet there pulls the image and starts the container, and the status flows back to the API server."},
+ {cat:"Fundamentals",q:"What is a Pod and why not just a container?",a:"The smallest deployable unit: one or more containers sharing a network namespace (one IP) and volumes, scheduled together. Sidecars and init containers need that shared context. Pods are ephemeral, so you manage them through controllers."},
+ {cat:"Fundamentals",q:"Deployment vs ReplicaSet vs Pod?",a:"A Pod runs the containers. A ReplicaSet keeps N identical pods alive. A Deployment manages ReplicaSets to give declarative updates, rolling updates and rollback. You almost always create Deployments."},
+ {cat:"Fundamentals",q:"What are labels, selectors and namespaces?",a:"Labels are key/value tags; selectors query them, which is how Services find pods and Deployments find their pods. Namespaces are logical partitions for names, RBAC and quotas, not a security boundary by themselves."},
+ {cat:"Networking",q:"How do pods communicate? What's the Kubernetes network model?",a:"Every pod gets its own IP, and any pod can reach any other pod IP directly without NAT. A CNI plugin (Calico, Cilium, Flannel) implements it. Because pod IPs change, you talk to pods through Services."},
+ {cat:"Networking",q:"What are the Service types?",a:"ClusterIP (internal, default), NodePort (port on every node), LoadBalancer (cloud LB), ExternalName (DNS alias), and headless (`clusterIP: None`, DNS returns pod IPs, used with StatefulSets)."},
+ {cat:"Networking",q:"Service vs Ingress?",a:"A Service is a stable internal virtual IP and load balancer for pods. An Ingress is a set of HTTP routing rules (host/path → Service) implemented by an Ingress controller, giving one entry point for many services with TLS, instead of one cloud LB per Service."},
+ {cat:"Networking",q:"How does service discovery and DNS work?",a:"CoreDNS gives every Service a name: `svc.namespace.svc.cluster.local`. Within a namespace the short name works. kube-proxy programs iptables/IPVS so the Service's virtual IP is load-balanced across its Ready pod IPs."},
+ {cat:"Workloads and config",q:"Deployment vs StatefulSet vs DaemonSet?",a:"Deployment: stateless interchangeable pods. StatefulSet: stable identity (`db-0`), ordered rollout and a PVC per pod, for databases and queues. DaemonSet: exactly one pod per node, for agents like log collectors."},
+ {cat:"Workloads and config",q:"Job vs CronJob?",a:"A Job runs pods to completion with retries (migrations, batch). A CronJob creates Jobs on a schedule; set `concurrencyPolicy` and history limits."},
+ {cat:"Workloads and config",q:"ConfigMap vs Secret. Are Secrets secure?",a:"Both inject config as env or files. Secrets are meant for sensitive data, but they're only base64 by default. Security comes from RBAC, encryption at rest and ideally an external manager like Vault or AWS Secrets Manager."},
+ {cat:"Workloads and config",q:"Liveness vs readiness vs startup probes?",a:"Liveness: is it stuck? Failure restarts the container. Readiness: can it serve now? Failure removes it from Service endpoints. Startup: has it booted? It holds off the other two for slow starters. Don't put downstream dependencies in liveness."},
+ {cat:"Workloads and config",q:"Requests vs limits?",a:"Requests are what the scheduler reserves and what HPA percentages use. Limits are the enforced ceiling: CPU is throttled, memory over the limit gets OOMKilled. Requests = limits gives Guaranteed QoS."},
+ {cat:"Workloads and config",q:"Init containers vs sidecars?",a:"Init containers run to completion, in order, before the app starts (wait for a dependency, run migrations, fetch config). Sidecars run alongside the app for the pod's life (log shipper, proxy, mesh agent)."},
+ {cat:"Storage",q:"Explain PV, PVC and StorageClass.",a:"A PVC is a pod's request for storage. A PV is the actual volume. A StorageClass defines how to provision volumes dynamically, so creating a PVC creates a PV on demand. Data outlives pods; reclaim policy decides what happens when the PVC is deleted."},
+ {cat:"Storage",q:"How would you run a database on Kubernetes?",a:"A StatefulSet with `volumeClaimTemplates`, a headless Service, Secrets for credentials, probes, resources, and backups. In practice many teams prefer a managed DB or an operator (CloudNativePG, etc.) for failover, backups and upgrades."},
+ {cat:"Production",q:"How does a rolling update work, and how do you roll back?",a:"The Deployment creates a new ReplicaSet and shifts replicas gradually within `maxSurge`/`maxUnavailable`, gating on readiness. `kubectl rollout status` watches it; `kubectl rollout undo` scales the previous ReplicaSet back up."},
+ {cat:"Production",q:"How do you get zero-downtime deployments?",a:"Correct readiness probes, `maxUnavailable: 0`, at least 2 replicas, graceful SIGTERM handling, a short preStop sleep to cover endpoint propagation, adequate `terminationGracePeriodSeconds`, and a PodDisruptionBudget."},
+ {cat:"Production",q:"How does autoscaling work?",a:"HPA scales pods from metrics (CPU/memory/custom): desired = ceil(current × currentMetric / target); needs metrics-server and CPU requests. VPA tunes requests. Cluster Autoscaler or Karpenter adds/removes nodes when pods are Pending or nodes are idle."},
+ {cat:"Production",q:"How do you secure a cluster and workloads?",a:"RBAC least privilege and dedicated ServiceAccounts, non-root and read-only root filesystems, dropped capabilities, Pod Security Standards, NetworkPolicies, secrets encryption/external manager, scanned and pinned images, private API endpoint, audit logs and regular upgrades."},
+ {cat:"Production",q:"Helm vs Kustomize?",a:"Helm packages templated charts with values and versioned releases (great for third-party software). Kustomize overlays patches on plain YAML without templates (great for per-environment variations of your own apps). They're often combined."},
+ {cat:"Production",q:"What is GitOps?",a:"Git holds the desired cluster state and an in-cluster agent (Argo CD/Flux) continuously syncs it. You get audit history, PR review, easy rollback with `git revert`, and no cluster credentials in CI."},
+ {cat:"Production",q:"Blue/green vs canary vs rolling?",a:"Rolling replaces pods gradually (default, cheap). Blue/green runs a full parallel version and flips traffic (instant rollback, double cost). Canary sends a small percentage to the new version first (safest, needs traffic splitting)."},
+ {cat:"Production",q:"What is a PodDisruptionBudget?",a:"It limits how many pods of an app can be voluntarily evicted at once (drains, upgrades), e.g. `minAvailable: 1`, so maintenance can't take the whole service down."},
+ {cat:"Production",q:"How do you monitor and log in Kubernetes?",a:"Apps log to stdout/stderr; an agent (Fluent Bit, Promtail) ships logs to Loki/ELK/CloudWatch. Prometheus scrapes metrics (kube-state-metrics, node exporter, app metrics) with Grafana dashboards, and alerts on restarts, Pending pods, error rates and saturation."},
+ {cat:"Scenarios",q:"A pod is in CrashLoopBackOff. What do you do?",a:"`kubectl get pod` for status, `describe pod` for exit code and Events, `logs --previous` for the crashed run. Typical causes: missing env/config, can't reach a dependency, wrong command, OOM (137). Fix the cause; reproduce with `kubectl run` or `debug` if needed."},
+ {cat:"Scenarios",q:"A Service isn't reachable. How do you debug?",a:"`kubectl get endpoints svc`: empty means selector mismatch or no Ready pods. Then check targetPort and that the app listens on 0.0.0.0, test from another pod (`curl svc`), check DNS (`nslookup`), NetworkPolicies, then Ingress/LB layers."},
+ {cat:"Scenarios",q:"How would you migrate an app from Docker Compose to Kubernetes?",a:"Each service becomes a Deployment + Service, env → ConfigMaps/Secrets, volumes → PVCs or StatefulSets, healthchecks → probes, ports → Ingress. Add resources, replicas, security contexts, and replace `depends_on` with readiness probes, init containers and retries."},
+ {cat:"Scenarios",q:"You need to drain a node for maintenance. What happens?",a:"`kubectl drain` cordons the node (no new pods) and evicts pods respecting PodDisruptionBudgets; controllers recreate them elsewhere. Bare pods and local-storage pods need flags/care, and DaemonSet pods are ignored."}
+];
+</script>
+</body>
+</html>

@@ -1,0 +1,1930 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Docker Interview Prep</title>
+<script>try{var t=localStorage.getItem('ip-theme');document.documentElement.dataset.theme=t||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}catch(e){}</script>
+<link rel="stylesheet" href="../../../assets/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/dockerfile.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/nginx.min.js"></script>
+<script defer src="../../../assets/app.js"></script>
+</head>
+<body>
+<div id="progress"></div>
+<svg width="0" height="0" style="position:absolute"><defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" style="fill:var(--muted)"/></marker></defs></svg>
+<button class="btn menu-btn" id="menu-btn">☰ Menu</button>
+
+<aside class="sidebar">
+  <div class="logo">🐳 Docker</div>
+  <div class="sub">Interview prep</div>
+  <nav id="toc"></nav>
+  <div class="tools"><button class="btn" id="theme-btn">🌓 Theme</button><a class="btn" href="../../../index.html" style="text-decoration:none">All topics</a></div>
+</aside>
+
+<main>
+<h1>Docker Interview Prep</h1>
+<p class="lead">Understand it simply, build it for production, debug it under pressure. Read top to bottom, then do the labs.</p>
+
+<div class="callout say"><b class="t">Your one-minute pitch (memorize)</b>
+<p>"Docker packages an app and everything it needs into an <b>image</b>. Running an image gives a <b>container</b>: an isolated process sharing the host kernel, so it's light and starts in seconds. That kills 'works on my machine'. I use multi-stage builds to keep images small, non-root users, healthchecks, and Compose to run app + DB + cache. For microservices each service has its own image, they talk over a Docker network by service name, and config comes from environment variables, never baked into the image."</p></div>
+
+<h2 id="plan"><span class="num">0</span>Study plan</h2>
+<div class="grid">
+  <div class="card"><span class="pill">Day 1</span><h4>Concepts + Lab 1</h4><p>Section 01, then Node + Postgres + Redis.</p></div>
+  <div class="card"><span class="pill">Day 2</span><h4>Production + Labs 2, 3</h4><p>Section 02, then Spring Boot and Next.js images.</p></div>
+  <div class="card"><span class="pill">Day 3</span><h4>Architecture + Lab 4</h4><p>Section 03, then microservices with a gateway.</p></div>
+  <div class="card"><span class="pill">Day 4</span><h4>Bugs + Q&amp;A</h4><p>Break things on purpose. Say the answers out loud.</p></div>
+</div>
+<p><b>What interviewers test:</b> (1) mental model, (2) Dockerfile skill, (3) networking and data, (4) Compose, (5) debugging, (6) production thinking.</p>
+<p><b>Readiness checklist</b> (ticks are saved in your browser):</p>
+<ul class="checklist">
+  <li>I can explain image vs container and container vs VM in 30 seconds</li>
+  <li>I can explain layer caching and reorder a Dockerfile for it</li>
+  <li>I can write a multi-stage Dockerfile from memory</li>
+  <li>I can explain why <code>localhost</code> breaks between containers</li>
+  <li>I can explain <code>depends_on</code> vs healthcheck-gated startup</li>
+  <li>I've completed all four labs</li>
+  <li>I can tell 5 bugs as stories (symptom → diagnosis → fix)</li>
+  <li>I can walk through my debugging flow without notes</li>
+</ul>
+
+<!-- ============================ 01 ============================ -->
+<h2 id="s1"><span class="num">01</span>Core concepts</h2>
+
+<h3>Image vs container</h3>
+<p>An <b>image</b> is a read-only snapshot (like a class or an installer). A <b>container</b> is a running instance of it (like an object). One image can start many containers.</p>
+<figure class="diagram">
+<svg class="d" viewBox="0 0 760 210">
+  <text class="h" x="30" y="24">IMAGE (read-only)</text>
+  <rect class="p" x="20" y="34" width="230" height="46" rx="8"/><text x="40" y="62">Layer 3: your app code</text>
+  <rect class="p" x="20" y="84" width="230" height="46" rx="8"/><text x="40" y="112">Layer 2: node_modules</text>
+  <rect class="p" x="20" y="134" width="230" height="46" rx="8"/><text x="40" y="162">Layer 1: node:20-alpine</text>
+  <path class="ln" d="M255 107 H345"/><text class="m" x="268" y="98">docker run</text>
+  <text class="h" x="400" y="24">CONTAINERS (running)</text>
+  <g><rect class="g" x="380" y="34" width="360" height="46" rx="8"/><text x="396" y="55">api-1</text><text class="m" x="396" y="71">writable layer + process (PID 1)</text></g>
+  <g><rect class="g" x="380" y="88" width="360" height="46" rx="8"/><text x="396" y="109">api-2</text><text class="m" x="396" y="125">same image, separate writable layer</text></g>
+  <g><rect class="g" x="380" y="142" width="360" height="46" rx="8"/><text x="396" y="163">api-3</text><text class="m" x="396" y="179">layers are shared, so no disk duplication</text></g>
+</svg>
+<figcaption>One image → many containers. Layers are shared; each container adds a thin writable layer on top.</figcaption>
+</figure>
+
+<h3>Container vs VM</h3>
+<div class="tablewrap"><table>
+<tr><th></th><th>VM</th><th>Container</th></tr>
+<tr><td>Own OS kernel</td><td>Yes</td><td><b>No</b>, shares host kernel</td></tr>
+<tr><td>Size</td><td>GBs</td><td>MBs</td></tr>
+<tr><td>Startup</td><td>Minutes</td><td>Seconds or less</td></tr>
+<tr><td>Isolation</td><td>Stronger (hardware level)</td><td>Process level (namespaces + cgroups)</td></tr>
+</table></div>
+<figure class="diagram">
+<svg class="d" viewBox="0 0 760 300">
+  <text class="h" x="60" y="22">Virtual machines</text>
+  <rect class="n" x="20" y="260" width="320" height="30" rx="6"/><text x="120" y="280">Hardware / host OS</text>
+  <rect class="o" x="20" y="224" width="320" height="30" rx="6"/><text x="130" y="244">Hypervisor</text>
+  <rect class="r" x="20" y="120" width="150" height="98" rx="6"/><text class="h" x="40" y="142">VM 1</text><text class="m" x="30" y="162">Full guest OS</text><text class="m" x="30" y="178">Libs</text><rect class="p" x="30" y="188" width="130" height="24" rx="5"/><text x="68" y="205">App A</text>
+  <rect class="r" x="190" y="120" width="150" height="98" rx="6"/><text class="h" x="210" y="142">VM 2</text><text class="m" x="200" y="162">Full guest OS</text><text class="m" x="200" y="178">Libs</text><rect class="p" x="200" y="188" width="130" height="24" rx="5"/><text x="238" y="205">App B</text>
+  <text class="h" x="440" y="22">Containers</text>
+  <rect class="n" x="400" y="260" width="340" height="30" rx="6"/><text x="470" y="280">Hardware</text>
+  <rect class="o" x="400" y="224" width="340" height="30" rx="6"/><text x="465" y="244">Host OS (one shared kernel)</text>
+  <rect class="v" x="400" y="188" width="340" height="30" rx="6"/><text x="490" y="208">Docker Engine</text>
+  <rect class="g" x="400" y="120" width="105" height="62" rx="6"/><text class="m" x="410" y="140">Libs</text><rect class="p" x="410" y="148" width="85" height="26" rx="5"/><text x="428" y="166">App A</text>
+  <rect class="g" x="517" y="120" width="105" height="62" rx="6"/><text class="m" x="527" y="140">Libs</text><rect class="p" x="527" y="148" width="85" height="26" rx="5"/><text x="545" y="166">App B</text>
+  <rect class="g" x="634" y="120" width="105" height="62" rx="6"/><text class="m" x="644" y="140">Libs</text><rect class="p" x="644" y="148" width="85" height="26" rx="5"/><text x="662" y="166">App C</text>
+  <text class="m" x="400" y="105">No guest OS, so much lighter</text>
+</svg>
+<figcaption>VMs carry a whole OS each. Containers share the host kernel.</figcaption>
+</figure>
+<div class="callout say"><b class="t">How isolation works</b>
+<p><b>Namespaces</b> control what a process can <i>see</i> (own PIDs, network, filesystem, hostname). <b>cgroups</b> control how much it can <i>use</i> (CPU, memory).</p></div>
+
+<h3>Layers and the build cache</h3>
+<p>Every <code>RUN</code>, <code>COPY</code>, <code>ADD</code> creates a layer, and layers are cached. <b>When a layer changes, every layer after it rebuilds.</b> So order from least to most frequently changing.</p>
+<figure class="diagram">
+<svg class="d" viewBox="0 0 760 270">
+  <text class="h" x="30" y="22">❌ Bad order</text>
+  <rect class="g" x="20" y="34" width="330" height="36" rx="6"/><text x="34" y="57">FROM node:20-alpine</text><text class="m" x="268" y="57">cached</text>
+  <rect class="r" x="20" y="76" width="330" height="36" rx="6"/><text x="34" y="99">COPY . .</text><text class="m" x="240" y="99">changed → rebuild</text>
+  <rect class="r" x="20" y="118" width="330" height="36" rx="6"/><text x="34" y="141">RUN npm install</text><text class="m" x="240" y="141">reinstalls EVERY time</text>
+  <rect class="r" x="20" y="160" width="330" height="36" rx="6"/><text x="34" y="183">CMD ["node","server.js"]</text><text class="m" x="268" y="183">rebuilt</text>
+  <text class="h" x="410" y="22">✅ Good order</text>
+  <rect class="g" x="400" y="34" width="340" height="36" rx="6"/><text x="414" y="57">FROM node:20-alpine</text><text class="m" x="678" y="57">cached</text>
+  <rect class="g" x="400" y="76" width="340" height="36" rx="6"/><text x="414" y="99">COPY package*.json ./</text><text class="m" x="678" y="99">cached</text>
+  <rect class="g" x="400" y="118" width="340" height="36" rx="6"/><text x="414" y="141">RUN npm install</text><text class="m" x="612" y="141">cached (deps same)</text>
+  <rect class="o" x="400" y="160" width="340" height="36" rx="6"/><text x="414" y="183">COPY . .</text><text class="m" x="620" y="183">only this rebuilds</text>
+  <text class="m" x="20" y="232">You edit one source file → Docker reinstalls all dependencies (slow).</text>
+  <text class="m" x="400" y="232">You edit one source file → seconds. Dependencies stay cached.</text>
+</svg>
+<figcaption>Dependencies change rarely, code changes constantly. Copy the manifest first, install, then copy the code.</figcaption>
+</figure>
+
+<h4>Step 1: two filesystems. Where does <code>COPY</code> copy from and to?</h4>
+<p>This is the part that confuses everyone. There are <b>two separate places</b>, and every Dockerfile line works in one or the other:</p>
+<figure class="diagram">
+<svg class="d" viewBox="0 0 760 260">
+  <rect class="o" x="10" y="10" width="300" height="240" rx="10"/><text class="h" x="26" y="36">1. Your computer (host OS)</text>
+  <text class="m" x="26" y="56">your project folder = the "build context"</text>
+  <text x="26" y="84">D:\projects\myapp\</text>
+  <text x="26" y="106">├─ package.json</text>
+  <text x="26" y="126">├─ package-lock.json</text>
+  <text x="26" y="146">├─ server.js</text>
+  <text x="26" y="166">├─ src\routes.js</text>
+  <text x="26" y="186">├─ node_modules\  (Windows binaries)</text>
+  <text x="26" y="206">└─ Dockerfile</text>
+  <text class="m" x="26" y="236">COPY reads files from HERE (the source)</text>
+  <rect class="g" x="450" y="10" width="300" height="240" rx="10"/><text class="h" x="466" y="36">2. Image filesystem (Linux)</text>
+  <text class="m" x="466" y="56">a separate Linux filesystem inside the image</text>
+  <text x="466" y="84">/  (root of the image)</text>
+  <text x="466" y="106">└─ app/    ← WORKDIR /app</text>
+  <text x="466" y="126">    ├─ package.json</text>
+  <text x="466" y="146">    ├─ package-lock.json</text>
+  <text x="466" y="166">    ├─ server.js</text>
+  <text x="466" y="186">    ├─ src/routes.js</text>
+  <text x="466" y="206">    └─ node_modules/  (from RUN npm install)</text>
+  <text class="m" x="466" y="236">COPY writes, and RUN executes, HERE</text>
+  <path class="lnp" d="M312 130 H448"/>
+  <text class="m" x="338" y="118">COPY</text><text class="m" x="326" y="152">host → image</text>
+</svg>
+<figcaption><b>COPY = host folder → image folder.</b> Nothing is copied "from Linux". The source is your own OS folder; the destination is inside the image.</figcaption>
+</figure>
+<ul>
+<li><b>The source</b> is always relative to the <b>build context</b>: the folder you pass at the end of <code>docker build ... .</code> (the <code>.</code> means "this folder"). Docker packs that folder (minus anything in <code>.dockerignore</code>) and sends it to the Docker engine.</li>
+<li><b>The destination</b> is a path <b>inside the image's Linux filesystem</b>. A relative destination (<code>./</code>, <code>.</code>) is relative to the current <code>WORKDIR</code>.</li>
+<li><b>Which OS?</b> Your files live on your OS (Windows/Mac/Linux). The image is always Linux. On Windows and Mac, Docker Desktop runs a small Linux VM (WSL2) and the build happens there. That's why paths <i>inside</i> the Dockerfile use Linux style (<code>/app</code>, forward slashes, case-sensitive) even on Windows.</li>
+<li><b><code>RUN</code> runs inside the image</b> (a temporary Linux container), <b>not</b> on your computer. <code>RUN npm install</code> executes with the Linux files you already copied in, which is why you must COPY <code>package.json</code> <i>before</i> it.</li>
+</ul>
+
+<h4>Step 2: syntax and parameters</h4>
+<div class="tablewrap"><table>
+<tr><th>Line</th><th>Syntax</th><th>Meaning, part by part</th></tr>
+<tr><td><code>FROM node:20-alpine</code></td><td><code>FROM image[:tag] [AS name]</code></td><td>Start from this base image (Linux + Node 20). <code>node</code> = repository, <code>20-alpine</code> = tag (version + small Alpine Linux). <code>AS name</code> names a stage (used in multi-stage builds).</td></tr>
+<tr><td><code>WORKDIR /app</code></td><td><code>WORKDIR path</code></td><td>Sets the current directory <b>inside the image</b> for all later lines, creating it if missing. If you skip it, files land in <code>/</code> (a mess).</td></tr>
+<tr><td><code>COPY package*.json ./</code></td><td><code>COPY &lt;src&gt;... &lt;dest&gt;</code></td><td><code>&lt;src&gt;</code> = <code>package*.json</code>, a wildcard in your project folder (matches <code>package.json</code> and <code>package-lock.json</code>). <code>&lt;dest&gt;</code> = <code>./</code>, meaning <code>/app/</code> inside the image (the WORKDIR). Multiple sources → dest must end with <code>/</code>.</td></tr>
+<tr><td><code>RUN npm install</code></td><td><code>RUN command</code></td><td>Runs the command <b>at build time</b> inside the image, in the WORKDIR, and saves the filesystem changes (<code>node_modules/</code>) as a new layer.</td></tr>
+<tr><td><code>COPY . .</code></td><td><code>COPY &lt;src&gt; &lt;dest&gt;</code></td><td>First <code>.</code> = <b>the whole build context</b> (your whole project folder, minus <code>.dockerignore</code>). Second <code>.</code> = the WORKDIR (<code>/app</code>) in the image.</td></tr>
+<tr><td><code>CMD ["node","server.js"]</code></td><td><code>CMD ["exe","arg"]</code></td><td>Not run during build. It's the command the <b>container</b> starts with. JSON-array (exec) form so node is PID 1 and receives SIGTERM.</td></tr>
+</table></div>
+<p>The build command itself: <code>docker build -t myapp:1.0 .</code></p>
+<div class="tablewrap"><table>
+<tr><th>Part</th><th>Meaning</th></tr>
+<tr><td><code>docker build</code></td><td>Build an image from a Dockerfile</td></tr>
+<tr><td><code>-t myapp:1.0</code></td><td><b>t</b>ag: name the result <code>myapp</code> version <code>1.0</code></td></tr>
+<tr><td><code>.</code> (last argument)</td><td>The <b>build context</b>: which host folder COPY can read from. It is <b>not</b> "the Dockerfile"; it's the folder that gets sent.</td></tr>
+<tr><td><code>-f path/Dockerfile</code> (optional)</td><td>Use a Dockerfile that isn't named <code>Dockerfile</code> or isn't in the context root</td></tr>
+<tr><td><code>--no-cache</code> (optional)</td><td>Ignore all cached layers and rebuild everything</td></tr>
+</table></div>
+
+<h4>Step 3: the two Dockerfiles, fully annotated</h4>
+<p>The diagram above hides <code>WORKDIR</code> to save space. Here is each file in full.</p>
+<script type="text/plain" class="code" data-lang="dockerfile" data-title="❌ Dockerfile (bad order)">
+# start from a Linux image that has Node 20
+FROM node:20-alpine
+# work inside /app in the image
+WORKDIR /app
+
+# host project folder → /app   (EVERYTHING: package.json AND your source)
+COPY . .
+# runs in /app. Needs package.json (just copied) → creates /app/node_modules
+RUN npm install
+
+# container start command
+CMD ["node", "server.js"]
+</script>
+<script type="text/plain" class="code" data-lang="dockerfile" data-title="✅ Dockerfile (good order)">
+# same base
+FROM node:20-alpine
+# same working dir
+WORKDIR /app
+
+# host: ONLY package.json + package-lock.json → /app/
+COPY package*.json ./
+# runs in /app. Only needed the 2 files above → creates /app/node_modules
+RUN npm install
+
+# now the rest of the host project (source code) → /app
+COPY . .
+# container start command
+CMD ["node", "server.js"]
+</script>
+<p>Both files produce the <b>same final image contents</b>. The difference is only <i>when</i> the source code enters the image, and that decides what the cache can reuse.</p>
+
+<h4>Step 4: why the bad order is bad (and in what sense it's "wrong")</h4>
+<div class="callout warn"><b class="t">Honest wording</b><p>The bad order is not <i>broken</i>. It builds a working image. It is <b>wrong for performance</b>: every tiny code change throws away the cached <code>npm install</code> and downloads all dependencies again, which wastes minutes per build, bandwidth and CI money.</p></div>
+<p><b>The rule Docker uses:</b></p>
+<ul>
+<li>Docker builds layers top to bottom and reuses a cached layer only if <b>the instruction is identical</b> <i>and</i> <b>every layer above it was reused</b>.</li>
+<li>For <code>COPY</code>, "identical" means <b>the content of the copied files</b> is unchanged (it checksums them).</li>
+<li>For <code>RUN</code>, "identical" means <b>the command text</b> is unchanged and the layer before it was reused. Docker does <i>not</i> look at what the command would do.</li>
+</ul>
+<p><b>Now edit <code>server.js</code> (one line) and rebuild:</b></p>
+<div class="tablewrap"><table>
+<tr><th>Step</th><th>❌ Bad order</th><th>✅ Good order</th></tr>
+<tr><td><code>FROM</code></td><td>cached</td><td>cached</td></tr>
+<tr><td><code>WORKDIR /app</code></td><td>cached</td><td>cached</td></tr>
+<tr><td>1st <code>COPY</code></td><td><code>COPY . .</code> → server.js changed → <b>cache miss</b></td><td><code>COPY package*.json ./</code> → those 2 files unchanged → <b>cached</b></td></tr>
+<tr><td><code>RUN npm install</code></td><td>Layer above changed → <b>cache miss</b> → downloads and installs <b>everything again</b> (30 s to minutes)</td><td>Layer above cached, same command → <b>cached</b> (0 s)</td></tr>
+<tr><td>2nd <code>COPY</code></td><td>none</td><td><code>COPY . .</code> → <b>runs</b> (copies the changed code; takes ~1 s)</td></tr>
+<tr><td><code>CMD</code></td><td>rebuilt (metadata only)</td><td>rebuilt (metadata only)</td></tr>
+<tr><td><b>Total</b></td><td><b>slow</b>, every edit</td><td><b>fast</b>, dependencies only reinstall when <code>package.json</code> changes</td></tr>
+</table></div>
+<p><b>Why the good order works:</b> <code>npm install</code> only needs <code>package.json</code> (and the lockfile) to decide what to install. It doesn't need your source code. So copy just those two files first. They change rarely (when you add a dependency), so that layer and the install layer stay cached. The source code, which changes all the time, comes <i>after</i>.</p>
+<p><b>Example of what you'd see</b> (illustrative, abbreviated BuildKit output after editing only <code>server.js</code>, good order):</p>
+<script type="text/plain" class="code" data-lang="bash" data-title="docker build -t myapp:1.0 .  (good order)">
+ => CACHED [2/5] WORKDIR /app
+ => CACHED [3/5] COPY package*.json ./
+ => CACHED [4/5] RUN npm install          # ← the slow step is skipped
+ => [5/5] COPY . .                        # ← only this one re-runs
+</script>
+
+<h4>Step 5: try it yourself (5 minutes)</h4>
+<ol class="steps">
+<li>Make a folder with a <code>package.json</code> (<code>npm init -y</code>), a <code>server.js</code> with one <code>console.log</code>, and the <b>bad</b> Dockerfile above. Run <code>docker build -t order-test .</code> and note the time.</li>
+<li>Change the text in <code>server.js</code> and build again. Watch <code>RUN npm install</code> run again (no <code>CACHED</code>).</li>
+<li>Swap in the <b>good</b> Dockerfile. Build once (slow), change <code>server.js</code>, build again. <code>RUN npm install</code> now says <code>CACHED</code>.</li>
+<li>Prove what's inside: <code>docker run --rm order-test ls -la /app</code> shows the files in the <b>Linux</b> image, not your Windows folder.</li>
+<li>Add a dependency (<code>npm install express</code> on your machine so <code>package.json</code> changes) and rebuild. Now <code>COPY package*.json</code> misses the cache, so the install re-runs. That's correct and expected.</li>
+</ol>
+
+<h4>Common COPY mistakes</h4>
+<div class="tablewrap"><table>
+<tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr>
+<tr><td><code>COPY ../shared .</code></td><td>Error: path is outside the build context. COPY can only read inside the folder you passed to <code>docker build</code>.</td><td>Build from the parent folder (<code>docker build -f app/Dockerfile .</code>) or restructure.</td></tr>
+<tr><td><code>COPY C:\projects\app .</code></td><td>Fails. Sources are relative to the context, not absolute host paths.</td><td><code>COPY . .</code> or a relative path like <code>COPY src/ ./src/</code>.</td></tr>
+<tr><td>No <code>WORKDIR</code></td><td><code>COPY . .</code> dumps files into <code>/</code> of the image.</td><td>Always set <code>WORKDIR /app</code> first.</td></tr>
+<tr><td><code>COPY . .</code> with no <code>.dockerignore</code></td><td>Copies your host <code>node_modules</code>, <code>.git</code> and <code>.env</code> into the image (slow, huge, leaks secrets, Windows binaries break on Linux).</td><td>Add a <code>.dockerignore</code> (see section 02).</td></tr>
+<tr><td><code>COPY a.json b.json /app</code> (no trailing slash)</td><td>Error: with several sources the destination must be a directory.</td><td><code>COPY a.json b.json /app/</code></td></tr>
+<tr><td>Editing a file <i>after</i> build and expecting the container to see it</td><td>The container has its own copy from build time. Your host file is not linked.</td><td>Rebuild, or use a bind mount (<code>-v</code>) in development.</td></tr>
+</table></div>
+<div class="callout say"><b class="t">Say it in an interview</b><p>"Docker caches each layer and invalidates everything after the first changed one. Dependencies change rarely and code changes constantly, so I copy only the package manifest first, run install, and copy the source afterwards. That way an ordinary code edit rebuilds in seconds instead of reinstalling all dependencies."</p></div>
+
+<h3>Instructions people mix up</h3>
+<p>Six pairs that look similar but behave differently. For each: <b>what</b> each one means, <b>why</b> it matters, and <b>exactly how</b> it behaves with an example. First, one picture that explains half of them.</p>
+
+<h4>The big picture: build time vs run time</h4>
+<figure class="diagram">
+<svg class="d" viewBox="0 0 760 250">
+  <rect class="o" x="10" y="10" width="230" height="190" rx="10"/><text class="h" x="26" y="36">docker build</text><text class="m" x="26" y="54">happens ONCE, on your machine / CI</text>
+  <text x="26" y="86">FROM · WORKDIR</text>
+  <text x="26" y="110">COPY · ADD · RUN</text>
+  <text x="26" y="134">ARG  (build-only variable)</text>
+  <text x="26" y="158">ENV · EXPOSE · CMD</text><text class="m" x="26" y="176">(only recorded as settings)</text>
+  <rect class="p" x="265" y="10" width="230" height="190" rx="10"/><text class="h" x="281" y="36">IMAGE</text><text class="m" x="281" y="54">frozen result, nothing running</text>
+  <text x="281" y="86">files: /app, node_modules…</text>
+  <text x="281" y="110">settings: ENV values</text>
+  <text x="281" y="134">settings: CMD, ENTRYPOINT</text>
+  <text x="281" y="158">settings: EXPOSE (a note)</text>
+  <rect class="g" x="520" y="10" width="230" height="190" rx="10"/><text class="h" x="536" y="36">docker run</text><text class="m" x="536" y="54">happens EVERY time a container starts</text>
+  <text x="536" y="86">ENTRYPOINT + CMD execute</text>
+  <text x="536" y="110">ENV values are visible</text>
+  <text x="536" y="134">-p publishes a port</text>
+  <text x="536" y="158">-e overrides an ENV value</text>
+  <path class="ln" d="M240 105 H263"/><path class="ln" d="M495 105 H518"/>
+  <text class="m" x="10" y="228">RUN / COPY / ARG act while building. CMD / ENTRYPOINT / -p / -e act when the container starts.</text>
+</svg>
+<figcaption>If you remember only one thing: the Dockerfile is a recipe run once; the container is what you run many times.</figcaption>
+</figure>
+
+<!-- ───────────── 1 ───────────── -->
+<h4>1. <code>CMD</code> vs <code>ENTRYPOINT</code></h4>
+<div class="grid">
+<div class="card"><h4>CMD</h4><p><b>What:</b> the <i>default</i> command (or default arguments) of the container.</p><p><b>Key property:</b> anything you type after the image name in <code>docker run</code> <b>replaces it completely</b>.</p></div>
+<div class="card"><h4>ENTRYPOINT</h4><p><b>What:</b> the <i>fixed program</i> the container always runs.</p><p><b>Key property:</b> whatever you type after the image name is <b>appended as arguments</b> to it. Only <code>--entrypoint</code> replaces it.</p></div>
+</div>
+<p><b>Why it matters:</b> it decides whether someone can easily run a different command in your image (debugging with a shell) or whether the image behaves like a single fixed tool.</p>
+<p><b>Example A: CMD only</b> (what you use for most web apps)</p>
+<script type="text/plain" class="code" data-lang="dockerfile" data-title="Dockerfile A">
+FROM node:20-alpine
+WORKDIR /app
+COPY . .
+CMD ["node", "server.js"]
+</script>
+<script type="text/plain" class="code" data-lang="bash" data-title="what each docker run actually executes">
+docker run myapp                 # → node server.js          (the default CMD)
+docker run myapp node other.js   # → node other.js           (CMD replaced)
+docker run -it myapp sh          # → sh                      (CMD replaced: great for debugging)
+</script>
+<p><b>Example B: ENTRYPOINT + CMD</b> (the program is fixed, the argument has a default)</p>
+<script type="text/plain" class="code" data-lang="dockerfile" data-title="Dockerfile B">
+FROM node:20-alpine
+WORKDIR /app
+COPY . .
+ENTRYPOINT ["node"]
+CMD ["server.js"]
+</script>
+<script type="text/plain" class="code" data-lang="bash" data-title="what each docker run actually executes">
+docker run myapp                         # → node server.js   (ENTRYPOINT + default CMD)
+docker run myapp other.js                # → node other.js    (CMD replaced, ENTRYPOINT kept)
+docker run myapp sh                      # → node sh          (tries to run a FILE called "sh": fails)
+docker run -it --entrypoint sh myapp     # → sh               (only --entrypoint changes the program)
+</script>
+<p><b>The rule, as a formula:</b> the final command = <code>ENTRYPOINT</code> + (<code>CMD</code> <i>or</i> whatever you typed after the image name).</p>
+<p><b>Real-world use of ENTRYPOINT:</b> a tool image. <code>ENTRYPOINT ["curl"]</code> lets users run <code>docker run mycurl -I https://example.com</code>, so the image <i>is</i> the tool. Official images like Postgres use an ENTRYPOINT <b>script</b> that does setup and then starts the server with the CMD.</p>
+<div class="callout tip"><b class="t">Rule of thumb</b><p>A normal app (API, website): use <b>CMD only</b>, so you can always <code>docker run -it myapp sh</code> to debug. A tool or an image with a setup script: use <b>ENTRYPOINT</b>, and put default arguments in CMD.</p></div>
+
+<!-- ───────────── 2 ───────────── -->
+<h4>2. <code>COPY</code> vs <code>ADD</code></h4>
+<div class="grid">
+<div class="card"><h4>COPY</h4><p>Copies files/folders from your build context into the image. <b>Only that. Nothing hidden.</b></p></div>
+<div class="card"><h4>ADD</h4><p>Does everything COPY does, <b>plus</b> two extras: it <b>auto-extracts</b> local <code>.tar</code>/<code>.tar.gz</code> files, and it can <b>download a URL</b>.</p></div>
+</div>
+<p><b>Why it matters:</b> "extra features" mean surprises. With <code>ADD</code>, you can't tell by reading the line whether a file stays a file or explodes into a folder.</p>
+<script type="text/plain" class="code" data-lang="dockerfile" data-title="same source file, two different results">
+# Suppose your project folder contains  assets.tar.gz
+
+# COPY: the archive stays ONE FILE
+COPY assets.tar.gz /app/
+# result in the image:  /app/assets.tar.gz
+
+# ADD: the archive is UNPACKED automatically
+ADD assets.tar.gz /app/
+# result in the image:  /app/logo.png  /app/styles.css  ...   (and no .tar.gz)
+</script>
+<p><b>The URL feature is also a trap:</b> <code>ADD https://example.com/tool.zip /tmp/</code> downloads at build time with no integrity check by default, isn't reproducible (the URL's content can change), and doesn't extract zip files. Prefer an explicit <code>RUN curl -fsSL ... &amp;&amp; sha256sum -c ...</code> so you can verify it.</p>
+<div class="callout tip"><b class="t">Rule of thumb</b><p>Always write <code>COPY</code>. Use <code>ADD</code> only on purpose, when you specifically want a local tar archive unpacked into the image.</p></div>
+
+<!-- ───────────── 3 ───────────── -->
+<h4>3. <code>RUN</code> vs <code>CMD</code></h4>
+<div class="grid">
+<div class="card"><h4>RUN</h4><p>Executes <b>while the image is being built</b>. Its <b>result</b> (files created or changed) is saved into the image as a layer. Runs <b>once</b>.</p></div>
+<div class="card"><h4>CMD</h4><p>Does <b>nothing during the build</b>. It's a note saying "when a container starts, run this". Runs <b>every time</b> you start a container.</p></div>
+</div>
+<script type="text/plain" class="code" data-lang="dockerfile" data-title="Dockerfile">
+FROM node:20-alpine
+WORKDIR /app
+
+# runs during `docker build`, ONCE. node_modules becomes part of the image
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+# runs at every `docker run`
+CMD ["node", "server.js"]
+</script>
+<p><b>Why it matters (the mistake to avoid):</b> putting install work in CMD.</p>
+<script type="text/plain" class="code" data-lang="dockerfile" data-title="❌ wrong place for the install">
+CMD npm install && node server.js
+# Every container start re-downloads all dependencies:
+#  - slow starts, even for restarts and autoscaling
+#  - needs internet access at runtime
+#  - two containers from the same image could end up with different versions
+</script>
+<div class="tablewrap"><table>
+<tr><th></th><th><code>RUN</code></th><th><code>CMD</code></th></tr>
+<tr><td>When it executes</td><td><code>docker build</code></td><td><code>docker run</code> / <code>docker start</code></td></tr>
+<tr><td>Where the result goes</td><td>Saved in the image (a new layer)</td><td>Nothing saved; it's the start command</td></tr>
+<tr><td>How many allowed</td><td>As many as you like</td><td>Only the <b>last</b> one counts</td></tr>
+<tr><td>Typical content</td><td><code>npm install</code>, <code>apk add curl</code>, <code>npm run build</code></td><td><code>["node","server.js"]</code></td></tr>
+</table></div>
+<div class="callout tip"><b class="t">Rule of thumb</b><p><b>Preparing the image</b> (install, compile, create folders) → <code>RUN</code>. <b>Starting the app</b> → <code>CMD</code>/<code>ENTRYPOINT</code>.</p></div>
+
+<!-- ───────────── 4 ───────────── -->
+<h4>4. <code>ARG</code> vs <code>ENV</code></h4>
+<div class="grid">
+<div class="card"><h4>ARG</h4><p>A variable that exists <b>only while building</b>. Set with <code>docker build --build-arg NAME=value</code>. The running container <b>does not</b> have it.</p></div>
+<div class="card"><h4>ENV</h4><p>A variable stored <b>in the image</b>. Available to later build steps <b>and</b> to the running container. Can be overridden at <code>docker run -e</code>.</p></div>
+</div>
+<p><b>Why it matters:</b> picking the wrong one means either your app can't see the value at runtime (ARG), or you've hard-wired a value you wanted to choose per build.</p>
+<script type="text/plain" class="code" data-lang="dockerfile" data-title="Dockerfile">
+# ARG before FROM: usable only inside the FROM line itself
+ARG NODE_VERSION=20
+FROM node:${NODE_VERSION}-alpine
+
+# an ARG used after FROM must be declared again
+ARG APP_VERSION=dev
+# copy it into an ENV so the RUNNING container can see it too
+ENV APP_VERSION=${APP_VERSION}
+
+# an ENV with a default that can be overridden at run time
+ENV PORT=3000
+</script>
+<script type="text/plain" class="code" data-lang="bash" data-title="see the difference">
+docker build --build-arg APP_VERSION=1.4.2 -t myapp .
+
+docker run --rm myapp printenv APP_VERSION                       # → 1.4.2      (ENV copied from ARG)
+docker run --rm -e APP_VERSION=hotfix myapp printenv APP_VERSION # → hotfix      (-e overrides ENV)
+docker run --rm myapp printenv PORT                              # → 3000       (ENV default)
+
+# Without the ENV line, ARG APP_VERSION would be gone at runtime:
+#   printenv APP_VERSION  → prints nothing
+</script>
+<div class="tablewrap"><table>
+<tr><th></th><th><code>ARG</code></th><th><code>ENV</code></th></tr>
+<tr><td>Available during build</td><td>Yes (after it's declared)</td><td>Yes (after it's set)</td></tr>
+<tr><td>Available in the running container</td><td><b>No</b></td><td><b>Yes</b></td></tr>
+<tr><td>How to set</td><td><code>--build-arg</code></td><td>Dockerfile, then <code>-e</code>/Compose to override</td></tr>
+<tr><td>Good for</td><td>Base image version, build flags, <code>NEXT_PUBLIC_*</code> baked at build time</td><td>Default runtime config like <code>PORT</code>, <code>NODE_ENV</code></td></tr>
+</table></div>
+<div class="callout bad"><b class="t">Neither is for secrets</b><p>ARG values appear in <code>docker history</code> and ENV values in <code>docker inspect</code>. Pass real secrets at runtime (secrets manager, <code>--env-file</code>) or use BuildKit secret mounts.</p></div>
+
+<!-- ───────────── 5 ───────────── -->
+<h4>5. <code>EXPOSE</code> vs <code>-p</code></h4>
+<div class="grid">
+<div class="card"><h4>EXPOSE 3000</h4><p>A <b>note</b> stored in the image: "the app inside listens on 3000". It opens nothing and changes no networking.</p></div>
+<div class="card"><h4>-p 8080:3000</h4><p>A <b>docker run option</b> that <b>publishes</b> the port: host port <code>8080</code> forwards to container port <code>3000</code>.</p></div>
+</div>
+<p><b>Why it matters:</b> the most common "my container runs but I can't open it in the browser" cause is a missing <code>-p</code>.</p>
+<figure class="diagram">
+<svg class="d" viewBox="0 0 760 210">
+  <text class="h" x="10" y="22">Without -p (EXPOSE alone)</text>
+  <rect class="n" x="10" y="34" width="130" height="44" rx="8"/><text x="24" y="61">Browser (host)</text>
+  <rect class="g" x="500" y="34" width="170" height="44" rx="8"/><text x="514" y="61">container :3000</text>
+  <path class="lnx" d="M140 56 H498"/><text class="m" x="190" y="48">localhost:3000 → connection refused</text>
+  <text class="h" x="10" y="124">With -p 8080:3000</text>
+  <rect class="n" x="10" y="136" width="130" height="44" rx="8"/><text x="24" y="163">Browser (host)</text>
+  <rect class="g" x="500" y="136" width="170" height="44" rx="8"/><text x="514" y="163">container :3000</text>
+  <path class="lnp" d="M140 158 H498"/><text class="m" x="168" y="150">localhost:8080 → forwarded to :3000 ✔</text>
+</svg>
+<figcaption>Publishing is what connects a host port to a container port.</figcaption>
+</figure>
+<script type="text/plain" class="code" data-lang="bash" data-title="try it">
+# Dockerfile has: EXPOSE 3000   (app listens on 3000)
+
+docker run -d --name a myapp
+curl http://localhost:3000        # ✗ fails: nothing published, EXPOSE alone does nothing
+
+docker run -d --name b -p 8080:3000 myapp
+curl http://localhost:8080        # ✔ works: host 8080 → container 3000
+
+docker run -d -p 127.0.0.1:8080:3000 myapp   # only reachable from your own machine
+docker run -d -P myapp                       # -P: publish every EXPOSEd port to a RANDOM host port
+docker port b                                # shows: 3000/tcp -> 0.0.0.0:8080
+</script>
+<div class="callout tip"><b class="t">Two details interviewers like</b>
+<p>1) Other containers on the <b>same Docker network</b> can reach <code>container:3000</code> with or without EXPOSE or <code>-p</code>. Publishing is only for traffic coming from <b>outside</b> (your browser, the host).<br>2) The order is always <code>HOST:CONTAINER</code>. <code>-p 3000:8080</code> is the reverse of <code>-p 8080:3000</code>.</p></div>
+
+<!-- ───────────── 6 ───────────── -->
+<h4>6. Shell form vs exec form</h4>
+<div class="grid">
+<div class="card"><h4>Shell form</h4><p><code>CMD node server.js</code></p><p>Docker runs it as <code>/bin/sh -c "node server.js"</code>. A <b>shell</b> becomes the main process (PID 1), and node is its child.</p></div>
+<div class="card"><h4>Exec form</h4><p><code>CMD ["node","server.js"]</code></p><p>Docker runs <code>node</code> <b>directly</b>. Your app is PID 1. No shell involved.</p></div>
+</div>
+<p><b>Why it matters:</b> <code>docker stop</code> sends a termination signal (SIGTERM) to <b>PID 1</b>. If PID 1 is a shell, your app may never receive it.</p>
+<script type="text/plain" class="code" data-lang="bash" data-title="see the process tree (expected output, illustrative)">
+# Dockerfile uses shell form:  CMD node server.js
+docker exec c1 ps
+#   PID   COMMAND
+#     1   /bin/sh -c node server.js     ← shell is PID 1 and receives SIGTERM
+#     7   node server.js                ← your app is just a child
+
+# Dockerfile uses exec form:   CMD ["node","server.js"]
+docker exec c2 ps
+#   PID   COMMAND
+#     1   node server.js                ← your app is PID 1 and receives SIGTERM
+</script>
+<script type="text/plain" class="code" data-lang="javascript" data-title="why this matters: graceful shutdown code">
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received, finishing in-flight requests…');
+  server.close(() => process.exit(0));   // stop accepting, finish work, exit cleanly
+});
+// Exec form → this handler runs immediately on `docker stop`.
+// Shell form → it may never run; after 10 s Docker force-kills the container (exit 137).
+</script>
+<div class="tablewrap"><table>
+<tr><th></th><th>Shell form <code>CMD node app.js</code></th><th>Exec form <code>CMD ["node","app.js"]</code></th></tr>
+<tr><td>PID 1</td><td><code>/bin/sh</code></td><td>Your app</td></tr>
+<tr><td>Receives SIGTERM on <code>docker stop</code></td><td>Usually not forwarded (some shells optimise a single command, don't rely on it)</td><td>Yes</td></tr>
+<tr><td>Environment variable expansion (<code>$PORT</code>)</td><td>Works (the shell expands it)</td><td><b>Doesn't</b> (no shell). Use <code>["sh","-c","exec node server.js --port $PORT"]</code> or read the env in code</td></tr>
+<tr><td>Pipes, <code>&amp;&amp;</code>, redirects</td><td>Works</td><td>Doesn't (no shell)</td></tr>
+<tr><td>Applies to</td><td colspan="2"><code>RUN</code>, <code>CMD</code> and <code>ENTRYPOINT</code> all have both forms</td></tr>
+</table></div>
+<div class="callout tip"><b class="t">Rule of thumb</b><p>Use <b>exec form</b> for <code>CMD</code> and <code>ENTRYPOINT</code> so signals reach your app. Shell form is fine for <code>RUN</code> (you often want <code>&amp;&amp;</code> and pipes there). If you need shell features at start, use a script that ends with <code>exec node server.js</code>.</p></div>
+
+<div class="callout say"><b class="t">One-sentence answers to say in an interview</b>
+<p><b>CMD vs ENTRYPOINT:</b> ENTRYPOINT is the fixed program, CMD is replaceable default arguments. <b>COPY vs ADD:</b> COPY just copies; ADD also unpacks tarballs and fetches URLs, so I use COPY. <b>RUN vs CMD:</b> RUN runs at build time and is saved in the image, CMD runs every time the container starts. <b>ARG vs ENV:</b> ARG exists only during build, ENV also exists in the running container. <b>EXPOSE vs -p:</b> EXPOSE is documentation, <code>-p</code> actually publishes a port. <b>Shell vs exec form:</b> exec form makes my app PID 1 so it receives SIGTERM.</p></div>
+
+<h3>Networking</h3>
+<ul>
+<li>Default <b>bridge</b>: containers reach each other by IP only.</li>
+<li><b>User-defined bridge</b> (what Compose creates): containers reach each other <b>by service name</b> via built-in DNS, e.g. <code>http://api:3000</code>.</li>
+<li><code>localhost</code> inside a container means <b>that container itself</b>. Not your machine, not another container.</li>
+<li><code>-p 8080:3000</code> means host 8080 → container 3000.</li>
+<li>Other drivers: <code>host</code> (shares host network, Linux), <code>none</code>, <code>overlay</code> (multi-host).</li>
+</ul>
+<figure class="diagram">
+<svg class="d" viewBox="0 0 760 270">
+  <rect class="n" x="150" y="10" width="600" height="250" rx="12"/><text class="h" x="166" y="32">Docker host</text>
+  <rect class="v dash" x="175" y="48" width="555" height="190" rx="10"/><text class="m" x="190" y="68">user-defined network "app-net" (built-in DNS)</text>
+  <rect class="p" x="200" y="100" width="130" height="70" rx="8"/><text class="h" x="236" y="128">web</text><text class="m" x="212" y="148">listens :80</text>
+  <rect class="g" x="400" y="100" width="130" height="70" rx="8"/><text class="h" x="441" y="128">api</text><text class="m" x="412" y="148">listens :3000</text>
+  <rect class="o" x="590" y="100" width="120" height="70" rx="8"/><text class="h" x="632" y="128">db</text><text class="m" x="602" y="148">listens :5432</text>
+  <path class="ln" d="M330 135 H398"/><text class="m" x="336" y="124">api:3000</text>
+  <path class="ln" d="M530 135 H588"/><text class="m" x="520" y="196">db:5432</text>
+  <rect class="n" x="10" y="100" width="100" height="70" rx="8"/><text class="h" x="30" y="128">Browser</text><text class="m" x="22" y="148">your machine</text>
+  <path class="lnp" d="M110 135 H198"/><text class="m" x="114" y="124">:8080</text><text class="m" x="116" y="156">(-p)</text>
+  <text class="m" x="190" y="225">Only web publishes a port. api and db are reachable only inside the network.</text>
+</svg>
+<figcaption>Service names are DNS names inside the network. Only published ports are reachable from outside.</figcaption>
+</figure>
+
+<h3>Storage</h3>
+<p>The container filesystem is <b>ephemeral</b>. Delete the container and its data is gone, unless it lives on a volume.</p>
+<div class="tablewrap"><table>
+<tr><th>Type</th><th>Example</th><th>Use</th></tr>
+<tr><td><b>Volume</b></td><td><code>-v pgdata:/var/lib/postgresql/data</code></td><td>Persistent data (DBs). Docker-managed. <b>Production choice.</b></td></tr>
+<tr><td><b>Bind mount</b></td><td><code>-v ./src:/app/src</code></td><td>Dev: live-reload your code into the container</td></tr>
+<tr><td><b>tmpfs</b></td><td><code>--tmpfs /tmp</code></td><td>In-memory scratch space, gone on stop</td></tr>
+</table></div>
+<figure class="diagram">
+<svg class="d" viewBox="0 0 760 200">
+  <rect class="g" x="250" y="20" width="260" height="150" rx="10"/><text class="h" x="318" y="44">Container</text>
+  <rect class="r" x="270" y="56" width="220" height="30" rx="6"/><text x="284" y="76">writable layer (EPHEMERAL)</text>
+  <rect class="n" x="270" y="92" width="220" height="30" rx="6"/><text x="284" y="112">/var/lib/postgresql/data</text>
+  <rect class="n" x="270" y="128" width="220" height="30" rx="6"/><text x="284" y="148">/app/src</text>
+  <rect class="g" x="20" y="92" width="170" height="30" rx="6"/><text x="30" y="112">Volume: pgdata ✔</text>
+  <text class="m" x="20" y="140">managed by Docker, survives</text><text class="m" x="20" y="154">container deletion</text>
+  <path class="ln2" d="M190 107 H268"/>
+  <rect class="o" x="570" y="128" width="170" height="30" rx="6"/><text x="580" y="148">Host folder ./src</text>
+  <text class="m" x="570" y="176">bind mount: dev live-reload</text>
+  <path class="ln2" d="M490 143 H568"/>
+  <text class="m" x="270" y="188">Delete container → writable layer is lost</text>
+</svg>
+<figcaption>Anything not on a volume or bind mount dies with the container.</figcaption>
+</figure>
+
+<h3>Container lifecycle and stopping</h3>
+<figure class="diagram">
+<svg class="d" viewBox="0 0 760 170">
+  <rect class="n" x="10" y="40" width="130" height="50" rx="8"/><text x="42" y="70">Created</text>
+  <rect class="g" x="200" y="40" width="130" height="50" rx="8"/><text x="236" y="70">Running</text>
+  <rect class="o" x="390" y="40" width="130" height="50" rx="8"/><text x="420" y="70">Exited</text>
+  <rect class="r" x="580" y="40" width="160" height="50" rx="8"/><text x="620" y="70">Removed</text>
+  <path class="ln" d="M140 65 H198"/><text class="m" x="148" y="55">start</text>
+  <path class="ln" d="M330 65 H388"/><text class="m" x="336" y="55">stop/exit</text>
+  <path class="ln" d="M520 65 H578"/><text class="m" x="542" y="55">rm</text>
+  <path class="ln" d="M455 90 Q455 130 300 130 Q265 130 265 92"/><text class="m" x="318" y="124">restart policy</text>
+  <text class="m" x="10" y="160"><tspan>docker stop = SIGTERM → wait 10 s → SIGKILL.  Exit 137 = killed (often OOM).  Exit 0 = main process finished normally.</tspan></text>
+</svg>
+<figcaption>A container lives exactly as long as its main process (PID 1).</figcaption>
+</figure>
+<figure class="diagram">
+<svg class="d" viewBox="0 0 760 200">
+  <text class="h" x="20" y="22">Shell form: CMD node app.js</text>
+  <rect class="v" x="20" y="34" width="130" height="40" rx="6"/><text x="36" y="59">docker stop</text>
+  <path class="ln" d="M150 54 H228"/><text class="m" x="158" y="46">SIGTERM</text>
+  <rect class="o" x="230" y="34" width="130" height="40" rx="6"/><text x="246" y="59">sh -c (PID 1)</text>
+  <path class="lnx" d="M360 54 H438"/><text class="m" x="372" y="46">blocked</text>
+  <rect class="r" x="440" y="34" width="130" height="40" rx="6"/><text x="465" y="59">node app</text>
+  <text class="m" x="590" y="59">→ 10 s later: SIGKILL</text>
+  <text class="h" x="20" y="124">Exec form: CMD ["node","app.js"]</text>
+  <rect class="v" x="20" y="136" width="130" height="40" rx="6"/><text x="36" y="161">docker stop</text>
+  <path class="ln" d="M150 156 H228"/><text class="m" x="158" y="148">SIGTERM</text>
+  <rect class="g" x="230" y="136" width="200" height="40" rx="6"/><text x="246" y="161">node app (PID 1)</text>
+  <text class="m" x="450" y="161">→ closes DB, exits cleanly ✔</text>
+</svg>
+<figcaption>Use exec form (or <code>init: true</code>) so your app actually receives SIGTERM and can shut down gracefully.</figcaption>
+</figure>
+
+<h3>What actually happens when a container starts?</h3>
+<p>A container is <b>not</b> a virtual machine and not a thread. <code>docker run</code> asks the Linux kernel to start <b>one ordinary process</b>, wrapped in restrictions. That process is the container's <b>PID 1</b>.</p>
+<figure class="diagram">
+<svg class="d" viewBox="0 0 760 200">
+  <rect class="n" x="10" y="30" width="100" height="56" rx="8"/><text class="h" x="22" y="56">docker</text><text class="m" x="22" y="74">CLI</text>
+  <rect class="p" x="135" y="30" width="130" height="56" rx="8"/><text class="h" x="147" y="56">Docker daemon</text><text class="m" x="147" y="74">images, networks</text>
+  <rect class="p" x="290" y="30" width="120" height="56" rx="8"/><text class="h" x="302" y="56">containerd</text><text class="m" x="302" y="74">runs containers</text>
+  <rect class="v" x="435" y="30" width="90" height="56" rx="8"/><text class="h" x="447" y="56">runc</text><text class="m" x="447" y="74">low-level</text>
+  <rect class="o" x="550" y="30" width="200" height="56" rx="8"/><text class="h" x="562" y="56">Linux kernel</text><text class="m" x="562" y="74">namespaces · cgroups · exec</text>
+  <path class="ln" d="M110 58 H133"/><path class="ln" d="M265 58 H288"/><path class="ln" d="M410 58 H433"/><path class="ln" d="M525 58 H548"/>
+  <rect class="g" x="550" y="130" width="200" height="50" rx="8"/><text class="h" x="562" y="160">ONE process = PID 1</text>
+  <path class="ln" d="M650 86 V128"/>
+  <text class="m" x="10" y="130">The CLI only talks to the daemon.</text>
+  <text class="m" x="10" y="150">runc exits after the start; containerd-shim stays as the parent.</text>
+</svg>
+<figcaption>The "container" is a normal process the kernel started with extra rules around it.</figcaption>
+</figure>
+<p><b>The five things the kernel does for a new container</b> (in order):</p>
+<ol class="steps">
+<li><b>Create namespaces.</b> New isolated "views": its own process IDs, network stack, mounts, hostname.</li>
+<li><b>Build the root filesystem.</b> The image layers are stacked (read-only) with a writable layer on top, and that becomes <code>/</code> for the process.</li>
+<li><b>Apply cgroups.</b> Memory/CPU/process-count limits (<code>-m 256m</code>, <code>--cpus 0.5</code>).</li>
+<li><b>Drop privileges.</b> Remove most root powers (capabilities) and filter dangerous system calls (seccomp).</li>
+<li><b><code>exec</code> your command.</b> <code>ENTRYPOINT</code>/<code>CMD</code> (e.g. <code>node server.js</code>) replaces the setup code, and it is now PID 1.</li>
+</ol>
+
+<h4>Why it's "PID 1", and what that means</h4>
+<figure class="diagram">
+<svg class="d" viewBox="0 0 760 210">
+  <rect class="g" x="10" y="10" width="330" height="190" rx="10"/><text class="h" x="26" y="36">Inside the container</text><text class="m" x="26" y="54">its own PID namespace</text>
+  <rect class="n" x="26" y="74" width="298" height="40" rx="6"/><text x="40" y="99">PID 1    node server.js</text>
+  <rect class="n" x="26" y="128" width="298" height="40" rx="6"/><text x="40" y="153">PID 14   sh</text>
+  <rect class="o" x="420" y="10" width="330" height="190" rx="10"/><text class="h" x="436" y="36">On the host (Linux)</text><text class="m" x="436" y="54">the same processes, global numbering</text>
+  <rect class="n" x="436" y="74" width="298" height="40" rx="6"/><text x="450" y="99">PID 48213   node server.js</text>
+  <rect class="n" x="436" y="128" width="298" height="40" rx="6"/><text x="450" y="153">PID 48390   sh</text>
+  <path class="ln2" d="M326 94 H434"/><path class="ln2" d="M326 148 H434"/>
+  <text class="m" x="350" y="84">same</text><text class="m" x="350" y="138">same</text>
+</svg>
+<figcaption>One real process, two numbers. On Windows/Mac, "the host" is Docker Desktop's hidden Linux VM.</figcaption>
+</figure>
+<ul>
+<li><b>A container lives exactly as long as PID 1.</b> When PID 1 of a PID namespace exits, the kernel kills everything else in it, and Docker marks the container <code>Exited</code>.</li>
+<li><code>docker run alpine echo hi</code> → PID 1 is <code>echo</code>, finishes in a millisecond → container exits at once. That's the classic "my container exits immediately".</li>
+<li>A web server stays up because <code>node server.js</code> never finishes: it keeps listening.</li>
+<li><b>Process or thread?</b> A process. It may spawn more processes or threads inside (Node worker threads, nginx workers, JVM threads). They all live in that namespace.</li>
+</ul>
+<div class="callout warn"><b class="t">PID 1 is special</b>
+<p><b>1) Signals:</b> the kernel gives PID 1 no default signal behavior. With no <code>SIGTERM</code> handler in your code, <code>docker stop</code> does <i>nothing</i> and Docker kills it after 10 s (exit 137). That's why Node apps need <code>process.on('SIGTERM', …)</code>.<br><b>2) Zombies:</b> PID 1 must reap orphaned child processes. Most apps don't, so <code>docker run --init</code> (or <code>init: true</code>) puts a tiny init (tini) in front.</p></div>
+<p><b>Prove it yourself:</b></p>
+<script type="text/plain" class="code" data-lang="bash" data-title="a container is just a process">
+docker run -d --name c alpine sleep 300
+
+docker top c               # the process, with its HOST pid
+docker exec c ps           # inside the container: sleep is PID 1
+docker exec c uname -r     # the kernel version equals the host's: there is no second kernel
+docker stop c              # SIGTERM → sleep has no handler as PID 1 → waits 10 s → SIGKILL (exit 137)
+docker rm c
+
+docker run alpine echo hi      # PID 1 finishes immediately → Exited (0)
+docker run -it alpine sh       # PID 1 = sh → lives until you type exit
+</script>
+
+<h3>How many containers can you create?</h3>
+<p><b>Docker has no fixed maximum.</b> You can start containers until some <b>resource on the host</b> runs out. The limiting resource depends on what the containers do, and it's usually <b>memory</b>.</p>
+<div class="tablewrap"><table>
+<tr><th>What limits you</th><th>Typical numbers</th><th>Notes / how to check</th></tr>
+<tr><td><b>RAM</b> (the usual limit)</td><td>An idle container costs a few MB. A Node app ~50–150 MB, a JVM app 300 MB+.</td><td><code>docker stats</code>, <code>free -h</code>. On Windows/Mac, <b>Docker Desktop's VM memory cap</b> applies (WSL2 defaults to ~50% of your RAM).</td></tr>
+<tr><td><b>CPU</b></td><td>Not a count limit; containers share cores.</td><td>Too many busy containers = everything slows. <code>--cpus</code> caps each one.</td></tr>
+<tr><td><b>Process IDs</b></td><td>Kernel <code>pid_max</code> is often 32,768 up to ~4 million, depending on the system.</td><td><code>cat /proc/sys/kernel/pid_max</code>. Threads also use PIDs. Per-container cap: <code>--pids-limit</code>.</td></tr>
+<tr><td><b>Open files</b></td><td>Per-process <code>ulimit -n</code> plus a system-wide <code>fs.file-max</code>.</td><td><code>ulimit -n</code>, <code>cat /proc/sys/fs/file-max</code>. Busy servers hit "too many open files".</td></tr>
+<tr><td><b>Disk</b></td><td>Image layers are shared, but each container has a writable layer and logs.</td><td><code>docker system df</code>. Unrotated <code>json-file</code> logs fill disks (Bug #30).</td></tr>
+<tr><td><b>Network</b></td><td>A Linux bridge holds about 1,000 attached containers, so the default <code>bridge</code> network tops out near there. Host ports: 65,535, each usable once.</td><td>Default subnet is <code>172.17.0.0/16</code> (~65k addresses), so the bridge limit hits first. Each new user-defined network consumes another address block from Docker's default pools.</td></tr>
+<tr><td><b>Orchestrator rules</b></td><td>Kubernetes defaults to <b>110 pods per node</b>.</td><td>A policy limit, not a Docker one (<code>kubelet --max-pods</code>).</td></tr>
+</table></div>
+<div class="callout say"><b class="t">Interview answer</b><p>"There's no hard cap by default. It depends on host resources: memory first, then PIDs, file descriptors, disk and network address space. On a laptop that's dozens of app containers; on a server, hundreds to thousands of small ones. In production I set per-container memory and CPU limits so one container can't starve the rest."</p></div>
+<script type="text/plain" class="code" data-lang="bash" data-title="feel the limits (start small!)">
+# start 30 tiny containers
+for i in $(seq 1 30); do docker run -d --rm alpine sleep 600; done
+
+docker ps -q | wc -l            # → 30
+docker stats --no-stream        # memory per container (a few MB each)
+cat /proc/sys/kernel/pid_max    # PID ceiling (run inside WSL2 / a Linux VM)
+
+docker kill $(docker ps -q)     # clean up (--rm removes them)
+</script>
+
+<h3>Linux fundamentals behind Docker</h3>
+<p>Docker is mostly a friendly wrapper around Linux kernel features. Learn these ideas once and Docker (and Kubernetes) stop being magic.</p>
+<div class="tablewrap"><table>
+<tr><th>Linux concept</th><th>What it is</th><th>Where it shows up in Docker</th></tr>
+<tr><td>Process / PID</td><td>A running program with a number</td><td>The container <b>is</b> a process (PID 1)</td></tr>
+<tr><td>Namespaces</td><td>What a process can <i>see</i></td><td>Isolation (PIDs, network, mounts, hostname)</td></tr>
+<tr><td>cgroups</td><td>How much a process can <i>use</i></td><td><code>-m</code>, <code>--cpus</code>, OOMKilled (137)</td></tr>
+<tr><td>Filesystem + overlayfs</td><td>Stacked layers presented as one tree</td><td>Image layers, writable layer, <code>COPY</code></td></tr>
+<tr><td>Signals</td><td>Messages sent to a process</td><td><code>docker stop</code> = SIGTERM, then SIGKILL</td></tr>
+<tr><td>stdout / stderr</td><td>Standard output streams</td><td><code>docker logs</code></td></tr>
+<tr><td>Users + capabilities</td><td>Who you are, what powers you have</td><td><code>USER node</code>, <code>cap_drop</code></td></tr>
+<tr><td>veth, bridge, iptables</td><td>Virtual network plumbing and NAT</td><td>Container networks, <code>-p</code> port publishing</td></tr>
+<tr><td>System calls (syscalls)</td><td>How programs ask the kernel for things</td><td>Shared kernel, seccomp filtering</td></tr>
+</table></div>
+
+<h4>1. Processes, PIDs, parent and child</h4>
+<ul>
+<li>Every running program is a <b>process</b> with a PID. A process starts another with <code>fork</code> (copy itself) then <code>exec</code> (turn into a different program). That's how the shell starts <code>node</code>.</li>
+<li>Processes form a tree: each has a <b>parent</b>. On a normal Linux machine PID 1 is <code>init</code>/<code>systemd</code>. In a container, PID 1 is <b>your app</b>.</li>
+<li>If a parent dies, children become <b>orphans</b> and get adopted by PID 1. A finished child nobody has "collected" is a <b>zombie</b>, and PID 1 must collect it.</li>
+<li>Info about every process lives in <code>/proc/&lt;pid&gt;/</code>. <code>/proc/1/cmdline</code> is PID 1's command.</li>
+</ul>
+<script type="text/plain" class="code" data-lang="bash" data-title="look at processes">
+ps aux                 # all processes
+ps -ef --forest        # as a tree (parent → child)
+echo $$                # PID of your current shell
+cat /proc/1/cmdline    # what PID 1 is (inside a container: your app)
+</script>
+
+<h4>2. Kernel, user space and system calls</h4>
+<ul>
+<li>The <b>kernel</b> controls hardware, memory and processes. Programs run in <b>user space</b> and ask the kernel for things through <b>system calls</b> (open a file, send a packet, start a process).</li>
+<li><b>All containers on a host share one kernel.</b> That's why they're light, and why a Linux container needs a Linux kernel (Docker Desktop on Windows/Mac runs a Linux VM for that).</li>
+<li>A container's "OS" (Alpine, Ubuntu…) is just a set of files and libraries, not a kernel.</li>
+</ul>
+
+<h4>3. Namespaces: what a process can see</h4>
+<div class="tablewrap"><table>
+<tr><th>Namespace</th><th>Isolates</th><th>Docker effect</th></tr>
+<tr><td><code>pid</code></td><td>Process IDs</td><td>Container sees only its own processes, starting at PID 1</td></tr>
+<tr><td><code>net</code></td><td>Network interfaces, IPs, ports, routes</td><td>Own <code>localhost</code> and IP, so two containers can both listen on :3000</td></tr>
+<tr><td><code>mnt</code></td><td>Mount points / filesystem view</td><td>Own root filesystem (<code>/</code>) from the image</td></tr>
+<tr><td><code>uts</code></td><td>Hostname</td><td>Own hostname (the container ID by default)</td></tr>
+<tr><td><code>ipc</code></td><td>Shared memory, message queues</td><td>Not shared between containers</td></tr>
+<tr><td><code>user</code></td><td>User/group ID mapping</td><td>Optional: "root" in the container ≠ root on the host</td></tr>
+<tr><td><code>cgroup</code></td><td>View of the cgroup tree</td><td>Container sees only its own limits</td></tr>
+</table></div>
+<script type="text/plain" class="code" data-lang="bash" data-title="build your own mini-container (run in WSL2 or any Linux, needs sudo)">
+# new PID namespace + new hostname namespace + fresh /proc, then a shell
+sudo unshare --pid --fork --mount-proc --uts bash
+
+echo $$           # → 1       (this shell is PID 1 in its own namespace!)
+ps                # only bash and ps: you can't see the host's processes
+hostname demo     # changes the hostname ONLY inside this namespace
+hostname          # → demo
+exit              # PID 1 exits → the namespace is gone (same rule as a container)
+
+hostname          # the real hostname is unchanged
+</script>
+<p>That is, in a nutshell, what <code>docker run</code> does, plus a root filesystem and cgroup limits.</p>
+
+<h4>4. cgroups: how much a process can use</h4>
+<ul>
+<li><b>Control groups</b> put processes in a group and cap its resources: memory, CPU, number of processes, disk I/O.</li>
+<li><code>docker run -m 256m --cpus 0.5 --pids-limit 100 myapp</code> writes those numbers into the container's cgroup.</li>
+<li><b>Memory over the limit → the kernel's OOM killer</b> kills a process (container exit 137, <code>OOMKilled: true</code>). <b>CPU over the limit → throttled</b>, not killed.</li>
+<li>Files live under <code>/sys/fs/cgroup/</code> (cgroup v2: <code>memory.max</code>, <code>cpu.max</code>).</li>
+</ul>
+<script type="text/plain" class="code" data-lang="bash" data-title="see a limit being enforced (cgroup v2 hosts, e.g. Docker Desktop/WSL2)">
+docker run --rm -m 64m alpine sh -c 'cat /sys/fs/cgroup/memory.max'     # → 67108864  (64 MiB in bytes)
+docker run --rm --cpus 0.5 alpine sh -c 'cat /sys/fs/cgroup/cpu.max'    # → 50000 100000 (50 ms per 100 ms)
+</script>
+
+<h4>5. Filesystem: how a container gets its files</h4>
+<div class="callout say"><b class="t">In one sentence</b>
+<p>A container's files are a <b>stack of read-only layers from the image, plus one thin writable layer on top</b>. Linux shows that stack as one normal folder tree (<code>/</code>). The technology that does the stacking is called <b>overlayfs</b>.</p></div>
+
+<p><b>The problem it solves.</b> Every container needs its own complete set of files (<code>/bin</code>, <code>/etc</code>, <code>/app</code>…), and 20 containers from the same image shouldn't need 20 full copies on disk, or take seconds to copy at start. Overlayfs lets them <b>share</b> the image files and only store what each container <i>changes</i>.</p>
+
+<h4>Analogy: a stack of transparent slides</h4>
+<p>Picture overhead-projector slides. The bottom slide has the base drawing (the operating system). On top you lay a slide with your <code>node_modules</code>, then a slide with your code. Looking down from above you see <b>one combined picture</b>. If two slides draw the same thing, <b>the higher slide wins</b>. The container gets one extra <b>blank slide on top</b> that it is allowed to draw on. All the slides below are glued down and never change.</p>
+<figure class="diagram">
+<svg class="d" viewBox="0 0 760 260">
+  <text class="h" x="10" y="18">The stack (top = checked first)</text>
+  <rect class="r" x="10" y="30" width="380" height="44" rx="6"/><text x="24" y="57">Container layer: YOUR CHANGES (read-write)</text>
+  <rect class="p" x="10" y="80" width="380" height="44" rx="6"/><text x="24" y="107">Image layer 3: your code (read-only)</text>
+  <rect class="p" x="10" y="130" width="380" height="44" rx="6"/><text x="24" y="157">Image layer 2: node_modules (read-only)</text>
+  <rect class="p" x="10" y="180" width="380" height="44" rx="6"/><text x="24" y="207">Image layer 1: node:20-alpine (read-only)</text>
+  <path class="ln" d="M390 127 H468"/><text class="m" x="398" y="116">overlayfs</text><text class="m" x="398" y="146">merges</text>
+  <rect class="g" x="470" y="60" width="280" height="130" rx="10"/><text class="h" x="486" y="86">What the container sees</text>
+  <text class="m" x="486" y="108">one normal folder tree:</text>
+  <text x="486" y="132">/app/server.js</text>
+  <text x="486" y="152">/app/node_modules/…</text>
+  <text x="486" y="172">/bin  /etc  /usr  /lib</text>
+  <text class="m" x="470" y="214">Same file in two layers? The higher layer wins.</text>
+</svg>
+<figcaption>You see one folder tree. Underneath it is a stack. Only the top layer is writable.</figcaption>
+</figure>
+
+<h4>What happens when you read, change or delete a file</h4>
+<p>This is the part to remember. Image layers are <b>never modified</b>, so each action is handled differently:</p>
+<figure class="diagram">
+<svg class="d" viewBox="0 0 760 230">
+  <rect class="g" x="10" y="10" width="236" height="210" rx="10"/><text class="h" x="26" y="36">READ a file</text><text class="m" x="26" y="56">cat /app/server.js</text>
+  <text class="m" x="26" y="92">Docker looks from the top</text><text class="m" x="26" y="110">layer downwards.</text>
+  <text class="m" x="26" y="140">Finds it in "your code".</text>
+  <text class="m" x="26" y="176">Nothing is copied.</text><text class="m" x="26" y="194">Fast and free.</text>
+  <rect class="o" x="262" y="10" width="236" height="210" rx="10"/><text class="h" x="278" y="36">CHANGE a file</text><text class="m" x="278" y="56">echo hi &gt;&gt; /etc/motd</text>
+  <text class="m" x="278" y="92">The file is COPIED UP into</text><text class="m" x="278" y="110">your top layer first.</text>
+  <text class="m" x="278" y="140">The change is made there.</text>
+  <text class="m" x="278" y="176">The original below is</text><text class="m" x="278" y="194">untouched.</text>
+  <rect class="r" x="514" y="10" width="236" height="210" rx="10"/><text class="h" x="530" y="36">DELETE a file</text><text class="m" x="530" y="56">rm /etc/issue</text>
+  <text class="m" x="530" y="92">A "whiteout" marker is</text><text class="m" x="530" y="110">written in your top layer.</text>
+  <text class="m" x="530" y="140">The marker hides the file.</text>
+  <text class="m" x="530" y="176">The original still exists</text><text class="m" x="530" y="194">below, just invisible.</text>
+</svg>
+<figcaption>This trick is called <b>copy-on-write</b>: nothing is copied until the container actually writes.</figcaption>
+</figure>
+
+<h4>Why many containers share one image</h4>
+<figure class="diagram">
+<svg class="d" viewBox="0 0 760 200">
+  <rect class="r" x="10" y="20" width="200" height="50" rx="8"/><text class="h" x="24" y="42">Container A</text><text class="m" x="24" y="60">its own top layer</text>
+  <rect class="r" x="10" y="130" width="200" height="50" rx="8"/><text class="h" x="24" y="152">Container B</text><text class="m" x="24" y="170">its own top layer</text>
+  <rect class="p" x="300" y="30" width="200" height="140" rx="10"/><text class="h" x="316" y="58">Image layers</text><text class="m" x="316" y="82">stored ONCE on disk</text><text class="m" x="316" y="102">read-only</text><text class="m" x="316" y="122">shared by every</text><text class="m" x="316" y="140">container of this image</text>
+  <path class="ln" d="M210 45 L298 80"/><path class="ln" d="M210 155 L298 120"/>
+  <text class="m" x="530" y="80">100 containers ≠ 100 copies.</text><text class="m" x="530" y="100">Each adds only its own</text><text class="m" x="530" y="120">small writable layer.</text>
+</svg>
+<figcaption>That's why starting a container takes milliseconds and costs almost no disk.</figcaption>
+</figure>
+
+<h4>See it with your own eyes</h4>
+<script type="text/plain" class="code" data-lang="bash" data-title="read / change / delete, then look at what changed">
+docker run -d --name demo alpine sleep 600
+
+# do three things inside the container
+docker exec demo sh -c 'echo hello > /note.txt'      # a NEW file
+docker exec demo sh -c 'echo hi >> /etc/motd'        # CHANGE an existing image file
+docker exec demo sh -c 'rm /etc/issue'               # DELETE an existing image file
+
+docker diff demo          # shows ONLY what is in the top layer (expected output, illustrative):
+# A /note.txt             ← A = Added
+# C /etc                  ← C = Changed
+# C /etc/motd
+# D /etc/issue            ← D = Deleted (the whiteout marker)
+
+docker rm -f demo                                  # remove the container → its top layer is gone
+docker run --rm alpine ls /note.txt                # → No such file or directory
+docker run --rm alpine cat /etc/issue              # → still there! The image was never modified
+</script>
+
+<h4>So where do you keep data that must survive?</h4>
+<p>The container's top layer disappears with the container. For data you want to keep (databases, uploads), you attach a <b>volume</b>: a folder stored <i>outside</i> the layer stack and plugged into the container at a path.</p>
+<script type="text/plain" class="code" data-lang="bash" data-title="a volume survives container removal">
+docker run --rm -v mydata:/data alpine sh -c 'echo saved > /data/file.txt'   # container 1 writes, then is removed
+docker run --rm -v mydata:/data alpine cat /data/file.txt                    # container 2 → saved
+</script>
+<div class="tablewrap"><table>
+<tr><th>Where you write</th><th>Lives in</th><th>Survives <code>docker rm</code>?</th><th>Speed</th></tr>
+<tr><td>Anywhere not mounted (e.g. <code>/app/uploads</code>)</td><td>Container's top layer (overlayfs)</td><td><b>No</b></td><td>Slower for heavy writes (copy-up cost)</td></tr>
+<tr><td>A named volume (<code>-v mydata:/data</code>)</td><td>Docker-managed folder outside the layers</td><td><b>Yes</b></td><td>Near-native</td></tr>
+<tr><td>A bind mount (<code>-v ./src:/app/src</code>)</td><td>Your host folder</td><td><b>Yes</b> (it's your files)</td><td>Native (slower on Windows/Mac file sharing)</td></tr>
+<tr><td><code>tmpfs</code></td><td>RAM</td><td>No (gone on stop)</td><td>Fastest</td></tr>
+</table></div>
+
+<h4>What is a "mount"? (plain English)</h4>
+<ul>
+<li>A <b>mount</b> means "attach some storage at this folder path". Linux builds its single <code>/</code> tree out of many mounts: your disk at <code>/</code>, a USB stick at <code>/mnt/usb</code>, and so on.</li>
+<li>A container gets <b>its own private list of mounts</b> (that's the <i>mount namespace</i>). Docker puts these in it:
+  <ul>
+  <li><code>/</code> → the overlayfs stack described above</li>
+  <li><code>/proc</code>, <code>/sys</code>, <code>/dev</code> → kernel information and devices</li>
+  <li>your volumes and bind mounts → at the paths you chose</li>
+  </ul></li>
+<li>The container's <code>/</code> is <b>not</b> your host's <code>/</code>. The kernel swaps the root for the process (the idea behind <code>chroot</code>/<code>pivot_root</code>), so the process cannot even see host files outside its tree.</li>
+</ul>
+<script type="text/plain" class="code" data-lang="bash" data-title="the container's own mount table">
+docker run --rm alpine sh -c 'mount | head -5'
+# overlay on / type overlay (rw,...lowerdir=...,upperdir=...,workdir=...)   ← the layer stack
+# proc on /proc type proc (...)
+# tmpfs on /dev type tmpfs (...)
+# sysfs on /sys type sysfs (...)
+# lowerdir = the read-only image layers, upperdir = the container's writable layer
+</script>
+
+<h4>Everything is a file</h4>
+<p>In Linux, almost everything is presented as a file: normal files, folders, devices (<code>/dev/null</code>), running-process info (<code>/proc</code>), kernel settings (<code>/sys</code>), even network sockets. That's why one set of tools (<code>cat</code>, <code>ls</code>, <code>echo</code>) can inspect so much, and why Docker can hand a container a private view of "files" for almost everything.</p>
+
+<div class="tablewrap"><table>
+<tr><th>Question</th><th>Answer</th></tr>
+<tr><td>Where do a container's files come from?</td><td>The image's read-only layers, stacked and merged into <code>/</code> by overlayfs.</td></tr>
+<tr><td>Where do my writes go?</td><td>The container's own thin writable (top) layer.</td></tr>
+<tr><td>Does editing a file change the image?</td><td>No. Image layers are never modified.</td></tr>
+<tr><td>What happens to my writes on <code>docker rm</code>?</td><td>They're deleted with the container.</td></tr>
+<tr><td>How do I keep data?</td><td>Use a volume or bind mount.</td></tr>
+<tr><td>Why are containers cheap and fast to start?</td><td>Layers are shared, and nothing is copied until a write happens (copy-on-write).</td></tr>
+</table></div>
+<div class="callout tip"><b class="t">Say it in an interview</b>
+<p>"A container's root filesystem is the image's read-only layers stacked with overlayfs, plus a thin writable layer on top. Reads come from the shared layers, the first write copies the file up into the container's layer, and deletes are recorded as whiteouts. The image is never changed, so many containers share it cheaply. Anything that must persist goes on a volume, because the writable layer disappears with the container."</p></div>
+
+<h4>6. Signals and exit codes</h4>
+<div class="tablewrap"><table>
+<tr><th>Signal</th><th>Number</th><th>Meaning</th><th>Docker context</th></tr>
+<tr><td><code>SIGTERM</code></td><td>15</td><td>"Please shut down" (can be handled)</td><td><code>docker stop</code> sends this first</td></tr>
+<tr><td><code>SIGKILL</code></td><td>9</td><td>Immediate kill (cannot be caught)</td><td>After 10 s, or by the OOM killer</td></tr>
+<tr><td><code>SIGINT</code></td><td>2</td><td>Interrupt (Ctrl+C)</td><td><code>docker run -it</code> then Ctrl+C</td></tr>
+<tr><td><code>SIGHUP</code></td><td>1</td><td>Hang up / reload config</td><td>nginx reload</td></tr>
+</table></div>
+<p><b>Exit codes:</b> <code>0</code> = success, <code>1</code> = generic error, <code>128 + N</code> = killed by signal N. So <b>137 = 128+9 (SIGKILL / OOM)</b> and <b>143 = 128+15 (SIGTERM)</b>.</p>
+
+<h4>7. stdin / stdout / stderr and file descriptors</h4>
+<ul>
+<li>Every process starts with three open <b>file descriptors</b>: <code>0</code> stdin, <code>1</code> stdout, <code>2</code> stderr.</li>
+<li><code>docker logs</code> just reads the container's stdout/stderr. That is why apps should <b>log to stdout</b> instead of files.</li>
+<li>Sockets, files and pipes all use file descriptors, which is why "too many open files" is a real limit under load.</li>
+</ul>
+
+<h4>8. Users, permissions and capabilities</h4>
+<ul>
+<li>Every process runs as a <b>UID</b> (<code>0</code> = root). Files have an owner and permission bits (<code>rwx</code> for user/group/others). <code>permission denied</code> usually means a UID/ownership mismatch (Bug #25).</li>
+<li><b>Root in a container is still real root on the host</b> unless user namespaces are used, but with fewer powers. That's why you run as non-root (<code>USER node</code>).</li>
+<li><b>Capabilities</b> split "root powers" into pieces (e.g. <code>NET_BIND_SERVICE</code> = bind ports below 1024). Docker drops most by default; <code>cap_drop: [ALL]</code> is the strict setup.</li>
+</ul>
+<script type="text/plain" class="code" data-lang="bash" data-title="who am I in the container?">
+docker run --rm alpine id                          # uid=0(root)  (default!)
+docker run --rm --user 1000 alpine id              # uid=1000
+docker run --rm node:20-alpine id                  # root; the image ships a 'node' user to switch to
+</script>
+
+<h4>9. Networking plumbing</h4>
+<ul>
+<li>Each container gets its own <b>network namespace</b> with its own <code>localhost</code>. That's why <code>localhost</code> never reaches another container (Bug #1).</li>
+<li>Docker connects it to the host with a <b>veth pair</b> (a virtual cable) plugged into a <b>bridge</b> (a virtual switch, <code>docker0</code> or a custom network).</li>
+<li><b>Outbound traffic</b> is NATed through the host. <b><code>-p 8080:3000</code></b> adds an <b>iptables DNAT rule</b>: traffic to host port 8080 is rewritten to the container's IP:3000.</li>
+<li>Inspect: <code>ip addr</code>, <code>ip route</code>, <code>ss -tlnp</code> (listening ports), <code>iptables -t nat -L</code>.</li>
+</ul>
+
+<h4>10. /proc and /sys: the kernel as files</h4>
+<ul>
+<li><code>/proc</code> exposes processes and kernel state: <code>/proc/&lt;pid&gt;/status</code>, <code>/proc/meminfo</code>, <code>/proc/sys/kernel/pid_max</code>.</li>
+<li><code>/sys</code> exposes devices and cgroups. Tools like <code>ps</code>, <code>top</code>, <code>free</code> just read these files.</li>
+<li>A pitfall: inside a container, old tools may read <b>host-wide</b> numbers from <code>/proc</code> (total RAM) instead of the container's limit. That's why JVMs and Node needed container-aware settings.</li>
+</ul>
+
+<h4>11. Init systems vs containers</h4>
+<p>A normal server boots <code>systemd</code> as PID 1, which starts many services. A container <b>doesn't boot an OS</b>: PID 1 is your single app. That's why "one process per container" is the standard design, and why you don't <code>ssh</code> into containers or use <code>systemctl</code> inside them. Use <code>docker exec</code> instead.</p>
+
+<div class="callout tip"><b class="t">Your 5-line mental model</b>
+<p>1) A container = <b>one Linux process</b> started by <code>runc</code>. 2) <b>Namespaces</b> limit what it sees, <b>cgroups</b> limit what it uses. 3) Its <code>/</code> is the <b>image layers</b> stacked with overlayfs plus a writable layer. 4) It's <b>PID 1</b>: when it exits, the container is done, and it must handle SIGTERM. 5) All containers <b>share the host kernel</b>, so they're light but less isolated than VMs.</p></div>
+
+<div class="callout say"><b class="t">Say it in an interview</b>
+<p>"A container is just a Linux process, isolated with namespaces and limited with cgroups, running on a root filesystem built from image layers with overlayfs. It's PID 1 in its own PID namespace, so it lives exactly as long as that process, and it shares the host kernel, which is why it starts in milliseconds and why it's lighter but less isolated than a VM."</p></div>
+
+<h3>Compose in 30 seconds</h3>
+<p>One YAML file describing services, networks and volumes. <code>docker compose up -d --build</code> starts everything. <code>down</code> stops and removes it (<code>-v</code> also deletes volumes ⚠️).</p>
+
+<h3>Commands to know cold</h3>
+<script type="text/plain" class="code" data-lang="bash" data-title="essential commands">
+docker build -t myapp:1.0 .
+docker run -d --name api -p 3000:3000 --env-file .env myapp:1.0
+docker ps -a                      # all containers, with exit status
+docker logs -f --tail 100 api
+docker exec -it api sh            # shell inside a running container
+docker inspect api                # full JSON: IP, mounts, env, health
+docker stats                      # live CPU / memory
+docker history myapp:1.0          # layers and their sizes
+docker system df                  # disk usage
+docker system prune -a --volumes  # ⚠️ remove all unused stuff
+docker compose config             # validate + show resolved compose file
+docker compose up -d --build | logs -f api | down
+</script>
+<div class="callout warn"><b class="t">Tags</b><p>Image name = <code>registry/repo:tag</code>, e.g. <code>ghcr.io/me/api:1.4.2</code>. <b>Never rely on <code>:latest</code> in production.</b> It's just a tag, not "newest". Pin versions or digests (<code>@sha256:...</code>).</p></div>
+
+<!-- ============================ 02 ============================ -->
+<h2 id="s2"><span class="num">02</span>Production practices</h2>
+
+<h3>1. Multi-stage builds (the thing to mention first)</h3>
+<p>Short version: <b>build in a big image, ship from a small one.</b> The rest of this section explains the problem it fixes, how it works, and walks through a complete project file by file.</p>
+
+<h4>The problem: a single-stage image ships your whole workshop</h4>
+<p>To <i>build</i> an app you need heavy tools: compilers, a package manager, devDependencies, source code. To <i>run</i> it you need almost none of that. With a normal one-stage Dockerfile, everything used to build ends up inside the final image.</p>
+<figure class="diagram">
+<svg class="d" viewBox="0 0 760 240">
+  <text class="h" x="10" y="18">One-stage image (what actually gets shipped)</text>
+  <rect class="r" x="10" y="30" width="400" height="36" rx="6"/><text x="24" y="53">Full Debian OS + tools (~1 GB base image)</text>
+  <rect class="r" x="10" y="70" width="400" height="36" rx="6"/><text x="24" y="93">devDependencies: typescript, @types/*, linters</text>
+  <rect class="r" x="10" y="110" width="400" height="36" rx="6"/><text x="24" y="133">src/*.ts, tsconfig.json (the source code)</text>
+  <rect class="r" x="10" y="150" width="400" height="36" rx="6"/><text x="24" y="173">npm cache and build leftovers</text>
+  <rect class="g" x="10" y="190" width="400" height="36" rx="6"/><text x="24" y="213">dist/ + production node_modules  ← all you needed to RUN</text>
+  <text class="h" x="450" y="48">Why that hurts</text>
+  <text class="m" x="450" y="74">• Huge image: slow to push, pull and deploy</text>
+  <text class="m" x="450" y="96">• More packages = more CVEs to patch</text>
+  <text class="m" x="450" y="118">• Compilers and shells help an attacker</text>
+  <text class="m" x="450" y="140">• Your source code is inside the image</text>
+  <text class="m" x="450" y="162">• Build secrets (e.g. .npmrc) can leak</text>
+  <text class="m" x="450" y="184">• Slow autoscaling and rollbacks</text>
+</svg>
+<figcaption>Only the green row is needed at runtime. The red rows are dead weight you pay for on every pull, scan and start.</figcaption>
+</figure>
+<div class="tablewrap"><table>
+<tr><th>Need at build time</th><th>Need at run time</th></tr>
+<tr><td>Compiler (<code>tsc</code>, <code>javac</code>, Go toolchain)</td><td>The compiled output (<code>dist/</code>, <code>app.jar</code>, a binary)</td></tr>
+<tr><td>Build tools (Maven, npm, webpack/Vite)</td><td>The runtime (Node, a JRE, or nothing for a static binary)</td></tr>
+<tr><td>devDependencies, test libraries</td><td>Production dependencies only</td></tr>
+<tr><td>Source code</td><td>Config and the files the app reads</td></tr>
+</table></div>
+
+<h4>The idea: two (or more) images in one Dockerfile</h4>
+<p>You write several <code>FROM</code> blocks (<b>stages</b>). Early stages are your workshop: build everything there. The <b>last</b> stage is a clean small image, and you <code>COPY --from=</code> only the finished result into it. Docker keeps only the last stage as the image you ship; the earlier stages are discarded (they only live in the build cache).</p>
+
+<h4>How it works, step by step</h4>
+<figure class="diagram">
+<svg class="d" viewBox="0 0 760 290">
+  <rect class="o" x="10" y="20" width="350" height="116" rx="10"/><text class="h" x="26" y="46">Stage 1 · build</text>
+  <text class="m" x="26" y="68">FROM node:20-alpine AS build</text>
+  <text class="m" x="26" y="86">npm ci  → ALL deps (incl. TypeScript)</text>
+  <text class="m" x="26" y="104">npm run build  → /app/dist</text>
+  <text class="m" x="26" y="124">discarded after the build 🗑</text>
+  <rect class="o" x="400" y="20" width="350" height="116" rx="10"/><text class="h" x="416" y="46">Stage 2 · prod-deps</text>
+  <text class="m" x="416" y="68">FROM node:20-alpine AS prod-deps</text>
+  <text class="m" x="416" y="86">npm ci --omit=dev</text>
+  <text class="m" x="416" y="104">→ /app/node_modules (no devDeps)</text>
+  <text class="m" x="416" y="124">discarded after the build 🗑</text>
+  <rect class="g" x="190" y="186" width="380" height="94" rx="10"/><text class="h" x="206" y="212">Stage 3 · runtime = the image you ship</text>
+  <text class="m" x="206" y="234">COPY --from=prod-deps  …/node_modules</text>
+  <text class="m" x="206" y="252">COPY --from=build  …/dist</text>
+  <text class="m" x="206" y="270">USER node · HEALTHCHECK · CMD</text>
+  <path class="ln" d="M185 136 L260 184"/><text class="m" x="100" y="168">dist/</text>
+  <path class="ln" d="M575 136 L500 184"/><text class="m" x="590" y="168">node_modules/</text>
+</svg>
+<figcaption>Three stages, one Dockerfile. Only stage 3's filesystem becomes the image.</figcaption>
+</figure>
+<ol class="steps">
+<li><b>Each <code>FROM</code> starts a brand-new, empty filesystem.</b> Stage 2 can't see stage 1's files unless you copy them.</li>
+<li><b><code>AS name</code></b> labels a stage so you can refer to it later (<code>AS build</code>).</li>
+<li><b><code>COPY --from=build /app/dist ./dist</code></b> copies files <b>from another stage's filesystem</b> (not from your computer) into the current stage. This is the only bridge between stages.</li>
+<li><b>The final image = the last stage.</b> Everything not copied across (compilers, devDependencies, source, caches) is simply not in it.</li>
+<li><b>Build cache still works per stage</b>, so rebuilds stay fast. BuildKit even builds independent stages in parallel and skips stages the final image doesn't use.</li>
+</ol>
+<div class="callout tip"><b class="t">Link to what you learned earlier</b><p>Plain <code>COPY src dest</code> reads from your <b>build context</b> (your computer). <code>COPY --from=stage src dest</code> reads from <b>another stage's filesystem</b> inside the build. Same instruction, different source.</p></div>
+
+<h4>A complete example project (Node + TypeScript API)</h4>
+<p>TypeScript is the perfect example: browsers and Node can't run <code>.ts</code> files, so you must <b>compile</b> first. The compiler is needed to build and useless afterwards.</p>
+<script type="text/plain" class="code" data-lang="bash" data-title="project layout on your computer (the build context)">
+myapi/
+├── package.json          # dependencies + scripts
+├── package-lock.json     # exact versions (needed by npm ci)
+├── tsconfig.json         # how TypeScript compiles
+├── .dockerignore         # what NOT to send to the build
+├── Dockerfile            # the recipe
+└── src/
+    └── server.ts         # your source code
+</script>
+<p><b>Each file, and why it matters for the build:</b></p>
+<script type="text/plain" class="code" data-lang="json" data-title="package.json">
+{
+  "name": "myapi",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.12.7"
+  }
+}
+</script>
+<ul>
+<li><b><code>dependencies</code></b> = needed at <b>runtime</b> (<code>express</code>). <b><code>devDependencies</code></b> = needed only to <b>build</b> (<code>typescript</code>, type definitions). This split is exactly what multi-stage exploits.</li>
+<li><code>"build": "tsc"</code> compiles <code>src/*.ts</code> into <code>dist/*.js</code>. <code>"start"</code> runs the compiled file.</li>
+</ul>
+<script type="text/plain" class="code" data-lang="json" data-title="tsconfig.json">
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "commonjs",
+    "rootDir": "src",
+    "outDir": "dist",
+    "strict": true,
+    "esModuleInterop": true
+  },
+  "include": ["src"]
+}
+</script>
+<ul><li><code>rootDir: src</code> → read TypeScript from <code>src/</code>. <code>outDir: dist</code> → write JavaScript to <code>dist/</code>. That <code>dist/</code> folder is "the artifact" we ship.</li></ul>
+<script type="text/plain" class="code" data-lang="typescript" data-title="src/server.ts">
+import express from 'express';
+
+const app = express();
+const port = Number(process.env.PORT || 3000);
+
+app.get('/health', (_req, res) => res.json({ status: 'ok' }));
+app.get('/', (_req, res) => res.json({ hello: 'from a multi-stage image' }));
+
+const server = app.listen(port, '0.0.0.0', () => console.log(`listening on ${port}`));
+process.on('SIGTERM', () => server.close(() => process.exit(0)));   // graceful stop
+</script>
+<script type="text/plain" class="code" data-lang="bash" data-title=".dockerignore">
+node_modules
+dist
+.git
+.env
+Dockerfile
+*.log
+</script>
+<ul><li><code>.dockerignore</code> keeps your host <code>node_modules</code> and <code>dist</code> out of the build context, so stages build everything fresh inside Linux.</li></ul>
+
+<h4>Before: the single-stage Dockerfile</h4>
+<script type="text/plain" class="code" data-lang="dockerfile" data-title="Dockerfile (single stage: works, but heavy)">
+FROM node:20
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
+CMD ["node", "dist/server.js"]
+</script>
+<p>It works, but the final image contains: the full Debian-based <code>node:20</code> image, <b>TypeScript and all devDependencies</b>, the <code>src/</code> TypeScript, and npm's cache. You ship ~1 GB to run ~20 lines of JavaScript.</p>
+
+<h4>After: the multi-stage Dockerfile, line by line</h4>
+<script type="text/plain" class="code" data-lang="dockerfile" data-title="Dockerfile (multi-stage, production style)">
+# ---------- Stage 1: build (needs devDependencies) ----------
+FROM node:20-alpine AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY tsconfig.json ./
+COPY src ./src
+RUN npm run build
+
+# ---------- Stage 2: production dependencies only ----------
+FROM node:20-alpine AS prod-deps
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --omit=dev
+
+# ---------- Stage 3: runtime (this is the image you ship) ----------
+FROM node:20-alpine AS runtime
+ENV NODE_ENV=production
+WORKDIR /app
+COPY --from=prod-deps /app/node_modules ./node_modules
+COPY --from=build /app/dist ./dist
+COPY package.json ./
+USER node
+EXPOSE 3000
+HEALTHCHECK --interval=15s --timeout=3s --start-period=5s --retries=3 \
+  CMD wget -qO- http://127.0.0.1:3000/health || exit 1
+CMD ["node", "dist/server.js"]
+</script>
+<div class="tablewrap"><table>
+<tr><th>Line</th><th>What it does</th><th>Why</th></tr>
+<tr><td><code>FROM node:20-alpine AS build</code></td><td>Starts stage 1 from a small Linux + Node image and names it <code>build</code>.</td><td>Alpine is far smaller than Debian-based <code>node:20</code>. The name lets later stages copy from it.</td></tr>
+<tr><td><code>COPY package*.json ./</code> then <code>RUN npm ci</code></td><td>Copies only the manifests, then installs <b>all</b> dependencies (including TypeScript).</td><td>Layer caching: the install is reused until <code>package.json</code> changes. <code>npm ci</code> installs exactly what the lockfile says (reproducible).</td></tr>
+<tr><td><code>COPY tsconfig.json ./</code> and <code>COPY src ./src</code></td><td>Copies only what the compiler needs from your computer.</td><td>No stray files; changing a README doesn't invalidate the build.</td></tr>
+<tr><td><code>RUN npm run build</code></td><td>Runs <code>tsc</code>, producing <code>/app/dist</code> inside stage 1.</td><td>This is the artifact we want to keep.</td></tr>
+<tr><td><code>FROM node:20-alpine AS prod-deps</code></td><td>Starts a <b>fresh</b> stage 2.</td><td>Separate stage = a clean <code>node_modules</code> with no devDependencies.</td></tr>
+<tr><td><code>RUN npm ci --omit=dev</code></td><td>Installs only <code>dependencies</code> (<code>express</code>).</td><td>Smaller, fewer CVEs, no compiler in production.</td></tr>
+<tr><td><code>FROM node:20-alpine AS runtime</code></td><td>Starts stage 3, <b>the image you ship</b>. It's empty except for the base image.</td><td>Nothing from stages 1 and 2 is present unless we copy it.</td></tr>
+<tr><td><code>ENV NODE_ENV=production</code></td><td>Sets the env var for the running app.</td><td>Frameworks like Express turn on production optimizations.</td></tr>
+<tr><td><code>COPY --from=prod-deps /app/node_modules ./node_modules</code></td><td>Copies <b>from stage 2's filesystem</b> into <code>/app/node_modules</code> here.</td><td>Brings the runtime libraries only.</td></tr>
+<tr><td><code>COPY --from=build /app/dist ./dist</code></td><td>Copies the compiled JavaScript from stage 1.</td><td>The one thing the build stage produced that we need.</td></tr>
+<tr><td><code>COPY package.json ./</code></td><td>Copies the manifest from your computer.</td><td>Tools and <code>npm start</code> expect it; it's tiny.</td></tr>
+<tr><td><code>USER node</code></td><td>Runs everything after as the non-root <code>node</code> user.</td><td>Limits damage if the app is compromised.</td></tr>
+<tr><td><code>HEALTHCHECK … 127.0.0.1</code></td><td>Docker polls <code>/health</code> to mark the container healthy/unhealthy.</td><td>Lets Compose/orchestrators know when it's ready. Uses <code>127.0.0.1</code> (not <code>localhost</code>).</td></tr>
+<tr><td><code>CMD ["node","dist/server.js"]</code></td><td>The start command, in exec form.</td><td>node is PID 1 and gets SIGTERM for graceful shutdown.</td></tr>
+</table></div>
+
+<h4>Build it and compare</h4>
+<script type="text/plain" class="code" data-lang="bash" data-title="compare single-stage vs multi-stage">
+# single-stage (save the first Dockerfile as Dockerfile.single)
+docker build -f Dockerfile.single -t myapi:single .
+
+# multi-stage
+docker build -t myapi:multi .
+
+docker images myapi
+# REPOSITORY   TAG      SIZE          ← illustrative; measure yours
+# myapi        single   ~1.1 GB
+# myapi        multi    ~150–200 MB
+
+docker run --rm myapi:multi ls /app           # → dist  node_modules  package.json   (no src/, no tsconfig)
+docker run --rm myapi:multi ls /app/node_modules/.bin/tsc   # → No such file: the compiler is not in the image
+
+# build just one stage (handy for debugging):
+docker build --target build -t myapi:buildstage .
+</script>
+<div class="callout warn"><b class="t">Sizes are illustrative</b><p>Exact numbers depend on your dependencies and base image tags. Always measure with <code>docker images</code> and <code>docker history &lt;image&gt;</code>. The point is the shape: roughly 5–8× smaller for typical Node apps.</p></div>
+
+<h4>Production examples you'll meet</h4>
+<p><b>A. React/Vite frontend → nginx.</b> The final image has no Node at all, just nginx and static files.</p>
+<script type="text/plain" class="code" data-lang="dockerfile" data-title="frontend Dockerfile">
+# stage 1: build the static site
+FROM node:20-alpine AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build            # → /app/dist  (HTML, JS, CSS)
+
+# stage 2: serve it with nginx
+FROM nginx:1.27-alpine
+COPY --from=build /app/dist /usr/share/nginx/html
+EXPOSE 80
+</script>
+<ul><li>Build stage ≈ 1 GB with Node and thousands of packages. Final image ≈ 50 MB. Node never runs in production here; nginx just serves files.</li></ul>
+<p><b>B. Spring Boot (Maven) → JRE.</b> You need the JDK + Maven to compile, but only a JRE to run the jar.</p>
+<script type="text/plain" class="code" data-lang="dockerfile" data-title="Spring Boot Dockerfile">
+# stage 1: compile with JDK + Maven
+FROM maven:3.9-eclipse-temurin-21 AS build
+WORKDIR /workspace
+COPY pom.xml .
+RUN mvn -q dependency:go-offline          # cached until pom.xml changes
+COPY src ./src
+RUN mvn -q package -DskipTests            # → /workspace/target/app-0.0.1.jar
+
+# stage 2: run with a JRE only
+FROM eclipse-temurin:21-jre
+WORKDIR /app
+RUN useradd -r -u 1001 spring
+COPY --from=build /workspace/target/*.jar app.jar
+USER spring
+EXPOSE 8080
+ENTRYPOINT ["java", "-XX:MaxRAMPercentage=75.0", "-jar", "app.jar"]
+</script>
+<ul>
+<li><code>maven:…</code> is ~700 MB (JDK + Maven + <code>~/.m2</code> download cache). <code>eclipse-temurin:21-jre</code> is far smaller, with no compiler or Maven.</li>
+<li><code>COPY --from=build /workspace/target/*.jar app.jar</code>: copies the built jar from stage 1 and renames it <code>app.jar</code>. (The wildcard must match exactly one jar.) See Lab 2 for the layered-jar version.</li>
+</ul>
+<p><b>C. Go → almost nothing.</b> Go compiles to one static binary, so the runtime image can be nearly empty.</p>
+<script type="text/plain" class="code" data-lang="dockerfile" data-title="Go Dockerfile">
+FROM golang:1.22 AS build
+WORKDIR /src
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+RUN CGO_ENABLED=0 go build -o /out/server .
+
+FROM gcr.io/distroless/static-debian12
+COPY --from=build /out/server /server
+USER nonroot
+ENTRYPOINT ["/server"]
+</script>
+<ul><li>~800 MB build image → a final image around 10–20 MB with <b>no shell, no package manager</b>. That's why compiled languages love multi-stage.</li></ul>
+<p><b>D. Next.js</b>: <code>deps → builder → runner</code> with <code>output: 'standalone'</code>. See Lab 3 for the complete file.</p>
+
+<h4>Useful features</h4>
+<div class="tablewrap"><table>
+<tr><th>Feature</th><th>Example</th><th>Use</th></tr>
+<tr><td>Build a specific stage</td><td><code>docker build --target build .</code></td><td>Debug a stage, or have a <code>dev</code> stage with hot reload and a <code>prod</code> stage</td></tr>
+<tr><td>Test stage</td><td><code>FROM build AS test</code> then <code>RUN npm test</code></td><td>Run tests in CI without adding them to the shipped image</td></tr>
+<tr><td>Copy from an external image</td><td><code>COPY --from=nginx:alpine /etc/nginx/nginx.conf /tmp/</code></td><td>Grab a file from any image without making it a stage</td></tr>
+<tr><td>Per-stage cache</td><td>automatic</td><td>Changing source only re-runs stages from that point</td></tr>
+<tr><td>Parallel stages</td><td>BuildKit (default)</td><td><code>build</code> and <code>prod-deps</code> above build at the same time</td></tr>
+</table></div>
+
+<h4>Common mistakes</h4>
+<div class="tablewrap"><table>
+<tr><th>Mistake</th><th>Result</th><th>Fix</th></tr>
+<tr><td>Forgetting to copy a needed file into the final stage (e.g. <code>node_modules</code>, config, <code>public/</code>)</td><td>Container crashes: <code>Cannot find module 'express'</code></td><td>Remember: each stage starts empty. Copy everything the runtime needs.</td></tr>
+<tr><td>Copying the build stage's <code>node_modules</code> into runtime</td><td>Works, but ships devDependencies (TypeScript etc.) again</td><td>Install with <code>--omit=dev</code> in a separate stage and copy that.</td></tr>
+<tr><td>Typo in <code>--from=</code> name</td><td><code>COPY --from=biuld</code> → "invalid from flag value"</td><td>Keep stage names short and consistent.</td></tr>
+<tr><td>Using <code>FROM node:20</code> (Debian) for the runtime stage</td><td>You still ship ~1 GB</td><td>Use <code>-alpine</code>, <code>-slim</code> or distroless for the last stage.</td></tr>
+<tr><td>Putting secrets in a build stage and assuming they're gone</td><td>They stay in the build cache and layer history on your machine/CI</td><td>Use BuildKit <code>--mount=type=secret</code>, and never <code>COPY</code> secrets.</td></tr>
+<tr><td>Alpine + native modules (<code>bcrypt</code>, <code>sharp</code>) break</td><td>musl vs glibc errors</td><td>Use <code>node:20-slim</code> for build and runtime, or install build deps in the build stage.</td></tr>
+</table></div>
+
+<div class="callout say"><b class="t">Say it in an interview</b>
+<p>"Before multi-stage, my production images carried the compiler, devDependencies and source because I built and ran in the same image. With multi-stage I build in one stage with all the tooling, then copy only the compiled output and production dependencies into a small runtime stage, running as a non-root user with a healthcheck. Typically that cuts a Node image from about 1 GB to under 200 MB, and removes the compiler and source from production, which means faster deploys and a smaller attack surface."</p></div>
+
+<h3>2. Small, specific base image</h3>
+<ul>
+<li><code>node:20-alpine</code>: small, but uses musl libc. If native modules (<code>bcrypt</code>, <code>sharp</code>) break, use <code>-slim</code>.</li>
+<li><code>eclipse-temurin:21-jre</code> for Java runtime (JRE, not JDK).</li>
+<li><code>distroless</code>: no shell, tiny attack surface.</li>
+<li>Pin versions: <code>node:20.11-alpine</code>, not <code>node:latest</code>.</li>
+</ul>
+
+<h3>3. Non-root and <code>.dockerignore</code></h3>
+<p>If an attacker breaks out of your app, root in the container is dangerous. Use <code>USER node</code> (shipped in node images) or create a user. And always add a <code>.dockerignore</code>: smaller context, no leaked secrets, and the host's <code>node_modules</code> can't overwrite the container's.</p>
+<script type="text/plain" class="code" data-lang="bash" data-title=".dockerignore">
+node_modules
+.git
+.env
+*.log
+Dockerfile
+docker-compose*.yml
+target
+.next
+</script>
+
+<h3>4. Config and secrets</h3>
+<div class="grid">
+<div class="callout bad"><b class="t">Never</b><p><code>COPY .env</code> or <code>ENV DB_PASSWORD=...</code> in a Dockerfile. It stays in image layers forever (<code>docker history</code> shows it).</p></div>
+<div class="callout tip"><b class="t">Do</b><p>Inject at runtime: <code>--env-file</code>, Compose <code>environment:</code>, or secret managers (Docker/K8s Secrets, AWS Secrets Manager, Vault). One image for every environment (12-factor).</p></div>
+</div>
+<p>Build-time secrets (private npm token): <code>RUN --mount=type=secret,id=npmrc ...</code> (BuildKit). It doesn't persist in layers.</p>
+
+<h3>5. Healthchecks</h3>
+<p>"Running" ≠ "ready". A DB container is <i>running</i> seconds before it <i>accepts connections</i>.</p>
+<script type="text/plain" class="code" data-lang="dockerfile" data-title="HEALTHCHECK">
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+  CMD wget -qO- http://127.0.0.1:3000/health || exit 1
+</script>
+<div class="callout warn"><b class="t">Gotcha</b><p>Use <code>127.0.0.1</code>, not <code>localhost</code>. On Alpine, <code>localhost</code> can resolve to IPv6 <code>::1</code> while your app listens on IPv4 only, so the check fails and the container is marked unhealthy (see Bug #33).</p></div>
+
+<h3>6. Logging, limits, restarts</h3>
+<script type="text/plain" class="code" data-lang="yaml" data-title="compose snippet">
+services:
+  api:
+    restart: unless-stopped        # come back after crash or reboot
+    init: true                     # tini: forwards signals, reaps zombies
+    logging:                       # without rotation logs fill the disk
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+    deploy:
+      resources:
+        limits: { cpus: "0.5", memory: 512M }
+</script>
+<ul>
+<li>Log to <b>stdout/stderr</b>, not files. Docker collects them; log drivers ship them to ELK/Loki/CloudWatch.</li>
+<li>No limits → one leaky container can eat the host. Java: <code>-XX:MaxRAMPercentage=75</code>. Node: <code>--max-old-space-size</code> below the limit.</li>
+<li>A crash loop means read the logs. The restart policy only hides it.</li>
+</ul>
+
+<h3>7. Security checklist</h3>
+<ul class="checklist">
+<li>Non-root user</li>
+<li>Minimal base image, pinned tag or digest</li>
+<li>No secrets in layers</li>
+<li>Scan images in CI: <code>trivy image myimage</code> or <code>docker scout cves myimage</code></li>
+<li>Read-only root filesystem (<code>read_only: true</code>) where possible</li>
+<li>Drop capabilities (<code>cap_drop: [ALL]</code>)</li>
+<li>Never mount <code>/var/run/docker.sock</code> into containers (it's root on the host)</li>
+<li>Resource limits set</li>
+</ul>
+
+<h3>8. Build speed</h3>
+<ul>
+<li>Order layers by change frequency.</li>
+<li>BuildKit cache mounts: <code>RUN --mount=type=cache,target=/root/.npm npm ci</code></li>
+<li>CI: <code>--cache-from</code> / <code>--cache-to</code> (registry or GitHub Actions cache).</li>
+<li>Multi-platform: <code>docker buildx build --platform linux/amd64,linux/arm64</code>. Built on an M1 Mac and the amd64 server says <code>exec format error</code>? That's why.</li>
+</ul>
+
+<h3>9. CI/CD flow</h3>
+<figure class="diagram">
+<svg class="d" viewBox="0 0 760 130">
+  <rect class="n" x="6" y="30" width="94" height="50" rx="8"/><text x="22" y="60">git push</text>
+  <rect class="p" x="112" y="30" width="94" height="50" rx="8"/><text x="144" y="60">test</text>
+  <rect class="p" x="218" y="30" width="94" height="50" rx="8"/><text x="238" y="60">build :sha</text>
+  <rect class="o" x="324" y="30" width="94" height="50" rx="8"/><text x="346" y="60">scan CVEs</text>
+  <rect class="v" x="430" y="30" width="94" height="50" rx="8"/><text x="450" y="60">push image</text>
+  <rect class="g" x="536" y="30" width="94" height="50" rx="8"/><text x="560" y="60">deploy</text>
+  <rect class="g" x="642" y="30" width="108" height="50" rx="8"/><text x="654" y="60">health gate ✔</text>
+  <path class="ln" d="M100 55 H110"/><path class="ln" d="M206 55 H216"/><path class="ln" d="M312 55 H322"/><path class="ln" d="M418 55 H428"/><path class="ln" d="M524 55 H534"/><path class="ln" d="M630 55 H640"/>
+  <text class="m" x="6" y="115">Rollback = redeploy the previous image tag. Tag with git SHA, never rely on :latest.</text>
+</svg>
+<figcaption>Push → test → build → scan → push to registry → deploy → healthcheck gates the rollout.</figcaption>
+</figure>
+
+<h3>10. Docker vs Kubernetes</h3>
+<p>Docker/Compose builds and runs containers on <b>one host</b>. Kubernetes orchestrates many containers across <b>many hosts</b>: scaling, self-healing, rolling updates, service discovery, secrets. Compose is great for dev and small deployments; K8s when you need scale and high availability.</p>
+
+<!-- ============================ 03 ============================ -->
+<h2 id="s3"><span class="num">03</span>Monolith vs microservices</h2>
+
+<h3>Monolith + Docker</h3>
+<p>One image, one deployable. <code>docker compose up</code> gives you the whole system. Scale = run more replicas behind a load balancer. Dockerizing a monolith is the easiest first step and makes a later split easier.</p>
+<figure class="diagram">
+<svg class="d" viewBox="0 0 760 130">
+  <rect class="n" x="10" y="35" width="110" height="50" rx="8"/><text x="38" y="65">Client</text>
+  <path class="ln" d="M120 60 H198"/>
+  <rect class="p" x="200" y="20" width="230" height="80" rx="10"/><text class="h" x="236" y="48">One app image</text><text class="m" x="214" y="70">users + orders + billing…</text><text class="m" x="214" y="86">single deployable</text>
+  <path class="ln" d="M430 45 H508"/><path class="ln" d="M430 78 H508"/>
+  <rect class="o" x="510" y="20" width="130" height="38" rx="8"/><text x="550" y="44">Postgres</text>
+  <rect class="o" x="510" y="64" width="130" height="38" rx="8"/><text x="556" y="88">Redis</text>
+</svg>
+<figcaption>Simple: one thing to build, ship and run. Downside: any change redeploys everything.</figcaption>
+</figure>
+
+<h3>Microservices + Docker</h3>
+<figure class="diagram">
+<svg class="d" viewBox="0 0 760 340">
+  <rect class="n" x="10" y="130" width="100" height="50" rx="8"/><text x="36" y="160">Client</text>
+  <path class="lnp" d="M110 155 H178"/><text class="m" x="116" y="146">:8080</text>
+  <rect class="v dash" x="170" y="95" width="130" height="120" rx="10"/><text class="m" x="178" y="112">public network</text>
+  <rect class="p" x="185" y="130" width="100" height="50" rx="8"/><text class="h" x="203" y="160">gateway</text>
+  <rect class="g dash" x="330" y="20" width="420" height="300" rx="12"/><text class="m" x="344" y="40">internal (private) network, no ports published</text>
+  <rect class="g" x="360" y="60" width="130" height="56" rx="8"/><text class="h" x="396" y="86">users</text><text class="m" x="372" y="104">users:3000</text>
+  <rect class="g" x="360" y="220" width="130" height="56" rx="8"/><text class="h" x="392" y="246">orders</text><text class="m" x="372" y="264">orders:3000</text>
+  <rect class="o" x="620" y="60" width="110" height="56" rx="8"/><text class="h" x="640" y="86">users-db</text><text class="m" x="632" y="104">own database</text>
+  <rect class="o" x="620" y="220" width="110" height="56" rx="8"/><text class="h" x="636" y="246">orders-db</text><text class="m" x="632" y="264">own database</text>
+  <path class="ln" d="M285 145 L360 95"/><path class="ln" d="M285 165 L360 235"/>
+  <path class="ln" d="M490 88 H618"/><path class="ln" d="M490 248 H618"/>
+  <path class="ln" d="M425 220 V118"/><text class="m" x="436" y="172">GET /users/1</text>
+</svg>
+<figcaption>Only the gateway is published. Services call each other by name. Each service owns its database.</figcaption>
+</figure>
+<ol class="steps">
+<li><b>One service = one image = one process.</b> Don't cram two services into one container.</li>
+<li><b>Database per service.</b> No shared tables, or it's a distributed monolith.</li>
+<li><b>Talk by service name</b> over a shared network (<code>http://users:3000</code>). Never <code>localhost</code>, never hard-coded IPs.</li>
+<li><b>Only the gateway is published</b>. Internal services have no <code>ports:</code>, so they're unreachable from outside.</li>
+<li><b>Each service has its own healthcheck and env config.</b></li>
+<li><b>Version independently:</b> <code>users:1.4.0</code>, <code>orders:2.1.3</code>.</li>
+<li><b>Startup order isn't guaranteed.</b> Use healthchecks plus retry logic in code. <code>depends_on</code> only helps locally.</li>
+<li><b>Use async messaging</b> (RabbitMQ/Kafka) for things that shouldn't fail together.</li>
+<li><b>Observability:</b> stdout logs plus a request/correlation ID passed between services.</li>
+</ol>
+
+<h3><code>depends_on</code> vs ready</h3>
+<figure class="diagram">
+<svg class="d" viewBox="0 0 760 190">
+  <text class="m" x="10" y="20">time →</text>
+  <path d="M60 16 H750" class="ln"/>
+  <rect class="o" x="60" y="34" width="250" height="30" rx="6"/><text x="72" y="54">db: starting, not accepting connections</text>
+  <rect class="g" x="310" y="34" width="200" height="30" rx="6"/><text x="322" y="54">db: ready ✔ (healthy)</text>
+  <text class="h" x="10" y="94">Plain depends_on</text>
+  <rect class="r" x="60" y="102" width="250" height="30" rx="6"/><text x="72" y="122">api starts → ECONNREFUSED 💥</text>
+  <text class="h" x="10" y="156">service_healthy</text>
+  <rect class="n dash" x="60" y="164" width="250" height="20" rx="6"/><text class="m" x="72" y="178">api waits…</text>
+  <rect class="g" x="310" y="160" width="200" height="30" rx="6"/><text x="322" y="180">api starts → connects ✔</text>
+</svg>
+<figcaption>Started ≠ ready. Gate startup on a healthcheck, and still add retry/backoff in the app for production.</figcaption>
+</figure>
+<div class="callout tip"><b class="t">Network isolation pattern</b><p>Put gateway + services on <code>frontend</code>, services + DBs on <code>backend</code>. A service on both networks bridges them, and the DB sits only on <code>backend</code>, so the gateway can't reach it.</p></div>
+
+<h3>Does Docker work well with Next.js? Yes.</h3>
+<ul>
+<li>Set <code>output: 'standalone'</code> in <code>next.config.js</code>. Next copies only what's needed → image ~150 MB instead of 1 GB+.</li>
+<li><code>NEXT_PUBLIC_*</code> variables are <b>inlined at build time</b>. Setting them at <code>docker run</code> is too late. Pass them as build <code>ARG</code>s or load config at runtime. <b>Great interview point.</b></li>
+<li>Bind to all interfaces: <code>HOSTNAME=0.0.0.0</code>.</li>
+<li>Two different API URLs: the <b>browser</b> uses the public URL, <b>server-side code</b> uses the internal Docker name.</li>
+</ul>
+<figure class="diagram">
+<svg class="d" viewBox="0 0 760 230">
+  <rect class="n" x="10" y="20" width="130" height="60" rx="8"/><text class="h" x="40" y="48">Browser</text><text class="m" x="22" y="66">on user's machine</text>
+  <rect class="p" x="300" y="20" width="170" height="60" rx="8"/><text class="h" x="330" y="48">Next.js web</text><text class="m" x="312" y="66">container, :3000</text>
+  <rect class="g" x="600" y="130" width="150" height="60" rx="8"/><text class="h" x="650" y="158">api</text><text class="m" x="612" y="176">container, :4000</text>
+  <path class="ln" d="M140 50 H298"/><text class="m" x="168" y="42">loads page</text>
+  <path class="lnp" d="M75 80 C75 160 300 175 598 165"/><text class="m" x="220" y="178">browser → http://localhost:4000  (NEXT_PUBLIC_API_URL, public)</text>
+  <path class="ln" d="M470 62 C540 70 560 120 598 140"/><text class="m" x="480" y="104">server → http://api:4000</text><text class="m" x="480" y="119">(internal Docker DNS)</text>
+</svg>
+<figcaption>Using <code>http://api:4000</code> in browser code fails, because the browser knows nothing about Docker DNS (Bug #6).</figcaption>
+</figure>
+
+<h3>Does Docker work well with Spring Boot? Yes.</h3>
+<ul>
+<li>Multi-stage: Maven/Gradle in a JDK stage → run the JAR on a JRE stage.</li>
+<li><b>Layered jars</b> (<code>-Djarmode=layertools</code>): dependency layers get cached; only your code layer changes. Or skip the Dockerfile: <code>./mvnw spring-boot:build-image</code>.</li>
+<li>Actuator <code>/actuator/health</code> for the HEALTHCHECK.</li>
+<li>Config via env: <code>SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/app</code> (relaxed binding).</li>
+<li>Slow startup → generous healthcheck <code>start_period</code> (~40 s) so it isn't killed while booting.</li>
+</ul>
+<div class="tablewrap"><table>
+<tr><th></th><th>Node</th><th>Spring Boot</th></tr>
+<tr><td>Build stage</td><td><code>npm ci &amp;&amp; npm run build</code></td><td><code>mvn package</code></td></tr>
+<tr><td>Runtime image</td><td>node alpine/slim</td><td>JRE (temurin)</td></tr>
+<tr><td>Image size</td><td>~150 MB</td><td>~250 MB</td></tr>
+<tr><td>Startup</td><td>~1 s</td><td>5–30 s (healthcheck start_period)</td></tr>
+<tr><td>Memory</td><td>~100 MB</td><td>300 MB+ (set limits!)</td></tr>
+</table></div>
+
+<!-- ============================ 04 ============================ -->
+<h2 id="s4"><span class="num">04</span>33 common bugs and fixes</h2>
+<p>Tell these as stories: "I hit X, diagnosed it with Y, fixed it with Z." Search by symptom or filter by category.</p>
+<div id="bugs-list"></div>
+
+<h3>Your universal debugging flow</h3>
+<figure class="diagram">
+<svg class="d" viewBox="0 0 760 200">
+  <rect class="p" x="6" y="30" width="138" height="70" rx="8"/><text class="h" x="16" y="54">1. Status</text><text class="m" x="16" y="74">docker ps -a</text><text class="m" x="16" y="90">exit code?</text>
+  <rect class="p" x="156" y="30" width="138" height="70" rx="8"/><text class="h" x="166" y="54">2. Logs</text><text class="m" x="166" y="74">docker logs</text><text class="m" x="166" y="90">--tail 100</text>
+  <rect class="p" x="306" y="30" width="138" height="70" rx="8"/><text class="h" x="316" y="54">3. Inspect</text><text class="m" x="316" y="74">env, mounts, net,</text><text class="m" x="316" y="90">health, OOMKilled</text>
+  <rect class="p" x="456" y="30" width="138" height="70" rx="8"/><text class="h" x="466" y="54">4. Look inside</text><text class="m" x="466" y="74">docker exec -it sh</text><text class="m" x="466" y="90">curl / ping peer</text>
+  <rect class="p" x="606" y="30" width="148" height="70" rx="8"/><text class="h" x="616" y="54">5. Compose</text><text class="m" x="616" y="74">docker compose config</text><text class="m" x="616" y="90">resolved as I think?</text>
+  <path class="ln" d="M144 65 H154"/><path class="ln" d="M294 65 H304"/><path class="ln" d="M444 65 H454"/><path class="ln" d="M594 65 H604"/>
+  <rect class="o" x="156" y="130" width="290" height="50" rx="8"/><text class="h" x="168" y="152">6. Reproduce minimal</text><text class="m" x="168" y="170">docker run -it --entrypoint sh image</text>
+  <rect class="o" x="466" y="130" width="288" height="50" rx="8"/><text class="h" x="478" y="152">7. Check the host</text><text class="m" x="478" y="170">docker system df · ports · daemon</text>
+  <path class="ln" d="M446 155 H464"/>
+</svg>
+<figcaption>Say this in order when asked "a container keeps restarting, what do you do?"</figcaption>
+</figure>
+
+<!-- ============================ 05 ============================ -->
+<h2 id="s5"><span class="num">05</span>Interview Q&amp;A</h2>
+<p>Click a question, answer out loud first, then reveal. Use 🎲 to practice randomly.</p>
+<div id="qa-list"></div>
+<div class="callout say"><b class="t">"Tell me about your Docker experience" (template)</b>
+<p>"I containerized a Node/Express API with Postgres and Redis using a multi-stage Dockerfile, non-root user and a healthcheck, and ran the stack with Compose. I hit the classic issues: the app starting before Postgres was ready, which I fixed with healthcheck-gated <code>depends_on</code> plus retry logic, and environment-specific config, which I moved to env files and secrets so the same image runs everywhere. For microservices I put an nginx gateway in front, kept services on a private network, and used a database per service."</p></div>
+
+<!-- ============================ LABS ============================ -->
+<h2 id="labs"><span class="num">06</span>Hands-on labs</h2>
+<p>Prereq: Docker Desktop running (<code>docker version</code>, <code>docker compose version</code>). All lab files also exist on disk in <code>labs/</code>. Lab 4 was tested end to end.</p>
+
+<h3>Lab 1: Node + Postgres + Redis (production style)</h3>
+<figure class="diagram">
+<svg class="d" viewBox="0 0 760 200">
+  <rect class="n" x="10" y="70" width="100" height="50" rx="8"/><text x="32" y="100">curl</text>
+  <path class="lnp" d="M110 95 H208"/><text class="m" x="118" y="86">:3000</text>
+  <rect class="p" x="210" y="50" width="170" height="90" rx="10"/><text class="h" x="262" y="78">api</text><text class="m" x="224" y="98">node · non-root · init</text><text class="m" x="224" y="116">retry + SIGTERM handler</text>
+  <rect class="o" x="500" y="20" width="160" height="60" rx="8"/><text class="h" x="548" y="46">db</text><text class="m" x="512" y="66">postgres:16 + healthcheck</text>
+  <rect class="g" x="500" y="120" width="160" height="60" rx="8"/><text class="h" x="544" y="146">cache</text><text class="m" x="512" y="166">redis:7</text>
+  <rect class="g" x="690" y="30" width="64" height="40" rx="8"/><text class="m" x="696" y="48">volume</text><text class="m" x="696" y="62">pgdata</text>
+  <path class="ln" d="M380 80 L498 50"/><path class="ln" d="M380 110 L498 148"/><path class="ln2" d="M660 50 H688"/>
+  <text class="m" x="395" y="58">service_healthy gate</text>
+</svg>
+<figcaption>api waits for db to be healthy, then talks to db and cache by service name.</figcaption>
+</figure>
+<script type="text/plain" class="code" data-lang="dockerfile" data-title="lab1-node/Dockerfile">
+# ---------- Stage 1: install prod deps ----------
+FROM node:20-alpine AS deps
+WORKDIR /app
+COPY package*.json ./
+RUN --mount=type=cache,target=/root/.npm npm install --omit=dev
+
+# ---------- Stage 2: final runtime image ----------
+FROM node:20-alpine
+ENV NODE_ENV=production
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+USER node
+EXPOSE 3000
+HEALTHCHECK --interval=15s --timeout=3s --start-period=10s --retries=3 \
+  CMD wget -qO- http://127.0.0.1:3000/health || exit 1
+CMD ["node", "server.js"]
+</script>
+<script type="text/plain" class="code" data-lang="yaml" data-title="lab1-node/compose.yaml">
+services:
+  api:
+    build: .
+    ports: ["3000:3000"]
+    environment:
+      DB_HOST: db
+      DB_USER: app
+      DB_PASSWORD: ${DB_PASSWORD:-secret}
+      DB_NAME: appdb
+      REDIS_URL: redis://cache:6379
+    depends_on:
+      db:    { condition: service_healthy }
+      cache: { condition: service_started }
+    restart: unless-stopped
+    init: true
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-secret}
+      POSTGRES_DB: appdb
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d appdb"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  cache:
+    image: redis:7-alpine
+
+volumes:
+  pgdata:
+</script>
+<script type="text/plain" class="code" data-lang="javascript" data-title="lab1-node/server.js">
+const express = require('express');
+const { Pool } = require('pg');
+const { createClient } = require('redis');
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Config comes from ENV (12-factor). Defaults match compose service names.
+const pool = new Pool({
+  host: process.env.DB_HOST || 'db',
+  user: process.env.DB_USER || 'app',
+  password: process.env.DB_PASSWORD || 'secret',
+  database: process.env.DB_NAME || 'appdb',
+});
+const redis = createClient({ url: process.env.REDIS_URL || 'redis://cache:6379' });
+redis.on('error', (e) => console.error('redis error', e.message));
+
+// Production has no depends_on, so the app must tolerate slow dependencies.
+async function retry(fn, label, tries = 10) {
+  for (let i = 1; i <= tries; i++) {
+    try { return await fn(); }
+    catch (e) {
+      console.log(`${label} not ready (${i}/${tries}): ${e.message}`);
+      await new Promise((r) => setTimeout(r, 2000));
+    }
+  }
+  throw new Error(`${label} never became ready`);
+}
+
+app.get('/health', (_req, res) => res.json({ status: 'ok' }));
+app.get('/visits', async (_req, res) => {
+  const count = await redis.incr('visits');
+  await pool.query('INSERT INTO hits(at) VALUES (now())');
+  const { rows } = await pool.query('SELECT count(*) FROM hits');
+  res.json({ redisCounter: count, dbRows: Number(rows[0].count) });
+});
+
+(async () => {
+  await retry(() => pool.query('SELECT 1'), 'postgres');
+  await pool.query('CREATE TABLE IF NOT EXISTS hits(at timestamptz)');
+  await retry(() => redis.connect(), 'redis');
+  const server = app.listen(PORT, '0.0.0.0', () => console.log(`listening on ${PORT}`));
+
+  // Graceful shutdown on `docker stop` (SIGTERM)
+  process.on('SIGTERM', () => {
+    server.close(async () => { await pool.end(); await redis.quit(); process.exit(0); });
+  });
+})().catch((e) => { console.error(e); process.exit(1); });
+</script>
+<script type="text/plain" class="code" data-lang="json" data-title="lab1-node/package.json">
+{
+  "name": "lab1-node", "version": "1.0.0", "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "dependencies": { "express": "^4.19.2", "pg": "^8.11.5", "redis": "^4.6.13" }
+}
+</script>
+<p><b>Run it:</b></p>
+<script type="text/plain" class="code" data-lang="bash" data-title="run lab 1">
+cd interview-prep/backend-engineering/tools/docker/labs/lab1-node
+docker compose up -d --build
+docker compose ps                 # wait for db "healthy"
+curl http://localhost:3000/health
+curl http://localhost:3000/visits # call it a few times
+</script>
+<p><b>Prove you understand it.</b> Do each and explain what happened:</p>
+<ol class="steps">
+<li><code>docker compose down</code> then <code>up -d</code> → hit <code>/visits</code>. DB rows persisted (volume). Redis counter reset (no volume).</li>
+<li><code>docker compose down -v</code> → data gone. <code>-v</code> deletes volumes.</li>
+<li><code>docker compose logs -f api</code> while you <code>stop db</code> → watch the behaviour.</li>
+<li><code>docker compose stop api</code> → fast = SIGTERM handled. Compare after changing to shell-form CMD.</li>
+<li><code>docker exec -it &lt;api&gt; sh</code> → <code>whoami</code> should be <code>node</code>, not root.</li>
+<li><code>docker images</code> then <code>docker history &lt;image&gt;</code> → see size and layers.</li>
+<li><b>Break it:</b> set <code>DB_HOST=localhost</code> → read the error → fix (Bug #1).</li>
+<li><b>Cache experiment:</b> edit <code>server.js</code> and rebuild → npm step says CACHED. Edit <code>package.json</code> → it reruns.</li>
+</ol>
+
+<h3>Lab 2: Spring Boot</h3>
+<p>Generate a project at <a href="https://start.spring.io" target="_blank" rel="noopener">start.spring.io</a> (Maven, Java 21, Spring Web + Actuator + JPA + PostgreSQL). Put these files next to <code>pom.xml</code>.</p>
+<script type="text/plain" class="code" data-lang="dockerfile" data-title="lab2-springboot/Dockerfile">
+# ---------- Stage 1: build ----------
+FROM eclipse-temurin:21-jdk AS build
+WORKDIR /workspace
+COPY mvnw pom.xml ./
+COPY .mvn .mvn
+RUN --mount=type=cache,target=/root/.m2 ./mvnw -q dependency:go-offline
+COPY src src
+RUN --mount=type=cache,target=/root/.m2 ./mvnw -q package -DskipTests
+# Split the fat jar into layers (deps change rarely, your code often)
+RUN java -Djarmode=layertools -jar target/*.jar extract --destination extracted
+
+# ---------- Stage 2: runtime (JRE only) ----------
+FROM eclipse-temurin:21-jre
+WORKDIR /app
+RUN useradd -r -u 1001 spring
+USER spring
+COPY --from=build /workspace/extracted/dependencies/ ./
+COPY --from=build /workspace/extracted/spring-boot-loader/ ./
+COPY --from=build /workspace/extracted/snapshot-dependencies/ ./
+COPY --from=build /workspace/extracted/application/ ./
+
+EXPOSE 8080
+ENV JAVA_TOOL_OPTIONS="-XX:MaxRAMPercentage=75.0"
+# Spring boots slowly → generous start-period. Needs the Actuator dependency.
+HEALTHCHECK --interval=20s --timeout=3s --start-period=45s --retries=3 \
+  CMD curl -fs http://127.0.0.1:8080/actuator/health || exit 1
+ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]
+</script>
+<script type="text/plain" class="code" data-lang="yaml" data-title="lab2-springboot/compose.yaml">
+services:
+  app:
+    build: .
+    ports: ["8080:8080"]
+    environment:
+      # Spring "relaxed binding": env var → property
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/appdb
+      SPRING_DATASOURCE_USERNAME: app
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-secret}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health
+    depends_on:
+      db: { condition: service_healthy }
+    deploy:
+      resources:
+        limits: { memory: 512M }
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-secret}
+      POSTGRES_DB: appdb
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d appdb"]
+      interval: 5s
+      retries: 10
+
+volumes:
+  pgdata:
+</script>
+<ol class="steps">
+<li><code>docker compose up -d --build</code> then <code>curl localhost:8080/actuator/health</code>.</li>
+<li>Compare sizes: build once with the JDK as the final image vs the JRE version.</li>
+<li>Watch startup time in <code>docker compose logs -f app</code> and explain why <code>start_period</code> is 45 s.</li>
+<li>Set memory limit to <code>128M</code> → watch it die → <code>docker inspect -f '{{.State.OOMKilled}}' &lt;c&gt;</code> (Bug #11).</li>
+</ol>
+<div class="callout warn"><b class="t">Note</b><p>The runtime image needs <code>curl</code> for that HEALTHCHECK. If the temurin JRE image lacks it in your version, <code>apt-get install -y curl</code> in the runtime stage or use a Java-based healthcheck.</p></div>
+
+<h3>Lab 3: Next.js</h3>
+<p>Create the app (<code>npx create-next-app@latest web</code>), add <code>output: 'standalone'</code> to <code>next.config.js</code>, then add:</p>
+<script type="text/plain" class="code" data-lang="dockerfile" data-title="lab3-nextjs/Dockerfile">
+# ---------- 1. deps ----------
+FROM node:20-alpine AS deps
+WORKDIR /app
+COPY package*.json ./
+RUN --mount=type=cache,target=/root/.npm npm ci
+
+# ---------- 2. build ----------
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+# NEXT_PUBLIC_* is inlined at BUILD time, so pass it here, not at `docker run`
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+RUN npm run build
+
+# ---------- 3. runtime ----------
+FROM node:20-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production PORT=3000 HOSTNAME=0.0.0.0
+COPY --from=builder --chown=node:node /app/.next/standalone ./
+COPY --from=builder --chown=node:node /app/.next/static ./.next/static
+COPY --from=builder --chown=node:node /app/public ./public
+USER node
+EXPOSE 3000
+CMD ["node", "server.js"]
+</script>
+<script type="text/plain" class="code" data-lang="yaml" data-title="lab3-nextjs/compose.yaml">
+services:
+  web:
+    build:
+      context: .
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:4000   # what the BROWSER will call
+    ports: ["3000:3000"]
+    environment:
+      INTERNAL_API_URL: http://api:4000              # what the SERVER calls
+</script>
+<ol class="steps">
+<li>Compare image size with a naive single-stage Dockerfile (<code>npm run build &amp;&amp; npm start</code>).</li>
+<li>Print <code>process.env.NEXT_PUBLIC_API_URL</code> on a page. Change it only via <code>docker run -e</code> → nothing changes. Rebuild with the ARG → it changes. Explain why (Bug #22).</li>
+</ol>
+
+<h3>Lab 4: Microservices + gateway</h3>
+<p>Two tiny dependency-free services behind nginx. See the architecture diagram in section 03.</p>
+<script type="text/plain" class="code" data-lang="yaml" data-title="lab4-microservices/compose.yaml">
+services:
+  gateway:                       # the ONLY thing published to the host
+    image: nginx:1.27-alpine
+    ports: ["8080:80"]
+    volumes: ["./nginx.conf:/etc/nginx/nginx.conf:ro"]
+    networks: [public, internal]
+    depends_on:
+      users:  { condition: service_healthy }
+      orders: { condition: service_healthy }
+
+  users:                         # no `ports:` → unreachable from outside
+    build: { context: ., dockerfile: Dockerfile.service, args: { SERVICE: users } }
+    networks: [internal]
+    restart: unless-stopped
+
+  orders:
+    build: { context: ., dockerfile: Dockerfile.service, args: { SERVICE: orders } }
+    environment:
+      USERS_URL: http://users:3000
+    networks: [internal]
+    depends_on:
+      users: { condition: service_healthy }
+    restart: unless-stopped
+
+networks:
+  public:
+  internal:
+</script>
+<script type="text/plain" class="code" data-lang="nginx" data-title="lab4-microservices/nginx.conf">
+events {}
+http {
+  # Docker's embedded DNS; re-resolve so restarts of a service don't break nginx
+  resolver 127.0.0.11 valid=10s;
+  server {
+    listen 80;
+    location /users/  { set $upstream http://users:3000;  proxy_pass $upstream; }
+    location /orders/ { set $upstream http://orders:3000; proxy_pass $upstream; }
+    location /health  { return 200 'gateway ok'; }
+  }
+}
+</script>
+<script type="text/plain" class="code" data-lang="dockerfile" data-title="lab4-microservices/Dockerfile.service">
+# One reusable Dockerfile for both tiny services (no npm deps).
+FROM node:20-alpine
+ENV NODE_ENV=production
+WORKDIR /app
+ARG SERVICE
+COPY ${SERVICE}/server.js .
+USER node
+EXPOSE 3000
+HEALTHCHECK --interval=10s --timeout=3s --retries=3 \
+  CMD wget -qO- http://127.0.0.1:3000/health || exit 1
+CMD ["node", "server.js"]
+</script>
+<script type="text/plain" class="code" data-lang="javascript" data-title="lab4-microservices/users/server.js">
+const http = require('http');
+const USERS = { 1: { id: 1, name: 'Ada' }, 2: { id: 2, name: 'Linus' } };
+
+const server = http.createServer((req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  if (req.url === '/health') return res.end('{"status":"ok"}');
+  const m = req.url.match(/^\/users\/(\d+)$/);
+  if (m && USERS[m[1]]) return res.end(JSON.stringify(USERS[m[1]]));
+  res.statusCode = 404; res.end('{"error":"not found"}');
+});
+server.listen(3000, '0.0.0.0', () => console.log('users svc on 3000'));
+process.on('SIGTERM', () => server.close(() => process.exit(0)));
+</script>
+<script type="text/plain" class="code" data-lang="javascript" data-title="lab4-microservices/orders/server.js">
+const http = require('http');
+const USERS_URL = process.env.USERS_URL || 'http://users:3000'; // service-name DNS, never localhost
+
+const server = http.createServer((req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  if (req.url === '/health') return res.end('{"status":"ok"}');
+  const m = req.url.match(/^\/orders\/(\d+)$/);
+  if (!m) { res.statusCode = 404; return res.end('{"error":"not found"}'); }
+
+  // Service-to-service call across the Docker network
+  http.get(`${USERS_URL}/users/${m[1]}`, (r) => {
+    let body = '';
+    r.on('data', (c) => (body += c));
+    r.on('end', () => res.end(JSON.stringify({ orderId: m[1], item: 'keyboard', user: JSON.parse(body) })));
+  }).on('error', (e) => {
+    res.statusCode = 502;
+    res.end(JSON.stringify({ error: 'users service unreachable', detail: e.message }));
+  });
+});
+server.listen(3000, '0.0.0.0', () => console.log('orders svc on 3000'));
+process.on('SIGTERM', () => server.close(() => process.exit(0)));
+</script>
+<script type="text/plain" class="code" data-lang="bash" data-title="run lab 4">
+cd interview-prep/backend-engineering/tools/docker/labs/lab4-microservices
+docker compose up -d --build
+curl http://localhost:8080/users/1
+curl http://localhost:8080/orders/1      # orders → users call over Docker DNS
+curl http://localhost:3000/users/1       # FAILS: not published (that's the point)
+</script>
+<ol class="steps">
+<li><code>docker compose stop users</code> → <code>curl /orders/1</code> returns a 502 with a helpful error (what a resilient caller looks like). Start users again → recovers without restarting orders.</li>
+<li><code>docker compose exec orders wget -qO- http://users:3000/users/2</code> → DNS by service name.</li>
+<li><code>docker network ls</code> and <code>docker network inspect lab4-microservices_internal</code> → see who's connected.</li>
+<li>Add <code>ports:</code> to <code>users</code>, try direct access, then remove it. Explain why gateway-only exposure is safer.</li>
+<li>Add a database per service on the <code>internal</code> network and explain why they don't share one.</li>
+</ol>
+
+<div class="callout tip"><b class="t">After the labs you can honestly say you've</b>
+<p>Multi-stage built Node, Spring Boot and Next.js images · run app + DB + cache with Compose, healthcheck-gated, with persistent volumes · run non-root with graceful shutdown, log rotation and limits · built a gateway-fronted microservice setup with private networks · diagnosed OOM, networking, startup-order and env-var issues.</p></div>
+<script type="text/plain" class="code" data-lang="bash" data-title="cleanup">
+docker compose down -v
+docker system prune -f
+</script>
+
+<!-- ============================ CHEATSHEET ============================ -->
+<h2 id="cheat"><span class="num">07</span>Last-minute cheatsheet</h2>
+<div class="grid">
+<div class="card"><h4>Say first</h4><p>Image = recipe, container = running instance. Shares kernel; namespaces + cgroups.</p></div>
+<div class="card"><h4>Dockerfile</h4><p>Order for cache · multi-stage · slim base · non-root · exec-form CMD · .dockerignore.</p></div>
+<div class="card"><h4>Networking</h4><p>Service names, not localhost. Publish only the gateway. 0.0.0.0, not 127.0.0.1.</p></div>
+<div class="card"><h4>Data</h4><p>Named volumes for DBs. Volume ≠ backup. Init scripts run once.</p></div>
+<div class="card"><h4>Startup</h4><p>Healthcheck + service_healthy + app-level retry.</p></div>
+<div class="card"><h4>Config</h4><p>Env at runtime. Never secrets in layers. NEXT_PUBLIC_* is build-time.</p></div>
+<div class="card"><h4>Exit codes</h4><p>0 normal · 1 app error · 137 SIGKILL/OOM · 143 SIGTERM.</p></div>
+<div class="card"><h4>Debug</h4><p>ps -a → logs → inspect → exec → compose config → minimal repro.</p></div>
+</div>
+</main>
+
+<script>
+window.BUGS = [
+ {n:1,cat:"Networking",title:"`ECONNREFUSED 127.0.0.1:5432`: `localhost` doesn't work between containers",why:"`localhost` inside a container is the container itself.",fix:"Use the service name: `DB_HOST=db` on a shared network. To reach the host machine use `host.docker.internal` (Win/Mac; on Linux add `extra_hosts: [\"host.docker.internal:host-gateway\"]`)."},
+ {n:2,cat:"Networking",title:"App runs in the container but the browser gets `ERR_CONNECTION_REFUSED`",why:"The app is bound to `127.0.0.1` inside the container, so only the container itself can reach it.",fix:"Listen on `0.0.0.0` (`app.listen(3000,'0.0.0.0')`; Next.js `HOSTNAME=0.0.0.0`; Spring `server.address=0.0.0.0`)."},
+ {n:3,cat:"Networking",title:"Port not reachable: forgot to publish it",why:"`EXPOSE` is documentation only and publishes nothing.",fix:"`-p 3000:3000` or Compose `ports: [\"3000:3000\"]`. Check the PORTS column in `docker ps`."},
+ {n:4,cat:"Networking",title:"`port is already allocated` / `address already in use`",why:"The host port is taken by another container or a local process.",fix:"Change the host side (`-p 3001:3000`) or find the culprit: `docker ps`, `netstat -ano | findstr :3000` (Windows) / `lsof -i :3000`."},
+ {n:5,cat:"Networking",title:"Service A can't resolve service B (`getaddrinfo ENOTFOUND`)",why:"They're on different networks, or on the default bridge (no DNS), or started with separate `docker run` commands.",fix:"Put both on the same user-defined network (Compose does it per project). Verify with `docker network inspect <net>`."},
+ {n:6,cat:"Networking",title:"Next.js/React calls `http://api:3000` and fails in the browser",why:"The browser runs on the user's machine and knows nothing about Docker DNS. `api` only resolves inside the network.",fix:"Browser → public URL (`http://localhost:3000` or domain). Server-side code (SSR, route handlers) → internal URL (`http://api:3000`). Keep two env vars."},
+ {n:7,cat:"Lifecycle",title:"Container exits immediately (Exited (0) or (1))",why:"A container lives only as long as PID 1. The foreground process ended or crashed.",fix:"`docker logs <c>`; exit code via `docker inspect -f '{{.State.ExitCode}}' <c>`. Keep the main process in the foreground (no daemon mode, no `&`). Debug with `docker run -it --entrypoint sh image`."},
+ {n:8,cat:"Lifecycle",title:"App starts before DB is ready and crashes (`connection refused` at boot)",why:"`depends_on` only waits for the container to *start*, not to be *ready*.",fix:"Healthcheck on the DB + `depends_on: db: condition: service_healthy`, **and** retry with backoff in the app (production has no Compose)."},
+ {n:9,cat:"Lifecycle",title:"Container restarts in a loop (`Restarting (1)`)",why:"The app crashes on boot and `restart: always` hides it.",fix:"`docker logs --tail 50 <c>`. Usually a missing env var, bad DB URL or port conflict. Fix the root cause. Temporarily set `restart: \"no\"` to debug."},
+ {n:10,cat:"Lifecycle",title:"`docker stop` takes 10 s, app doesn't shut down gracefully",why:"Shell-form `CMD node app.js` wraps in `sh -c`: SIGTERM goes to sh, not node. After 10 s Docker sends SIGKILL. `npm start` as entrypoint has the same problem.",fix:"Exec form `CMD [\"node\",\"app.js\"]`, handle `SIGTERM` in code, or `init: true` / `docker run --init` (tini)."},
+ {n:11,cat:"Lifecycle",title:"Exit code 137",why:"SIGKILL = 128+9. Usually **OOM killed** (memory limit hit) or force-killed after the stop timeout.",fix:"`docker inspect -f '{{.State.OOMKilled}}' <c>`. Raise the limit, fix the leak, tune the heap (`-XX:MaxRAMPercentage`, `--max-old-space-size`)."},
+ {n:12,cat:"Lifecycle",title:"`exec format error`",why:"CPU architecture mismatch: built on Apple Silicon (arm64), running on an amd64 server (or vice versa). Also happens with CRLF line endings in shell scripts.",fix:"`docker buildx build --platform linux/amd64 ...` (or multi-arch). For scripts convert to LF (`dos2unix`, `.gitattributes: *.sh text eol=lf`)."},
+ {n:13,cat:"Lifecycle",title:"`exec: \"./entrypoint.sh\": permission denied` or `no such file or directory`",why:"Script isn't executable, or has CRLF endings. The `\\r` makes the interpreter path `/bin/sh\\r`, which doesn't exist, hence the confusing 'no such file'.",fix:"`COPY --chmod=755` or `RUN chmod +x entrypoint.sh`, and convert to LF."},
+ {n:14,cat:"Build",title:"Every build reinstalls all dependencies (slow)",why:"`COPY . .` before `npm install` invalidates the cache on any file change.",fix:"Copy manifests first, install, then copy source. Use BuildKit cache mounts."},
+ {n:15,cat:"Build",title:"Huge image (1–2 GB)",why:"Full base image, dev deps, build tools, no multi-stage, no `.dockerignore`.",fix:"Multi-stage, alpine/slim/distroless, `npm ci --omit=dev`, `.dockerignore`. Inspect with `docker history` or `dive`."},
+ {n:16,cat:"Build",title:"Code changes don't show up after a rebuild",why:"Cached layer, container not recreated, or the file is outside the build context / excluded by `.dockerignore`.",fix:"`docker compose up -d --build` (recreates), `--no-cache` to confirm it's the cache, check `.dockerignore`."},
+ {n:17,cat:"Build",title:"`COPY failed: file not found in build context`",why:"The path is outside the context (`COPY ../shared .` is not allowed) or excluded by `.dockerignore`.",fix:"Build from a parent dir (`docker build -f svc/Dockerfile .`) or set Compose `build: { context: ., dockerfile: svc/Dockerfile }` for monorepos."},
+ {n:18,cat:"Build",title:"Native module errors (`bcrypt`, `Error loading shared library`)",why:"`COPY . .` or a bind mount brought host (Windows/Mac) `node_modules` binaries into a Linux container.",fix:"`.dockerignore` with `node_modules`. In dev bind mounts add an anonymous volume: `- /app/node_modules`."},
+ {n:19,cat:"Build",title:"`npm ci` fails: lockfile missing or out of sync",why:"Lockfile not copied or not committed, or `package.json` changed without updating the lock.",fix:"`COPY package*.json ./`; run `npm install` locally and commit the lockfile."},
+ {n:20,cat:"Build",title:"Alpine-specific failures (`bcrypt`, `sharp`, `node-gyp`, glibc errors)",why:"Alpine uses musl libc; many prebuilt native binaries target glibc.",fix:"Switch to `node:20-slim` (Debian), or install build deps (`apk add python3 make g++`) in the build stage only."},
+ {n:21,cat:"Build",title:"Secrets leaked into the image",why:"`COPY .env`, `ENV TOKEN=...` or `ARG` used for secrets. All visible via `docker history`.",fix:"Runtime env or secret managers; BuildKit `--mount=type=secret`. **Rotate the leaked secret**. Deleting the layer isn't enough if the image was pushed."},
+ {n:22,cat:"Build",title:"`NEXT_PUBLIC_API_URL` is `undefined` or wrong in production Next.js",why:"`NEXT_PUBLIC_*` is baked in at **build** time. Setting it at `docker run` is too late.",fix:"Pass as `ARG` → `ENV` in the build stage per environment, or load runtime config via a server endpoint."},
+ {n:23,cat:"Data",title:"Database data disappears after `docker compose down` / recreate",why:"No volume; data lived in the container's writable layer.",fix:"Named volume `pgdata:/var/lib/postgresql/data`. And beware `docker compose down -v`, which deletes volumes."},
+ {n:24,cat:"Data",title:"Postgres init scripts or new password don't apply",why:"`/docker-entrypoint-initdb.d` and `POSTGRES_PASSWORD` only run on **first init** (empty data dir). An existing volume is ignored.",fix:"`docker compose down -v` (dev only!) to re-init, or use a migration tool."},
+ {n:25,cat:"Data",title:"`permission denied` writing to a mounted volume",why:"The container runs as a non-root UID (e.g. 1000) but the host dir is owned by root or another UID.",fix:"`chown` the dir to the container UID, set `user: \"1000:1000\"`, or use named volumes (Docker sets perms). On SELinux add `:z` to the mount."},
+ {n:26,cat:"Data",title:"Host file changes don't trigger hot reload (Windows/WSL)",why:"Filesystem events don't propagate from Windows into the Docker VM, or the project lives on the Windows drive instead of the WSL2 filesystem.",fix:"Keep the repo inside the WSL2 filesystem, or enable polling (`CHOKIDAR_USEPOLLING=true`, `WATCHPACK_POLLING=true` for Next)."},
+ {n:27,cat:"Compose",title:"Env var is empty/undefined inside the container",why:"`.env` is used for Compose **variable substitution** (`${VAR}`), not injected into containers automatically. Or a typo or quoting issue.",fix:"Use `env_file: .env` or `environment: - DB_HOST=${DB_HOST}`. Debug with `docker compose config` and `docker exec <c> env`."},
+ {n:28,cat:"Compose",title:"YAML errors: `services.x must be a mapping`, tabs",why:"YAML forbids tabs and indentation is meaningful.",fix:"2 spaces, and validate with `docker compose config`."},
+ {n:29,cat:"Compose",title:"`container name \"/api\" is already in use`",why:"An earlier container with the same fixed `container_name` still exists.",fix:"`docker rm -f api`. Avoid `container_name` in Compose (it also blocks scaling). Use `docker compose down --remove-orphans`."},
+ {n:30,cat:"Host",title:"`no space left on device`",why:"Accumulated images, stopped containers, build cache and unrotated logs.",fix:"`docker system df` to see → `docker system prune -a` (add `--volumes` only if sure). Set log rotation. Prune regularly in CI."},
+ {n:31,cat:"Host",title:"`Cannot connect to the Docker daemon` / `permission denied /var/run/docker.sock`",why:"Daemon not running (Docker Desktop closed) or the user isn't in the `docker` group.",fix:"Start Docker Desktop / `sudo systemctl start docker`; `sudo usermod -aG docker $USER` then log in again."},
+ {n:32,cat:"Host",title:"Pull fails behind VPN/corporate proxy (`TLS handshake timeout`, `i/o timeout`)",why:"Proxy or DNS settings aren't passed to the Docker daemon.",fix:"Configure the proxy in Docker Desktop settings; set DNS (`\"dns\": [\"8.8.8.8\"]` in daemon.json)."},
+ {n:33,cat:"Lifecycle",title:"Container is `unhealthy` but the app works (healthcheck uses `localhost`)",why:"On Alpine/newer images `localhost` resolves to IPv6 `::1` first, while the app listens only on IPv4. `wget localhost` fails → unhealthy → dependents never start (`dependency failed to start`). Found while testing Lab 4.",fix:"Use `127.0.0.1` in the HEALTHCHECK, or make the app listen on `::`. Diagnose with `docker inspect --format '{{json .State.Health}}' <c>`, which shows the failing command output."}
+];
+
+window.QA = [
+ {cat:"Fundamentals",q:"What is Docker and why use it?",a:"It packages an app plus dependencies into an image that runs identically anywhere. It fixes 'works on my machine', speeds onboarding, and makes deployments repeatable and environments disposable."},
+ {cat:"Fundamentals",q:"Image vs container?",a:"An image is a read-only template made of layers. A container is a running instance of it with a thin writable layer on top."},
+ {cat:"Fundamentals",q:"How is a container different from a VM?",a:"It shares the host kernel and is isolated with namespaces and cgroups. There's no guest OS, so it's MBs and starts in seconds."},
+ {cat:"Fundamentals",q:"What happens on `docker run`?",a:"Pull the image if missing → create the container (writable layer, network, mounts) → start the process (PID 1) with the configured CMD/ENTRYPOINT."},
+ {cat:"Fundamentals",q:"What are layers and why do they matter?",a:"Each instruction creates a cached, shareable layer. Good ordering gives fast builds; shared layers save disk and bandwidth."},
+ {cat:"Fundamentals",q:"CMD vs ENTRYPOINT?",a:"ENTRYPOINT is the fixed executable. CMD is default arguments that can be overridden at `docker run`."},
+ {cat:"Fundamentals",q:"What is PID 1 in a container and why care?",a:"It's your main process. If it exits, the container stops. It receives signals like SIGTERM and must reap zombies, so use exec form, handle signals, or use `--init`."},
+ {cat:"Dockerfile and images",q:"How do you reduce image size?",a:"Multi-stage builds, slim/alpine/distroless base, only prod dependencies, `.dockerignore`, clean up in the same `RUN`, and no build tools in the final stage."},
+ {cat:"Dockerfile and images",q:"Explain multi-stage builds.",a:"Several `FROM` stages. Build in a fat stage and `COPY --from=build` only the artifacts into a lean runtime stage. Less size, less attack surface."},
+ {cat:"Dockerfile and images",q:"How do you handle secrets?",a:"Never in the image, ENV or git. Inject at runtime (env, orchestrator secrets, Vault/AWS Secrets Manager) and use BuildKit secret mounts at build time. Rotate if leaked."},
+ {cat:"Dockerfile and images",q:"COPY vs ADD? ARG vs ENV?",a:"Use COPY; ADD has implicit extraction and URL fetching. ARG is build-time only; ENV persists into runtime."},
+ {cat:"Networking and storage",q:"How do containers talk to each other?",a:"On the same user-defined network, by service name via embedded DNS. Publish only the ports that must be reachable from outside."},
+ {cat:"Networking and storage",q:"Bridge vs host vs overlay?",a:"Bridge: private network on one host (default). Host: shares the host network stack (no isolation, no port mapping). Overlay: spans multiple hosts (Swarm/K8s)."},
+ {cat:"Networking and storage",q:"Volume vs bind mount?",a:"Volume: Docker-managed and persistent, for production. Bind mount: a host path mapped in, for development."},
+ {cat:"Networking and storage",q:"How do you persist a database?",a:"A named volume on the data directory, plus real backups (`pg_dump`). A volume is not a backup."},
+ {cat:"Compose and orchestration",q:"What does `depends_on` do?",a:"Start order only. Use `condition: service_healthy` with a healthcheck for readiness, plus retries in code."},
+ {cat:"Compose and orchestration",q:"How do you scale a service in Compose?",a:"`docker compose up --scale api=3`, with no fixed `container_name` and no fixed host port, behind a load balancer or nginx."},
+ {cat:"Compose and orchestration",q:"Compose vs Swarm vs Kubernetes?",a:"Compose defines multi-container apps on one host. Swarm is simple native clustering. Kubernetes is the industry-standard orchestrator: auto-scaling, self-healing, rolling updates."},
+ {cat:"Production and security",q:"How do you secure containers?",a:"Non-root user, minimal base, pinned versions, image scanning (Trivy/Scout), read-only filesystem, dropped capabilities, no docker.sock mount, resource limits, secrets outside the image."},
+ {cat:"Production and security",q:"How do you do zero-downtime deploys?",a:"Rolling update behind a load balancer using healthchecks: start the new version → wait healthy → shift traffic → stop the old one. Rollback = redeploy the previous tag."},
+ {cat:"Production and security",q:"How do you monitor and log?",a:"Log to stdout, ship with a log driver or agent (Loki, ELK, CloudWatch). Metrics via Prometheus/cAdvisor. `docker stats` for quick checks. Healthchecks."},
+ {cat:"Production and security",q:"Why not use the `latest` tag?",a:"It's a mutable tag: non-reproducible builds and surprise upgrades. Pin a version or digest and tag images with the git SHA."},
+ {cat:"Scenarios",q:"A container keeps restarting. What do you do?",a:"`docker ps -a` for status and exit code → `docker logs --tail 100` → `docker inspect` (env, health, OOMKilled) → `docker exec` or a minimal repro with `--entrypoint sh` → `docker compose config`. Usually a missing env var, bad DB URL, port conflict, or OOM (137)."},
+ {cat:"Scenarios",q:"The app works locally but not in the container. Why?",a:"Usual suspects: bound to 127.0.0.1 instead of 0.0.0.0, `localhost` used for another service, missing env vars, host-built native modules, different CPU architecture, or files excluded by `.dockerignore`."},
+ {cat:"Scenarios",q:"How would you containerize an existing monolith?",a:"Write a multi-stage Dockerfile, move config to env vars, add a healthcheck and a /health endpoint, log to stdout, put the DB on a volume via Compose, and add the image build to CI. Splitting into services comes later."},
+ {cat:"Scenarios",q:"Why does my Next.js env var not change at runtime?",a:"`NEXT_PUBLIC_*` values are inlined at build time. Pass them as build args per environment, or read configuration at runtime on the server."}
+];
+</script>
+</body>
+</html>

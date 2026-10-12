@@ -2,7 +2,7 @@
 
 - **Status:** Drafted, awaiting explicit send approval
 - **Channels:** Email to Ora Onel (cofounder), LinkedIn connection note to Bryan Onel (CEO)
-- **Portfolio outreach page:** src/lib/outreach/oneleet.ts, will be live at https://talha-atif.vercel.app/r/oneleet once pushed and deployed
+- **Portfolio outreach page:** src/lib/outreach/oneleet.ts, will be live at https://talhaatif.tech/r/oneleet once pushed and deployed
 
 ## Email to Ora Onel
 
@@ -11,7 +11,7 @@
 **Body:**
 Dear Ora,
 
-I have prepared a detailed introduction matched directly against Oneleet's engineering roles and your product itself, available here. https://talha-atif.vercel.app/r/oneleet
+I have prepared a detailed introduction matched directly against Oneleet's engineering roles and your product itself, available here. https://talhaatif.tech/r/oneleet
 
 At Intimec I owned an enterprise IAM platform end to end on a two person engineering team, including the entitlement rule engine, access requests, and the audit trail underneath all of it. I refactored the audit schema to remove raw personal data while preserving full forensic traceability, which is close to the exact trade off your platform is built around for access reviews and risk management.
 
@@ -23,11 +23,11 @@ I would welcome the chance to talk directly, or take on a real piece of work to 
 
 Best regards,
 Talha
-https://talha-atif.vercel.app
+https://talhaatif.tech
 
 ## LinkedIn Connection Note to Bryan Onel (not sent, drafted for review)
 
-Hi Bryan, I built the compliance grade IAM and audit systems Oneleet now sells as a platform, entitlement engine included. Wrote up the direct overlap here. https://talha-atif.vercel.app/r/oneleet Would value a conversation.
+Hi Bryan, I built the compliance grade IAM and audit systems Oneleet now sells as a platform, entitlement engine included. Wrote up the direct overlap here. https://talhaatif.tech/r/oneleet Would value a conversation.
 
 *(Character count: 214, within typical LinkedIn connection note limits)*
 

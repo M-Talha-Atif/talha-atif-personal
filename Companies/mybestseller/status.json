@@ -1,0 +1,32 @@
+{
+    "company":  "Mybestseller",
+    "slug":  "mybestseller",
+    "status":  "Sent",
+    "lastUpdated":  "2026-10-07",
+    "opportunity":  {
+                        "role":  "Direct introduction (informational), no posted opening checked",
+                        "companyUrl":  ""
+                    },
+    "contact":  {
+                    "name":  "Peter van Bekkum",
+                    "title":  "Co-Founder and CEO",
+                    "email":  "peterpaul@mybestseller.com",
+                    "emailStatus":  "From user-supplied export, not independently verified"
+                },
+    "outreach":  {
+                     "channel":  "Email",
+                     "portfolioPage":  "/r/mybestseller",
+                     "pageUrl":  "https://talhaatif.tech/r/mybestseller",
+                     "draftStatus":  "Drafted",
+                     "approvalStatus":  "Approved (user, 2026-10-07)",
+                     "sentStatus":  "Sent 2026-10-07 (Gmail message 1a1177310aeb6b9c), no resume attached, offered on request",
+                     "followUpAfter":  "2026-10-14"
+                 },
+    "riskFlags":  [
+                      "mijnbestseller.nl redirects to Bookmundo, company status unconfirmed"
+                  ],
+    "notion":  {
+                   "synced":  false,
+                   "recordUrl":  null
+               }
+}

@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Interview Prep</title>
+<script>try{var t=localStorage.getItem('ip-theme');document.documentElement.dataset.theme=t||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}catch(e){}</script>
+<link rel="stylesheet" href="assets/style.css">
+<style>main{margin-left:0;margin:0 auto;padding-top:48px}.top{display:flex;justify-content:space-between;align-items:center}a.card{text-decoration:none;color:inherit;display:block}a.card:hover{border-color:var(--brand)}</style>
+</head>
+<body>
+<main>
+  <div class="top"><h1>🎯 Interview Prep</h1><button class="btn" id="t">🌓 Theme</button></div>
+  <p class="lead">Pick a topic. Each page has concepts, diagrams, production practices, bugs and fixes, Q&amp;A and hands-on labs.</p>
+  <div class="grid" id="topics"></div>
+  <div class="callout tip"><b class="t">Add a new topic</b><p>Copy <code>_template/</code> to <code>&lt;topic&gt;/</code>, follow <code>_template/AI-INSTRUCTIONS.md</code>, then add one line to the <code>TOPICS</code> array in this file.</p></div>
+</main>
+<script>
+/* Register topics here. status: "ready" | "planned" */
+var TOPICS = [
+  {slug:"backend-engineering/tools/docker", icon:"🐳", title:"Docker", blurb:"Images, Compose, production practices, microservices, 33 bugs, Q&A, 4 labs.", status:"ready"},
+  {slug:"backend-engineering/tools/kubernetes", icon:"☸️", title:"Kubernetes", blurb:"Architecture, workloads, probes, rollouts, 34 bugs, Q&A, 5 labs (manifests parse-checked, not run on a live cluster).", status:"ready"},
+  {slug:"companies/intimec", icon:"🏢", title:"Intimec (project defense)", blurb:"My IAM platform: 11 services, tool choices with trade-offs, security, outbox design, gaps register, 30 hard Q&A. Built from the real repo.", status:"ready"}
+];
+document.getElementById('topics').innerHTML = TOPICS.map(function(t){
+  var inner = '<h4>'+t.icon+' '+t.title+'</h4><p>'+t.blurb+'</p><span class="pill">'+t.status+'</span>';
+  return t.status==='ready' ? '<a class="card" href="'+t.slug+'/index.html">'+inner+'</a>' : '<div class="card" style="opacity:.6">'+inner+'</div>';
+}).join('');
+document.getElementById('t').onclick=function(){var r=document.documentElement;r.dataset.theme=r.dataset.theme==='dark'?'light':'dark';try{localStorage.setItem('ip-theme',r.dataset.theme)}catch(e){}};
+</script>
+</body>
+</html>

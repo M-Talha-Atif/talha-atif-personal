@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "careerflow-admin": {
+      "type": "http",
+      "url": "https://api.careerflow.ai/instituteApp/v2/mcp",
+      "headers": {
+        "cf-api-key": "YOUR_API_KEY"
+      }
+    },
+    "olostep": {
+      "type": "http",
+      "url": "https://mcp.olostep.com/mcp",
+      "headers": {
+        "Authorization": "Bearer olostep_vKlWIVJb1UWJF4SMwnhvzOG75wVCh8LLkVLB"
+      }
+    }
+  }
+}

@@ -80,7 +80,7 @@ Distinguish, using a dedicated property if one exists, or a clearly-labeled conv
 
 ## Outreach Page URL
 
-When `prepare-outreach` supplies a slug, the public URL follows the existing route exactly: `/r/[slug]`. The known deployed base for this portfolio is `https://talha-atif.vercel.app` (confirmed from existing Notion outreach notes), giving e.g. `https://talha-atif.vercel.app/r/atomic`. Never invent a different route or a different base domain. Store it in the Outreach Page URL field if one exists; otherwise note it in Notes. Never modify the portfolio codebase to "make" this URL work — it already exists.
+When `prepare-outreach` supplies a slug, the public URL follows the existing route exactly: `/r/[slug]`. The known deployed base for this portfolio is `https://talhaatif.tech` (confirmed from existing Notion outreach notes), giving e.g. `https://talhaatif.tech/r/atomic`. Never invent a different route or a different base domain. Store it in the Outreach Page URL field if one exists; otherwise note it in Notes. Never modify the portfolio codebase to "make" this URL work — it already exists.
 
 ## Inputs and Default/Update Status
 

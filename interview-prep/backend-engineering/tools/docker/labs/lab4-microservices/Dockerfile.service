@@ -1,0 +1,12 @@
+# One reusable Dockerfile for both tiny services (no npm deps).
+# In real projects each service has its own Dockerfile with its own deps.
+FROM node:20-alpine
+ENV NODE_ENV=production
+WORKDIR /app
+ARG SERVICE
+COPY ${SERVICE}/server.js .
+USER node
+EXPOSE 3000
+HEALTHCHECK --interval=10s --timeout=3s --retries=3 \
+  CMD wget -qO- http://127.0.0.1:3000/health || exit 1
+CMD ["node", "server.js"]

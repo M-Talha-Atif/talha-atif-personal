@@ -1,0 +1,93 @@
+# TROUBLESHOOTING DOJO: six deliberately broken workloads. Apply, diagnose, fix. Don't peek at the answers in the page.
+#   kubectl create ns dojo && kubectl apply -f broken.yaml -n dojo && kubectl get pods -n dojo
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: b1 }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: b1 } }
+  template:
+    metadata: { labels: { app: b1 } }
+    spec:
+      containers:
+        - { name: web, image: "nginx:1.26-alpne" }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: b2 }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: b2 } }
+  template:
+    metadata: { labels: { app: b2 } }
+    spec:
+      containers:
+        - name: job
+          image: busybox:1.36
+          command: ["sh", "-c", "echo 'starting'; echo 'DB_URL not set' >&2; exit 1"]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: b3 }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: b3 } }
+  template:
+    metadata: { labels: { app: b3 } }
+    spec:
+      containers:
+        - name: web
+          image: nginx:1.26-alpine
+          resources:
+            requests: { cpu: "64", memory: 512Gi }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: b4 }
+spec:
+  replicas: 2
+  selector: { matchLabels: { app: b4 } }
+  template:
+    metadata: { labels: { app: b4 } }
+    spec:
+      containers:
+        - { name: web, image: "nginx:1.26-alpine", ports: [{ containerPort: 80 }] }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: b4 }
+spec:
+  selector: { app: b-4 }
+  ports: [{ port: 80, targetPort: 80 }]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: b5 }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: b5 } }
+  template:
+    metadata: { labels: { app: b5 } }
+    spec:
+      containers:
+        - name: web
+          image: nginx:1.26-alpine
+          envFrom:
+            - configMapRef: { name: does-not-exist }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: b6 }
+spec:
+  replicas: 2
+  selector: { matchLabels: { app: b6 } }
+  template:
+    metadata: { labels: { app: b6 } }
+    spec:
+      containers:
+        - name: web
+          image: nginx:1.26-alpine
+          ports: [{ containerPort: 80 }]
+          readinessProbe:
+            httpGet: { path: /healthz, port: 80 }
+            periodSeconds: 3

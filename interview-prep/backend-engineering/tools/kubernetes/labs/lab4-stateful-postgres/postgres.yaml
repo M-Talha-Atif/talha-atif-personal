@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: Secret
+metadata: { name: pg-secret }
+type: Opaque
+stringData: { POSTGRES_PASSWORD: demo-only-change-me }   # stringData = plain text here, stored base64 by the API
+---
+apiVersion: v1
+kind: Service
+metadata: { name: pg }
+spec:
+  clusterIP: None                      # HEADLESS: DNS returns pod IPs → stable name pg-0.pg
+  selector: { app: pg }
+  ports: [{ port: 5432 }]
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata: { name: pg }
+spec:
+  serviceName: pg                      # ties pods to the headless Service for stable DNS
+  replicas: 1
+  selector: { matchLabels: { app: pg } }
+  template:
+    metadata: { labels: { app: pg } }
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          ports: [{ containerPort: 5432 }]
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom: { secretKeyRef: { name: pg-secret, key: POSTGRES_PASSWORD } }
+            - name: PGDATA                          # sub-dir avoids the volume's lost+found breaking initdb
+              value: /var/lib/postgresql/data/pgdata
+          readinessProbe:
+            exec: { command: ["pg_isready", "-U", "postgres"] }
+            periodSeconds: 5
+          resources:
+            requests: { cpu: 100m, memory: 128Mi }
+            limits: { memory: 256Mi }
+          volumeMounts: [{ name: data, mountPath: /var/lib/postgresql/data }]
+  volumeClaimTemplates:                # one PVC per pod: data-pg-0, data-pg-1 …
+    - metadata: { name: data }
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources: { requests: { storage: 1Gi } }

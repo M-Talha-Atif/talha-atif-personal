@@ -1,0 +1,32 @@
+{
+    "company":  "BOMESI Collective",
+    "slug":  "bomesi",
+    "status":  "Sent",
+    "lastUpdated":  "2026-10-07",
+    "opportunity":  {
+                        "role":  "Direct introduction (informational), no posted opening checked",
+                        "companyUrl":  ""
+                    },
+    "contact":  {
+                    "name":  "Devon Johnson",
+                    "title":  "Cofounder and CEO",
+                    "email":  "devon@bomesi.org",
+                    "emailStatus":  "From user-supplied export, not independently verified"
+                },
+    "outreach":  {
+                     "channel":  "Email",
+                     "portfolioPage":  "/r/bomesi",
+                     "pageUrl":  "https://talhaatif.tech/r/bomesi",
+                     "draftStatus":  "Drafted",
+                     "approvalStatus":  "Approved (user, 2026-10-07)",
+                     "sentStatus":  "Sent 2026-10-07 (Gmail message 1a117730d7244ff4), no resume attached, offered on request",
+                     "followUpAfter":  "2026-10-14"
+                 },
+    "riskFlags":  [
+                      "Nonprofit, limited budget likely"
+                  ],
+    "notion":  {
+                   "synced":  false,
+                   "recordUrl":  null
+               }
+}

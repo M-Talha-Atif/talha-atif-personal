@@ -2,7 +2,7 @@
 
 - **Status:** Sent
 - **Channel:** Email to Kim Van Lavieren (Co-Founder & CTO), kim@dawnguard.ai
-- **Portfolio outreach page:** src/lib/outreach/dawnguard.ts, live at https://talha-atif.vercel.app/r/dawnguard
+- **Portfolio outreach page:** src/lib/outreach/dawnguard.ts, live at https://talhaatif.tech/r/dawnguard
 - **Tailored documents:** Resumes/Dawnguard Resume/dawnguard-engineer.tex and dawnguard-cover-letter.tex, both link to the outreach page. No compiled PDF exists yet, Docker Desktop was not running locally when compilation was attempted and starting it was judged not worth the disruption for this request; user was told directly rather than silently skipping it.
 
 ## Email sent (cover letter content used as the email body, standard practice)
@@ -11,7 +11,7 @@
 
 Dear Kim,
 
-I am writing to apply for the Medior Software Engineer, Full Stack role. I have also prepared a page matched directly against this posting, available here. https://talha-atif.vercel.app/r/dawnguard
+I am writing to apply for the Medior Software Engineer, Full Stack role. I have also prepared a page matched directly against this posting, available here. https://talhaatif.tech/r/dawnguard
 
 What drew me in specifically is the idea of shift left security done properly, validating design and generating production ready infrastructure as code before a single line of application code exists, rather than bolting security on after the fact. That is a genuinely different way to think about the problem, and it is close to how I already think about the systems I build.
 
@@ -25,7 +25,7 @@ I would welcome the chance to talk through where my background fits and where it
 
 Best regards,
 Muhammad Talha Atif
-https://talha-atif.vercel.app
+https://talhaatif.tech
 
 ## Approval status
 **Sent.** Sent via Apollo emailer (talhaatif573@gmail.com to kim@dawnguard.ai) 2026-07-30 13:07 UTC, status `completed`.

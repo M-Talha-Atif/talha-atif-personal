@@ -3,10 +3,10 @@
 - **Status:** Drafted, awaiting human approval
 - **Channel:** LinkedIn only (no verified email found, per instruction no email draft is prepared without one)
 - **Contact:** Andreas Kaltenbach, CTO & Co-Founder
-- **Portfolio outreach page:** src/lib/outreach/inblick.ts, live at https://talha-atif.vercel.app/r/inblick (verified rendering locally, 2026-07-24, both images confirmed 200 OK)
+- **Portfolio outreach page:** src/lib/outreach/inblick.ts, live at https://talhaatif.tech/r/inblick (verified rendering locally, 2026-07-24, both images confirmed 200 OK)
 
 ## LinkedIn Connection Note
-Hi Andreas, saw your post asking if full-stack developers want to work more with AI, that's exactly my thing. I'm a backend/full-stack engineer (Java/Spring, Node, some LangChain/agent work) based in Pakistan, open to remote work. Put together a short page on Inblick here: https://talha-atif.vercel.app/r/inblick
+Hi Andreas, saw your post asking if full-stack developers want to work more with AI, that's exactly my thing. I'm a backend/full-stack engineer (Java/Spring, Node, some LangChain/agent work) based in Pakistan, open to remote work. Put together a short page on Inblick here: https://talhaatif.tech/r/inblick
 
 ## Follow-up Message (after connection accepted)
 Hi Andreas, Inblick 1.1 (GPT-5/Grok insights, PhenixID login, Slack delivery) on a team this small is a lot of real engineering ground covered.

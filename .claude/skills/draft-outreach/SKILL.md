@@ -7,7 +7,7 @@ description: Draft one extremely short, personalized cold outreach email (60-100
 
 Write the email that gets someone to click the personalized portfolio page — not the email that tries to be the pitch itself.
 
-The detailed story — engineering evidence, selected projects, culture fit, evaluation paths — already lives on the company-specific outreach page (`https://talha-atif.vercel.app/r/[slug]`, built by `prepare-outreach` and rendered by the existing `/r/[slug]` template). This skill's only job is the hook: a short, specific, evidence-backed email that makes the recipient curious enough to open that page. It is the trailer, not the movie. It must never try to explain the whole career.
+The detailed story — engineering evidence, selected projects, culture fit, evaluation paths — already lives on the company-specific outreach page (`https://talhaatif.tech/r/[slug]`, built by `prepare-outreach` and rendered by the existing `/r/[slug]` template). This skill's only job is the hook: a short, specific, evidence-backed email that makes the recipient curious enough to open that page. It is the trailer, not the movie. It must never try to explain the whole career.
 
 ## Workflow Position
 
@@ -47,7 +47,7 @@ This skill does not perform broad company discovery or research — that already
 - Contact email, if available
 - Contact LinkedIn, if available
 - Prepared outreach package (loaded from the local record above)
-- Company-specific outreach page URL (`https://talha-atif.vercel.app/r/[slug]`)
+- Company-specific outreach page URL (`https://talhaatif.tech/r/[slug]`)
 
 Example:
 ```
@@ -56,7 +56,7 @@ Role: Backend Engineer
 Contact: [Name]
 Contact Role: [Role]
 Contact Email: [Email]
-Outreach Page: https://talha-atif.vercel.app/r/atomic
+Outreach Page: https://talhaatif.tech/r/atomic
 ```
 
 The local record found above is the primary source for the prepared package and contact info. Only fall back to a conversation-pasted `prepare-outreach` output if the local record is missing or thinner than what's available directly in the conversation. Never re-run broad company research to fill a gap. If a critical fact is still missing after checking both, don't invent it — omit the claim, or state plainly what's missing and ask, rather than guessing.
@@ -67,7 +67,7 @@ The local record found above is the primary source for the prepared package and 
 - The supplied `prepare-outreach` package — the valid source for which evidence/project/decision was already selected as strongest for this company; reuse its selection rather than re-choosing independently, unless it's missing something this email specifically needs.
 - `Outreach/outreach-rules.md` — the existing tone and structure rules for cold outreach (communication style, message shape, what never goes in outreach, subject-line conventions). This skill is that file's rules applied specifically to the email-drafting step.
 - `Brand/voice.md` — technical, clear, thoughtful, direct; no em dashes; no generic motivational language; no corporate buzzwords.
-- Existing portfolio identity: name "Talha Atif" / "M. Talha Atif", portfolio `https://talha-atif.vercel.app`, GitHub `https://github.com/M-Talha-Atif`, LinkedIn `https://www.linkedin.com/in/muhammad-talha-atif/`. Use these for the signature — never invent contact details.
+- Existing portfolio identity: name "Talha Atif" / "M. Talha Atif", portfolio `https://talhaatif.tech`, GitHub `https://github.com/M-Talha-Atif`, LinkedIn `https://www.linkedin.com/in/muhammad-talha-atif/`. Use these for the signature — never invent contact details.
 
 ## Hard Constraints (never violate)
 
@@ -131,7 +131,7 @@ Never use: "Job Application," "Backend Engineer Application," "Interested in joi
 
 ## Personalized Portfolio Link
 
-Use the existing company-specific route exactly: `https://talha-atif.vercel.app/r/[slug]` (or whatever canonical production domain the portfolio is already deployed to, if different from this default — never invent a new route format). The slug must match the company, and the URL must match what's stored in `outreach.md`'s `pageUrl`/`status.json.outreach.pageUrl` in the local record. Never substitute the generic portfolio homepage when a company-specific page already exists.
+Use the existing company-specific route exactly: `https://talhaatif.tech/r/[slug]` (or whatever canonical production domain the portfolio is already deployed to, if different from this default — never invent a new route format). The slug must match the company, and the URL must match what's stored in `outreach.md`'s `pageUrl`/`status.json.outreach.pageUrl` in the local record. Never substitute the generic portfolio homepage when a company-specific page already exists.
 
 ## Signature
 

@@ -1,0 +1,150 @@
+<!doctype html>
+<!--
+  ╔════════════════════════════════════════════════════════════════════╗
+  ║  INTERVIEW-PREP TOPIC TEMPLATE                                      ║
+  ║  Copy this folder to  interview-prep/<topic>/  and fill it in.      ║
+  ║  Read AI-INSTRUCTIONS.md first. Search for  TODO  to find every     ║
+  ║  placeholder. Delete these banner comments in the finished page.    ║
+  ║  Shared CSS/JS live in ../assets/ . Do not copy them.               ║
+  ╚════════════════════════════════════════════════════════════════════╝
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TODO Topic Interview Prep</title>
+<script>try{var t=localStorage.getItem('ip-theme');document.documentElement.dataset.theme=t||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}catch(e){}</script>
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<!-- TODO: add extra hljs languages if needed, e.g. dockerfile, nginx, kotlin, hcl:
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/dockerfile.min.js"></script> -->
+<script defer src="../assets/app.js"></script>
+</head>
+<body>
+<div id="progress"></div>
+<!-- Required once per page: arrowhead used by every diagram -->
+<svg width="0" height="0" style="position:absolute"><defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" style="fill:var(--muted)"/></marker></defs></svg>
+<button class="btn menu-btn" id="menu-btn">☰ Menu</button>
+
+<aside class="sidebar">
+  <div class="logo">TODO emoji Topic</div>
+  <div class="sub">Interview prep</div>
+  <nav id="toc"></nav> <!-- auto-filled from every <h2 id="..."> -->
+  <div class="tools"><button class="btn" id="theme-btn">🌓 Theme</button><a class="btn" href="../index.html" style="text-decoration:none">All topics</a></div>
+</aside>
+
+<main>
+<h1>TODO Topic Interview Prep</h1>
+<p class="lead">TODO one sentence: what the reader will be able to do after this page.</p>
+
+<!-- ───────── COMPONENT: say-it-out-loud pitch (always first) ───────── -->
+<div class="callout say"><b class="t">Your one-minute pitch (memorize)</b>
+<p>TODO 4-6 sentences, first person, spoken style. Define the thing, why it exists, how you use it, 1-2 concrete practices.</p></div>
+
+<!-- ───────── SECTION 0: study plan + readiness checklist ───────── -->
+<h2 id="plan"><span class="num">0</span>Study plan</h2>
+<div class="grid">
+  <div class="card"><span class="pill">Day 1</span><h4>TODO</h4><p>TODO</p></div>
+  <div class="card"><span class="pill">Day 2</span><h4>TODO</h4><p>TODO</p></div>
+  <div class="card"><span class="pill">Day 3</span><h4>TODO</h4><p>TODO</p></div>
+</div>
+<p><b>Readiness checklist</b> (ticks are saved in the browser):</p>
+<ul class="checklist">  <!-- app.js adds the checkboxes automatically -->
+  <li>TODO I can explain X in 30 seconds</li>
+  <li>TODO I can build Y from memory</li>
+</ul>
+
+<!-- ───────── SECTION 1: core concepts ───────── -->
+<h2 id="s1"><span class="num">01</span>Core concepts</h2>
+<h3>TODO concept</h3>
+<p>TODO plain-language explanation first, jargon second. Use an analogy.</p>
+
+<!-- COMPONENT: diagram. Always wrap in figure.diagram + caption. See AI-INSTRUCTIONS.md for the SVG kit. -->
+<figure class="diagram">
+<svg class="d" viewBox="0 0 760 140">
+  <rect class="p" x="20"  y="40" width="150" height="56" rx="8"/><text class="h" x="40" y="72">Box A</text>
+  <rect class="g" x="300" y="40" width="150" height="56" rx="8"/><text class="h" x="320" y="72">Box B</text>
+  <rect class="o" x="580" y="40" width="150" height="56" rx="8"/><text class="h" x="600" y="72">Box C</text>
+  <path class="ln" d="M170 68 H298"/><text class="m" x="200" y="58">label</text>
+  <path class="ln" d="M450 68 H578"/>
+</svg>
+<figcaption>TODO one-line takeaway the diagram proves.</figcaption>
+</figure>
+
+<!-- COMPONENT: comparison table -->
+<div class="tablewrap"><table>
+<tr><th></th><th>Option A</th><th>Option B</th></tr>
+<tr><td>TODO</td><td>TODO</td><td>TODO</td></tr>
+</table></div>
+
+<!-- COMPONENT: callouts. Variants: (default blue) | say | tip | warn | bad -->
+<div class="callout tip"><b class="t">Tip</b><p>TODO</p></div>
+<div class="callout warn"><b class="t">Gotcha</b><p>TODO common trap interviewers love.</p></div>
+<div class="callout bad"><b class="t">Never</b><p>TODO anti-pattern.</p></div>
+<div class="callout say"><b class="t">Say this</b><p>TODO a polished sentence to speak.</p></div>
+
+<!-- COMPONENT: code block. Content is raw text (no HTML escaping needed). data-lang = highlight.js language. -->
+<script type="text/plain" class="code" data-lang="bash" data-title="TODO filename or purpose">
+echo "replace me"
+</script>
+
+<!-- ───────── SECTION 2: practices (production / best practices) ───────── -->
+<h2 id="s2"><span class="num">02</span>Best practices</h2>
+<p>TODO 8-12 practices, each: what, why, tiny example. Prefer a checklist or numbered steps.</p>
+<ol class="steps">
+  <li><b>TODO practice.</b> Why it matters.</li>
+</ol>
+
+<!-- ───────── SECTION 3: architecture / real-world scenarios ───────── -->
+<h2 id="s3"><span class="num">03</span>Real-world scenarios</h2>
+<p>TODO how the topic behaves in the situations the interviewer will probe (e.g. monolith vs microservices, small vs large scale, local vs cloud). Add 1-2 diagrams.</p>
+
+<!-- ───────── SECTION 4: bugs / pitfalls  (data lives in window.BUGS below) ───────── -->
+<h2 id="s4"><span class="num">04</span>Common bugs and fixes</h2>
+<p>Tell these as stories: "I hit X, diagnosed it with Y, fixed it with Z."</p>
+<div id="bugs-list"></div>  <!-- rendered from window.BUGS: search + category chips + expand all -->
+<h3>Your universal debugging flow</h3>
+<p>TODO numbered diagnosis steps (diagram optional).</p>
+
+<!-- ───────── SECTION 5: interview Q&A  (data lives in window.QA below) ───────── -->
+<h2 id="s5"><span class="num">05</span>Interview Q&amp;A</h2>
+<div id="qa-list"></div>  <!-- rendered from window.QA: grouped, reveal/hide, random question -->
+<div class="callout say"><b class="t">"Tell me about your experience with TODO" (template)</b>
+<p>TODO answer in 5-6 sentences with one problem, one diagnosis, one fix.</p></div>
+
+<!-- ───────── SECTION 6: hands-on labs ───────── -->
+<h2 id="labs"><span class="num">06</span>Hands-on labs</h2>
+<p>TODO prerequisites. Each lab: goal → diagram (optional) → full runnable code → run commands → "break it on purpose" steps.</p>
+<h3>Lab 1: TODO</h3>
+<script type="text/plain" class="code" data-lang="bash" data-title="run lab 1">
+echo "replace me"
+</script>
+<ol class="steps">
+  <li>TODO experiment, and what you should observe, and why.</li>
+  <li><b>Break it:</b> TODO introduce a known bug, read the error, fix it.</li>
+</ol>
+
+<!-- ───────── SECTION 7: cheatsheet ───────── -->
+<h2 id="cheat"><span class="num">07</span>Last-minute cheatsheet</h2>
+<div class="grid">
+  <div class="card"><h4>TODO</h4><p>TODO one-line reminder</p></div>
+  <div class="card"><h4>TODO</h4><p>TODO one-line reminder</p></div>
+</div>
+</main>
+
+<script>
+/* Bug / pitfall data. Fields: n (number), cat (category chip), title (the SYMPTOM, what the engineer sees),
+   why (root cause), fix (what to do). Inline formatting allowed: `code` and **bold**. No HTML. Use double quotes. */
+window.BUGS = [
+  {n:1, cat:"TODO Category", title:"TODO symptom / error message", why:"TODO root cause", fix:"TODO fix, with a command if useful"},
+  {n:2, cat:"TODO Category", title:"TODO symptom", why:"TODO cause", fix:"TODO fix"}
+];
+/* Q&A data. cat groups consecutive questions, so keep same-category items together. q = question, a = spoken answer. */
+window.QA = [
+  {cat:"Fundamentals", q:"TODO question?", a:"TODO concise spoken answer (2-4 sentences)."},
+  {cat:"Fundamentals", q:"TODO question?", a:"TODO answer."}
+];
+</script>
+</body>
+</html>

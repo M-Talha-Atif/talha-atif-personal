@@ -1,0 +1,233 @@
+%==============================================================
+% Muhammad Talha Atif -- AI Engineer Resume (3+ years)
+% Compile with: pdflatex AI-Engineer.tex
+%==============================================================
+\documentclass[10pt, letterpaper]{article}
+
+\usepackage[
+top=0.55in, bottom=0.55in,
+left=0.65in, right=0.65in
+]{geometry}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{parskip}
+\usepackage{microtype}
+\usepackage{lmodern}
+
+\definecolor{navy}{HTML}{1A1A2E}
+\definecolor{accentblue}{HTML}{1565C0}
+\definecolor{medgray}{HTML}{555555}
+\definecolor{lightgray}{HTML}{777777}
+
+\hypersetup{colorlinks=true,urlcolor=accentblue,linkcolor=accentblue}
+
+\titleformat{\section}
+{\normalsize\bfseries\color{navy}}{}{0em}{\MakeUppercase}
+[\vspace{-4pt}\color{lightgray}\rule{\linewidth}{0.4pt}\vspace{2pt}]
+\titlespacing{\section}{0pt}{10pt}{4pt}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+\setlist[itemize]{leftmargin=14pt,itemsep=2pt,parsep=0pt,topsep=3pt,label=\textbullet}
+
+\newcommand{\jobheader}[2]{%
+\noindent\textbf{#1}\hfill{\small\color{lightgray}\textit{#2}}\par\vspace{-2pt}}
+
+\newcommand{\jobsub}[2]{%
+\noindent{\small\color{accentblue}\textbf{#1}}\quad{\small\color{lightgray}#2}\par\vspace{2pt}}
+
+\newcommand{\jobdesc}[1]{%
+\noindent{\small\color{lightgray}\textit{#1}}\par\vspace{2pt}}
+
+\newcommand{\projheader}[4]{%
+\noindent\textbf{#1}\quad{\color{lightgray}|}\quad{\small #2}\quad{\color{lightgray}|}\quad
+{\small\color{accentblue}\href{#3}{Demo}}%
+\hfill{\small\color{lightgray}\textit{#4}}\par\vspace{-2pt}}
+
+\newcommand{\skillrow}[2]{%
+\noindent\textbf{#1}\quad{\color{medgray}#2}\par\vspace{3pt}}
+
+\newcommand{\awardrow}[3]{%
+\noindent\textbf{#1}\hfill{\small\color{lightgray}\textit{#3}}\par
+{\small\color{lightgray}#2}\par\vspace{4pt}}
+
+\begin{document}
+\pagestyle{empty}
+
+\begin{center}
+{\Large\bfseries\color{navy} Muhammad Talha Atif}\par\vspace{4pt}
+{\normalsize\color{medgray} AI Engineer \enspace$\diamond$\enspace Backend Engineer}\par\vspace{4pt}
+{\small\color{lightgray}
++923064391520\enspace$\diamond$\enspace
+\href{mailto:talhaatif573@gmail.com}{talhaatif573@gmail.com}\enspace$\diamond$\enspace
+Lahore, Pakistan\enspace$\diamond$\enspace
+\href{https://linkedin.com/in/muhammad-talha-atif}{LinkedIn}\enspace$\diamond$\enspace
+\href{https://github.com/M-Talha-Atif}{GitHub}\enspace$\diamond$\enspace
+\href{https://talhaatif.tech}{Portfolio}}
+\end{center}
+
+\vspace{2pt}
+
+%--------------------------------------------------------------
+% SUMMARY
+%--------------------------------------------------------------
+\section{Summary}
+
+AI and Backend Engineer with 3+ years of professional experience (since Sep 2023) building LLM-powered
+products, async AI pipelines, and production APIs in Python, TypeScript, and Java. Built two AI products
+end to end as the sole engineer, including a multimodal inference service and a Gemini-powered tutor,
+and shipped backend work with measurable results such as 3s to 700ms API latency, 5,000+ user bulk
+operations, and zero-downtime migrations. Works with LangGraph, CrewAI, and RAG, and has 4 merged open
+source pull requests, three of them in an AI agent observability tool.
+
+%--------------------------------------------------------------
+% WORK EXPERIENCE
+%--------------------------------------------------------------
+\section{Work Experience}
+
+\jobheader{Founding Engineer (Contract)}{Jun '26 -- Present}
+\jobsub{myStaffhub}{Remote}
+\jobdesc{Founding engineer on an HR and payroll management platform for a South African workforce
+management company.}
+\begin{itemize}
+  \item Developed a comprehensive API for HR and payroll management as the founding engineer.
+  \item Designed a permission-based access-control system to strengthen security across numerous
+        endpoints.
+  \item Managed infrastructure for deployment and monitoring of sensitive data in compliance with
+        South Africa's POPIA.
+\end{itemize}
+
+\vspace{4pt}
+
+\jobheader{Backend Engineer}{Dec '25 -- Jun '26}
+\jobsub{Intimec via MicroTechX}{Remote}
+\jobdesc{Built backend infrastructure for a compliance-heavy Identity Governance platform across 8+
+Spring Boot microservices, audit systems, access automation, and event-driven workflows.}
+\begin{itemize}
+\item Designed an async, chunk-based bulk assignment engine on Kafka supporting 5,000+ users per
+operation, with real-time progress tracking and a failure reason for every item.
+\item Architected a generic rule-based automation engine that assigns roles and entitlements through
+grouped condition evaluation, CRON scheduling, and event-triggered execution, and caught a
+compliance-critical logic bug with a purpose-built 26-employee test dataset before production.
+\item Migrated service-to-service communication from REST to gRPC, reducing inter-service latency by
+50\% across Auth, Identity, and Access Portal workflows.
+\item Led a zero-downtime OpenSearch migration of 5M+ documents using alias switching, restoring
+analytics that now handle 100K+ logs per cycle.
+\item Refactored the audit log schema to remove PII while preserving forensic traceability, and fixed
+a Spring AOP self-invocation issue that was silently bypassing audit advice.
+\end{itemize}
+
+\vspace{4pt}
+
+\jobheader{Backend Engineer}{Sep '25 -- Jan '26}
+\jobsub{Digital Upgraders LLC}{Remote}
+\jobdesc{Built and optimized production backend APIs for a social platform serving photographers,
+videographers, and creative professionals across web and mobile clients.}
+\begin{itemize}
+\item Reduced production feed load time from 3s to 700ms (77\%) by fixing four separate causes: a
+missing index, unused response fields, no caching, and an unoptimised query.
+\item Eliminated duplicate notification delivery by redesigning concurrent write flows with database
+transactions and a unique constraint as a second line of defence.
+\item Led a zero-downtime migration from AWS EC2 to Fly.io, covering Docker, CI/CD, DNS, and
+environment configuration, keeping the old instance as a fallback until cutover was verified.
+\item Built and maintained REST APIs for feeds, notifications, user interactions, authentication, and
+media workflows.
+\end{itemize}
+
+\vspace{4pt}
+
+\jobheader{Full Stack Engineer}{Sep '23 -- Apr '25}
+\jobsub{HannSoft}{Remote}
+\jobdesc{Built Android and client products for clients across different countries, as the only engineer
+on each engagement, from requirements through delivery.}
+\begin{itemize}
+  \item Shipped integration-heavy features such as a barcode scan to recipe flow with Gemini-based AI
+        content generation for the Fridge Buddy app.
+  \item Built third party API integrations (library and sports data providers, Firebase Cloud
+        Messaging) with timeouts, circuit breakers, and exponential backoff retries, so one
+        unreliable provider could not cascade into an app-wide outage.
+  \item Owned the technical lifecycle of independent client products end to end, from data modeling
+        and access control design to native client delivery, with Firestore security rules enforcing
+        RBAC at the data layer.
+\end{itemize}
+
+%--------------------------------------------------------------
+% PROJECTS
+%--------------------------------------------------------------
+\section{AI Projects}
+
+\projheader{Moodly}{Multimodal AI Booking Platform (solo)}{https://talhaatif.tech/projects/moodly}{}
+\begin{itemize}
+\item Built every layer alone: React Native app, NestJS backend, FastAPI AI inference service (HuBERT
+for voice, DeepFace for facial emotion), and AWS deployment.
+\item Decoupled AI inference from the booking flow with an async RabbitMQ pipeline, cutting perceived
+AI wait time from 4-8 seconds to under 1 second.
+\item Added strict input validation, secure authentication, and unit-tested business logic across
+critical API paths.
+\end{itemize}
+
+\vspace{4pt}
+
+\projheader{Memingo}{AI Language Learning Platform (solo)}{https://talhaatif.tech/projects/memingo}{}
+\begin{itemize}
+\item Integrated a Gemini-powered conversational tutor with session-aware context management,
+structured output parsing, and personalized recommendations based on learner progress.
+\item Built an object detection API that classifies camera frames and returns vocabulary with
+cultural context as a structured response.
+\item Cut a leaderboard API from 30 seconds to 90ms by replacing read-time ranking with a Redis
+precomputed cache.
+\end{itemize}
+
+%--------------------------------------------------------------
+% OPEN SOURCE
+%--------------------------------------------------------------
+\section{Open Source}
+
+\noindent\textbf{OpenSRE (Tracer Cloud)}\quad{\small\color{lightgray}AI agent observability platform, 3 merged PRs}\par\vspace{2pt}
+\begin{itemize}
+\item \href{https://github.com/Tracer-Cloud/opensre/pull/3702}{PR \#3702}: replaced scattered broad
+exception handling in the agent harness with a named exception hierarchy and a single
+\texttt{safe\_execute()} boundary, making fallback behavior explicit and auditable.
+\item \href{https://github.com/Tracer-Cloud/opensre/pull/3620}{PR \#3620} and
+\href{https://github.com/Tracer-Cloud/opensre/pull/3618}{PR \#3618}: fixed stale documentation paths
+and removed a legacy constant while preserving backward-compatible migration for older installs.
+\end{itemize}
+
+\vspace{2pt}
+\noindent\textbf{Apache Checkstyle}\quad{\small\color{lightgray}\href{https://github.com/checkstyle/checkstyle/pull/18807}{PR \#18807}, merged documentation contribution}\par
+
+%--------------------------------------------------------------
+% SKILLS
+%--------------------------------------------------------------
+\section{Skills}
+
+\skillrow{AI \& Automation}{LLM APIs (Gemini, OpenAI SDK), LangChain, LangGraph, CrewAI, RAG, Hugging Face, structured output parsing, async AI pipelines, agent workflows}
+\skillrow{Languages}{Python, TypeScript, JavaScript, Java}
+\skillrow{Backend}{FastAPI, Node.js, NestJS, Express.js, Spring Boot, REST APIs, gRPC, WebSockets, API Design}
+\skillrow{Architecture}{Microservices, Event-Driven Architecture, Kafka, RabbitMQ, Message Queues, Distributed Systems}
+\skillrow{Databases}{PostgreSQL, MySQL, MongoDB, Redis, OpenSearch, Firebase, Supabase}
+\skillrow{Cloud \& DevOps}{AWS (S3, RDS, EC2), Docker, GitHub Actions, CI/CD, Fly.io}
+\skillrow{Frontend Familiarity}{React, Next.js, React Native, Tailwind CSS}
+
+%--------------------------------------------------------------
+% AWARDS
+%--------------------------------------------------------------
+\section{Awards}
+
+\awardrow{Runner-up, App Development Hackathon (2025)}{Organized by Punjab University}{May '25}
+\awardrow{Ranked, ICPC Asia Topi Online Programming Contest (2024)}{Organized by International Collegiate Programming Contests}{Nov '24}
+
+%--------------------------------------------------------------
+% EDUCATION
+%--------------------------------------------------------------
+\section{Education}
+
+\noindent\textbf{Bachelor's degree in Computer Science, University of Management and Technology -- UMT}
+\hfill{\small\color{lightgray}\textit{Oct '21 -- Aug '25}}
+
+\end{document}

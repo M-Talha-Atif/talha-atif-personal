@@ -56,7 +56,7 @@ Last updated: July 2026
 
 **Key learning:** Building a multi-service personal project alone means integration issues (like the .m4a vs .wav audio format mismatch between Expo and FastAPI) surface late if you don't test the seams early.
 
-**Links:** [Demo](https://talha-atif.vercel.app/projects/moodly) | [Backend](https://github.com/M-Talha-Atif/AI-Moodler-Backend)
+**Links:** [Demo](https://talhaatif.tech/projects/moodly) | [Backend](https://github.com/M-Talha-Atif/AI-Moodler-Backend)
 
 ---
 

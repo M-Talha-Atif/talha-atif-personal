@@ -3,10 +3,10 @@
 - **Status:** Drafted, awaiting explicit send approval (user asked to review before sending)
 - **Channel:** LinkedIn connection note (230-char limit) + Email
 - **Contact:** Muhammad Ahmed, Co-Founder / CSO at Texagon
-- **Portfolio outreach page:** src/lib/outreach/texagon.ts, live at https://talha-atif.vercel.app/r/texagon (verified rendering locally, 2026-07-24, both images confirmed 200 OK)
+- **Portfolio outreach page:** src/lib/outreach/texagon.ts, live at https://talhaatif.tech/r/texagon (verified rendering locally, 2026-07-24, both images confirmed 200 OK)
 
 ## LinkedIn Connection Note (230 characters, includes portfolio link)
-Hi Muhammad, saw your post on the Jr Software Engineer role, exactly my band (fresh grad-1yr, Java/Node/React). Pakistan-based, ready now. Page here: https://talha-atif.vercel.app/r/texagon
+Hi Muhammad, saw your post on the Jr Software Engineer role, exactly my band (fresh grad-1yr, Java/Node/React). Pakistan-based, ready now. Page here: https://talhaatif.tech/r/texagon
 
 *(Character count: 191, within the 230 limit)*
 
@@ -19,7 +19,7 @@ Hi Muhammad Ahmed,
 
 Saw your post looking for Jr. Software Engineers, fresh grad to 1 year, remote, Pakistan-based. That's exactly my band: Java/Spring Boot, Node.js, React, about 1-2 years of production experience.
 
-Wrote up specifics here: https://talha-atif.vercel.app/r/texagon
+Wrote up specifics here: https://talhaatif.tech/r/texagon
 
 Happy to send my resume or jump on a quick call whenever works.
 

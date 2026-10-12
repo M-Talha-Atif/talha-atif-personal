@@ -3,7 +3,7 @@
 - **Status:** Drafted, awaiting human approval
 - **Channel:** LinkedIn (no verified email available)
 - **Contact:** Anish Bhardwaj, Co-Founder & CTO
-- **Portfolio outreach page:** src/lib/outreach/vendra.ts, live at https://talha-atif.vercel.app/r/vendra (verified rendering locally, 2026-07-24)
+- **Portfolio outreach page:** src/lib/outreach/vendra.ts, live at https://talhaatif.tech/r/vendra (verified rendering locally, 2026-07-24)
 
 ## LinkedIn Connection Note
 Hi Anish, following Vendra's YC launch with interest. I'm a backend/full-stack engineer (Java/Spring, Node/React, some applied AI) based in Pakistan, open to remote contract work. Would value connecting, no ask beyond that for now.
@@ -16,7 +16,7 @@ Hi Anish, congrats on Vendra's progress, de-risking parts sourcing for teams lik
 
 I'm a full-stack/backend engineer (about 2 years, Java/Spring Boot, Node/React, some applied AI) based in Pakistan. I know ITAR work is likely off the table for me, but if there's non-restricted engineering work where I could help, I'd welcome a short chat.
 
-Put together a page specific to Vendra here: https://talha-atif.vercel.app/r/vendra
+Put together a page specific to Vendra here: https://talhaatif.tech/r/vendra
 
 Talha
 
@@ -51,7 +51,7 @@ Hi Logan,
 
 Quick correction on my last email, I had you down at ScriptPro from an old record. Just saw you're actually Core SE at Vendra. Your post on agent reliability, runtime reward signals over prompt engineering, is exactly the problem I keep circling too.
 
-I'm a full-stack/backend engineer (about 2 years, Java/Spring Boot, Node/React, some LangGraph/agent work) based in Pakistan, open to remote work. Put together a short page on Vendra here: https://talha-atif.vercel.app/r/vendra
+I'm a full-stack/backend engineer (about 2 years, Java/Spring Boot, Node/React, some LangGraph/agent work) based in Pakistan, open to remote work. Put together a short page on Vendra here: https://talhaatif.tech/r/vendra
 
 Talha
 

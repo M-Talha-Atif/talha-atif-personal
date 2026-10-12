@@ -1,0 +1,31 @@
+{
+  "company": "CityGem",
+  "slug": "citygem",
+  "status": "Sent",
+  "lastUpdated": "2026-10-07",
+  "opportunity": {
+    "role": "No posted opening checked. Direct introduction (informational) as Backend and Mobile Engineer, based on CityGem's expansion and the overlap with Moodly (React Native plus AI service).",
+    "companyUrl": "https://citygem.app"
+  },
+  "contact": {
+    "name": "Gregoire Chermont",
+    "title": "Co-Founder and CEO",
+    "email": "glemasne@citygem.app",
+    "emailStatus": "From user-supplied contact export. Not independently verified. The local part does not match the contact's name, so confirm before sending."
+  },
+  "outreach": {
+    "channel": "Email",
+    "portfolioPage": "/r/citygem",
+    "pageUrl": "https://talhaatif.tech/r/citygem",
+    "pageDeployed": "2026-10-07 (Portfolio-NEXTJS main, commits 5f9b8e7 and 1662161, Vercel build success, live page returns 200)",
+    "draftStatus": "Drafted",
+    "approvalStatus": "Approved (user, 2026-10-07)",
+    "sentStatus": "Sent 2026-10-07 to glemasne@citygem.app (Gmail message 1a1176d5da672523), no resume attached, offered on request"
+  },
+  "riskFlags": [
+    "Contact email unverified, local part differs from the contact's name",
+    "No GPS or maps product experience, stated openly on the page and in the closing note",
+    "Whether CityGem has any open engineering role was not checked"
+  ],
+  "notion": { "synced": false, "recordUrl": null }
+}

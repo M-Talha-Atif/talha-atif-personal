@@ -52,7 +52,7 @@ Recipient Role: CTO
 Recipient Email: jane@example.com
 Subject: [approved subject]
 Email Body: [approved 4-5 line email]
-Portfolio URL: https://talha-atif.vercel.app/r/atomic
+Portfolio URL: https://talhaatif.tech/r/atomic
 ```
 
 ## Approval Requirement (hard gate — check first, every time)
@@ -94,7 +94,7 @@ Run all four before sending anything. Any failure stops the send.
 - Never silently substitute a different contact, company, or role than what was approved.
 
 **Portfolio URL**
-- Uses the existing company-specific route exactly: `https://talha-atif.vercel.app/r/[slug]` (or the actual canonical production domain already established, if different).
+- Uses the existing company-specific route exactly: `https://talhaatif.tech/r/[slug]` (or the actual canonical production domain already established, if different).
 - The slug matches the company.
 - Never invent a different URL or fall back to the generic homepage when a company-specific page exists.
 

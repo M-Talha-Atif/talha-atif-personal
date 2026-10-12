@@ -1,0 +1,12 @@
+# Only "orders" pods may call "users". Everything else in the namespace is denied.
+# NetworkPolicy is only enforced if your CNI supports it (Calico/Cilium; not the default in kind/Docker Desktop).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: { name: users-only-from-orders }
+spec:
+  podSelector: { matchLabels: { app: users } }
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector: { matchLabels: { app: orders } }
+      ports: [{ port: 3000 }]

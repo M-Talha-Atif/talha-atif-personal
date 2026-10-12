@@ -1,0 +1,32 @@
+{
+    "company":  "Pozolazo",
+    "slug":  "pozolazo",
+    "status":  "Sent",
+    "lastUpdated":  "2026-10-07",
+    "opportunity":  {
+                        "role":  "Direct introduction (informational), no posted opening checked",
+                        "companyUrl":  ""
+                    },
+    "contact":  {
+                    "name":  "Rafael Orozco",
+                    "title":  "Founder/CEO",
+                    "email":  "rafael@pozolazo.com",
+                    "emailStatus":  "From user-supplied export, not independently verified"
+                },
+    "outreach":  {
+                     "channel":  "Email",
+                     "portfolioPage":  "/r/pozolazo",
+                     "pageUrl":  "https://talhaatif.tech/r/pozolazo",
+                     "draftStatus":  "Drafted",
+                     "approvalStatus":  "Approved (user, 2026-10-07)",
+                     "sentStatus":  "Sent 2026-10-07 (Gmail message 1a11773075a0215f), no resume attached, offered on request",
+                     "followUpAfter":  "2026-10-14"
+                 },
+    "riskFlags":  [
+                      "Email from unverified export"
+                  ],
+    "notion":  {
+                   "synced":  false,
+                   "recordUrl":  null
+               }
+}

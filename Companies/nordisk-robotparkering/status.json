@@ -1,0 +1,32 @@
+{
+    "company":  "Nordisk Robotparkering AB",
+    "slug":  "nordisk-robotparkering",
+    "status":  "Sent",
+    "lastUpdated":  "2026-10-07",
+    "opportunity":  {
+                        "role":  "Direct introduction (informational), no posted opening checked",
+                        "companyUrl":  ""
+                    },
+    "contact":  {
+                    "name":  "Henrik Nell",
+                    "title":  "Co-Founder and CEO",
+                    "email":  "henrik.nell@nordiskrobotparkering.se",
+                    "emailStatus":  "From user-supplied export, not independently verified"
+                },
+    "outreach":  {
+                     "channel":  "Email",
+                     "portfolioPage":  "/r/nordisk-robotparkering",
+                     "pageUrl":  "https://talhaatif.tech/r/nordisk-robotparkering",
+                     "draftStatus":  "Drafted",
+                     "approvalStatus":  "Approved (user, 2026-10-07)",
+                     "sentStatus":  "Sent 2026-10-07 (Gmail message 1a1177314b51c979), no resume attached, offered on request",
+                     "followUpAfter":  "2026-10-14"
+                 },
+    "riskFlags":  [
+                      "Reseller of Klaus Multiparking, small software budget likely"
+                  ],
+    "notion":  {
+                   "synced":  false,
+                   "recordUrl":  null
+               }
+}

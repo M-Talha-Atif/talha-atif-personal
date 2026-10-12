@@ -1,12 +1,12 @@
 # Career Document — Muhammad Talha Atif
 
-Last updated: July 2026
+Last updated: October 2026
 
 ---
 
 ## 1. Introduction
 
-I am a full stack engineer who leans backend, with 2+ years of production experience building distributed systems, microservices, and event-driven architecture. My core strength is turning ambiguous requirements into working systems end to end, from a whiteboard conversation with a non-technical founder to a deployed, auditable service handling real load. I have owned an enterprise IAM platform from scratch in a 2-person engineering team, shipped a production social platform serving real users, and built AI-integrated products solo.
+I am a full stack engineer who leans backend, with 3+ years of production experience (since September 2023) building distributed systems, microservices, and event-driven architecture. My core strength is turning ambiguous requirements into working systems end to end, from a whiteboard conversation with a non-technical founder to a deployed, auditable service handling real load. I have owned an enterprise IAM platform from scratch in a 2-person engineering team, shipped a production social platform serving real users, and built AI-integrated products solo.
 
 I am not trying to become merely proficient with tools. I am trying to become the engineer who can take a complex, half-formed requirement and translate it into a system design with clear trade-offs, named failure scenarios, and a rollback plan, and who can explain that design to both an engineer and a founder in language each of them actually understands.
 
@@ -113,6 +113,15 @@ I understand RAG architecture, multi-agent orchestration with frameworks like Cr
 
 Format: Problem → Action → Technical Decision → Result → Learning
 
+### myStaffhub (June 2026 – Present)
+
+**Role:** Founding Engineer (Contract), remote, South Africa. Company site: mystaffhub.org (GovHub, workforce management for municipalities).
+
+**Documented scope** (detailed Problem → Action → Result stories are still to be written here; nothing below is a metric I have not measured):
+- Developed a comprehensive API for HR and payroll management as the founding engineer.
+- Designed a permission-based access-control system to strengthen security across numerous endpoints.
+- Managed the infrastructure, ensuring seamless deployment and monitoring of sensitive data in compliance with South Africa’s POPIA.
+
 ### Intimec via MicroTechX
 
 **Story 1: Access Portal from Zero**
@@ -200,6 +209,15 @@ Format: Problem → Action → Technical Decision → Result → Learning
 - Technical Decision: Applied passive event listeners, requestAnimationFrame batching, and Intersection Observer for lazy loading instead of a design system rewrite.
 - Result: Smooth scrolling and reliable taps across all platforms with zero visual changes.
 - Learning: Cross-platform bugs are usually about how the browser schedules work, not about the UI code being "wrong."
+
+### HannSoft (September 2023 – April 2025)
+
+**Role:** Full Stack Engineer, remote. Android and client-product delivery for clients across different countries, as the only engineer on each engagement, including sitting in direct client meetings to capture requirements.
+
+**Documented scope** (detailed Problem → Action → Result stories are still to be written here; nothing below is a metric I have not measured):
+- Engineered third party API integrations, including library and sports data providers and Firebase Cloud Messaging, to degrade gracefully under real world failure, applying timeouts, circuit breakers, and exponential backoff retries so one unreliable upstream provider could not cascade into an app wide outage.
+- Structured client applications around MVVM to keep business logic, state, and UI concerns independently testable and resilient to configuration changes, while delivering integration heavy production features such as Fridge Buddy's scan to recipe flow, combining barcode scanning with Gemini based AI content generation.
+- Owned the full technical lifecycle of independent client products end to end, from data modeling and access control design through native client delivery, architecting Firestore and Realtime Database schemas alongside the Firestore security rules and RBAC model that enforced authorization at the data layer rather than trusting the client.
 
 ---
 

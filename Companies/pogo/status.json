@@ -1,0 +1,28 @@
+{
+  "company": "Pogo",
+  "slug": "pogo",
+  "status": "Outreach Prepared",
+  "lastUpdated": "2026-10-10",
+  "opportunity": {
+    "role": "Full Stack Engineer, enterprise AI SaaS product (joinpogo.ai). Posted opening, 2-4 years, builds AI agents, backend services, APIs, web UIs and internal tools.",
+    "companyUrl": "https://www.joinpogo.com/",
+    "jobUrl": "Unknown (supplied as pasted posting)"
+  },
+  "contact": { "name": null, "title": null, "email": null, "emailStatus": "Not found. Application route unknown, check the posting's apply link or LinkedIn company people page." },
+  "outreach": {
+    "channel": "Not chosen yet",
+    "portfolioPage": "/r/pogo",
+    "pageUrl": "https://talhaatif.tech/r/pogo",
+    "pageDeployed": "2026-10-10 (Portfolio-NEXTJS main, Vercel build success, live page returns 200)",
+    "draftStatus": "Not Drafted",
+    "approvalStatus": "Not Approved",
+    "sentStatus": "Not Sent"
+  },
+  "riskFlags": [
+    "Posting does not state location or work authorization. Candidate is Pakistan-based, so remote eligibility must be confirmed.",
+    "No Plaid or card transaction data experience, stated on the page",
+    "Largest scale so far is 5,000+ users per operation and 5M+ documents, Pogo reports 3M+ users",
+    "Funding figures differ across sources (user supplied 27.1M, a press page says 32M raised)"
+  ],
+  "notion": { "synced": false, "recordUrl": null }
+}

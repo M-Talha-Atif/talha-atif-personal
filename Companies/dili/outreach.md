@@ -3,17 +3,17 @@
 - **Status:** Drafted, awaiting human approval
 - **Channel:** LinkedIn only (no verified email found, per instruction no email draft prepared without one)
 - **Contact:** Anand Chaturvedi, Co-Founder & CEO
-- **Portfolio outreach page:** src/lib/outreach/dili.ts, live at https://talha-atif.vercel.app/r/dili (verified rendering locally, 2026-07-24, both images confirmed 200 OK)
+- **Portfolio outreach page:** src/lib/outreach/dili.ts, live at https://talhaatif.tech/r/dili (verified rendering locally, 2026-07-24, both images confirmed 200 OK)
 
 ## LinkedIn Connection Note
-Hi Anand, noticed Dili's move from PE/VC diligence into clean-energy compliance, a much more concrete, high-stakes problem. Backend/full-stack engineer (Python, React), Pakistan-based, open to remote. Wrote up the overlap with your Founding Engineer post: https://talha-atif.vercel.app/r/dili
+Hi Anand, noticed Dili's move from PE/VC diligence into clean-energy compliance, a much more concrete, high-stakes problem. Backend/full-stack engineer (Python, React), Pakistan-based, open to remote. Wrote up the overlap with your Founding Engineer post: https://talhaatif.tech/r/dili
 
 ## Follow-up Message (after connection accepted)
 Hi Anand, the shift from a general due-diligence copilot to prevailing-wage/apprenticeship compliance for clean-energy projects is a much sharper problem, real money (tax incentives, federal funding) rides on getting the paperwork right.
 
 Your Founding Engineer post (Python/Django, React, LLM document extraction, AWS/Terraform) overlaps directly on Python and React, and on the core problem of pulling trustworthy structured data out of messy documents, I built exactly that pattern into an AI inference pipeline (Moodly) and a zero-downtime migration of a 5M-document index. Django and Terraform specifically would be new to me, want to say that upfront rather than imply otherwise.
 
-Wrote up the specifics here: https://talha-atif.vercel.app/r/dili
+Wrote up the specifics here: https://talhaatif.tech/r/dili
 
 Talha
 
@@ -34,7 +34,7 @@ Noticed Dili's move from PE/VC diligence into clean-energy compliance, a much sh
 
 I'm a backend/full-stack engineer (about 2 years, Python, React) based in Pakistan, open to remote work. Your Founding Engineer post (Python/Django, React, LLM document extraction, AWS/Terraform) overlaps directly on Python and React, and on the core problem of pulling trustworthy structured data out of messy documents, I built exactly that pattern into an AI inference pipeline (Moodly) and a zero-downtime migration of a 5M-document index. Django and Terraform specifically would be new to me, want to say that upfront rather than imply otherwise.
 
-Wrote up the specifics here: https://talha-atif.vercel.app/r/dili
+Wrote up the specifics here: https://talhaatif.tech/r/dili
 
 Talha
 

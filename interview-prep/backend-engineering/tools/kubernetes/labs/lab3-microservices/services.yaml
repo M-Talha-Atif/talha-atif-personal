@@ -1,0 +1,62 @@
+# Two Deployments + two ClusterIP Services. orders reaches users at http://users:3000 (cluster DNS).
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: users }
+spec:
+  replicas: 2
+  selector: { matchLabels: { app: users } }
+  template:
+    metadata: { labels: { app: users, tier: backend } }
+    spec:
+      containers:
+        - name: users
+          image: node:20-alpine
+          command: ["node", "/app/server.js"]
+          ports: [{ containerPort: 3000 }]
+          volumeMounts: [{ name: code, mountPath: /app }]
+          readinessProbe: { httpGet: { path: /health, port: 3000 }, periodSeconds: 3 }
+          livenessProbe:  { httpGet: { path: /health, port: 3000 }, periodSeconds: 10 }
+          resources:
+            requests: { cpu: 50m, memory: 48Mi }
+            limits: { memory: 96Mi }
+      volumes:
+        - { name: code, configMap: { name: users-code } }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: users }
+spec:
+  selector: { app: users }
+  ports: [{ port: 3000, targetPort: 3000 }]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: orders }
+spec:
+  replicas: 2
+  selector: { matchLabels: { app: orders } }
+  template:
+    metadata: { labels: { app: orders, tier: backend } }
+    spec:
+      containers:
+        - name: orders
+          image: node:20-alpine
+          command: ["node", "/app/server.js"]
+          env:
+            - { name: USERS_URL, value: "http://users:3000" }   # Service name, same namespace
+          ports: [{ containerPort: 3000 }]
+          volumeMounts: [{ name: code, mountPath: /app }]
+          readinessProbe: { httpGet: { path: /health, port: 3000 }, periodSeconds: 3 }
+          livenessProbe:  { httpGet: { path: /health, port: 3000 }, periodSeconds: 10 }
+          resources:
+            requests: { cpu: 50m, memory: 48Mi }
+            limits: { memory: 96Mi }
+      volumes:
+        - { name: code, configMap: { name: orders-code } }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: orders }
+spec:
+  selector: { app: orders }
+  ports: [{ port: 3000, targetPort: 3000 }]

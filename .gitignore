@@ -1,0 +1,9 @@
+# OS and tool junk
+.DS_Store
+Thumbs.db
+node_modules/
+# LaTeX build artifacts (keep the .tex and the final .pdf)
+*.aux
+*.log
+*.out
+*.synctex.gz

@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: shop
+resources:
+  - namespace.yaml
+  - services.yaml
+  - hpa.yaml
+  - networkpolicy.yaml
+configMapGenerator:
+  - name: users-code
+    files: [users/server.js]
+  - name: orders-code
+    files: [orders/server.js]

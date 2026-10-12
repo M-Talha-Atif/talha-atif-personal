@@ -1,0 +1,32 @@
+{
+    "company":  "govIT GmbH",
+    "slug":  "govit",
+    "status":  "Sent",
+    "lastUpdated":  "2026-10-07",
+    "opportunity":  {
+                        "role":  "Direct introduction (informational), no posted opening checked",
+                        "companyUrl":  ""
+                    },
+    "contact":  {
+                    "name":  "Dominik Foertsch",
+                    "title":  "Co-Founder and CEO",
+                    "email":  "dominik.foertsch@govit.de",
+                    "emailStatus":  "From user-supplied export, not independently verified"
+                },
+    "outreach":  {
+                     "channel":  "Email",
+                     "portfolioPage":  "/r/govit",
+                     "pageUrl":  "https://talhaatif.tech/r/govit",
+                     "draftStatus":  "Drafted",
+                     "approvalStatus":  "Approved (user, 2026-10-07)",
+                     "sentStatus":  "Sent 2026-10-07 (Gmail message 1a117730b4e02317), no resume attached, offered on request",
+                     "followUpAfter":  "2026-10-14"
+                 },
+    "riskFlags":  [
+                      "German recipient, cold email risk under UWG, consider LinkedIn for any follow-up; GovHub role to confirm"
+                  ],
+    "notion":  {
+                   "synced":  false,
+                   "recordUrl":  null
+               }
+}

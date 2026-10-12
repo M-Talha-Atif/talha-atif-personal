@@ -1,0 +1,8 @@
+[
+  { "id": "s1", "text": "Need a web app that actually scales? I'm Talha, a full stack engineer shipping real products." },
+  { "id": "s2", "text": "Cunocovo, a social platform for creatives, serves over five thousand active users. I cut feed load from three seconds to seven hundred milliseconds." },
+  { "id": "s3", "text": "For enterprises, I engineered an identity governance platform. Eight microservices, event driven workflows, and compliance grade audit trails." },
+  { "id": "s4", "text": "React and Next.js frontends. Nest, Spring Boot or Django backends. Auth, admin panels, real time features, and cloud deployment." },
+  { "id": "s5", "text": "You share the idea. I plan, build in clear milestones, and launch with monitoring." },
+  { "id": "s6", "text": "Fifty plus web projects, over a hundred thousand users. Let's build yours. Message me today." }
+]
